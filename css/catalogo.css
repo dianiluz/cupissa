@@ -1,0 +1,15 @@
+.catalogo-section {
+  min-height: 100vh;
+}
+
+.titulo-catalogo {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 30px;
+}
+
+.grid-productos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
