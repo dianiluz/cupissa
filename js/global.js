@@ -79,7 +79,7 @@ function enviarCarritoWhatsApp() {
     mensaje += `Ref: ${item.ref}%0A`;
     mensaje += `Talla: ${item.talla}%0A`;
     mensaje += `Cantidad: ${item.cantidad}%0A`;
-    mensaje += `Imagen: https://TU-DOMINIO.com/assets/img/${item.imagen}%0A%0A`;
+    mensaje += `Imagen: https://cupissa.com/assets/img/${item.imagen}%0A%0A`;
   });
 
   window.open(`https://wa.me/573147671380?text=${mensaje}`, "_blank");
