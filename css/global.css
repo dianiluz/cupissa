@@ -142,3 +142,27 @@ main {
   color: white;
   cursor: pointer;
 }
+
+.item-carrito {
+  position: relative;
+  background: #111;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.eliminar-item {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #ff4d6d;
+  transition: 0.3s;
+}
+
+.eliminar-item:hover {
+  transform: scale(1.2);
+  color: #ff00c8;
+}
