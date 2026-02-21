@@ -48,15 +48,17 @@ function cerrarCarrito() {
 
   carrito.forEach((item, index) => {
     container.innerHTML += `
-      <div class="item-carrito">
-        <strong>${item.nombre}</strong><br>
-        Ref: ${item.ref}<br>
-        Talla: ${item.talla}<br>
-        Cantidad: ${item.cantidad}<br>
-        <button onclick="eliminarItem(${index})">Eliminar</button>
-      </div>
-    `;
-  });
+  <div class="item-carrito">
+
+    <span class="eliminar-item" onclick="eliminarItem(${index})">✖</span>
+
+    <strong>${item.nombre}</strong><br>
+    Ref: ${item.ref}<br>
+    Talla: ${item.talla}<br>
+    Cantidad: ${item.cantidad}<br>
+
+  </div>
+`;
 }
 
 function eliminarItem(index) {
