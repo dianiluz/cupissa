@@ -47,6 +47,19 @@ lista.forEach(p=>{
 const div = document.createElement("div");
 div.className = "producto";
 
+const img = div.querySelector(".producto-img");
+
+img.addEventListener("click", function(){
+  const modal = document.getElementById("imgModal");
+  const modalImg = document.getElementById("imgGrande");
+  modal.style.display = "block";
+  modalImg.src = this.src;
+});
+
+document.querySelector(".close").onclick = function(){
+  document.getElementById("imgModal").style.display = "none";
+};
+
 let tallaHTML = "";
 
 if(p.talla.length > 0){
