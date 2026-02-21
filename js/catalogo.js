@@ -15,9 +15,9 @@ fetch(sheetURL)
         imagenurl: col[2],
         categoria: col[4],
         palabras_clave: col[12],
-        activo: col[13]?.trim()
+       activo: col[13]?.trim().toLowerCase()
       };
-    }).filter(p => p.activo === "true");
+    }).filter(p => p.activo === "true" || p.activo === "si");
 
     mostrarProductos(productosGlobal);
   });
