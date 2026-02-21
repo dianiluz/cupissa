@@ -1,27 +1,33 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catálogo — Cupissa</title>
-
-<link rel="stylesheet" href="../css/theme.css">
+  <meta charset="UTF-8">
+  <title>Catálogo | CUPISSA</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/catalogo.css">
 </head>
 
 <body>
 
-<div id="header"></div>
+  <div id="header"></div>
 
-<main class="catalogo-container">
-  <div id="productos" class="productos-grid"></div>
-</main>
+  <main>
+    <section class="catalogo-section">
+      <h1 class="titulo-catalogo">Explora el Universo CUPISSA</h1>
 
-<div id="footer"></div>
+      <div class="filtros">
+        <select id="filtro-categoria">
+          <option value="todos">Todas las categorías</option>
+        </select>
+      </div>
 
-<script src="../js/components.js"></script>
-<script src="../js/cart.js"></script>
-<script src="../js/catalogo.js"></script>
-<script src="../js/search.js"></script>
+      <div id="productos-container" class="grid-productos"></div>
+    </section>
+  </main>
 
+  <div id="footer"></div>
+
+  <script src="/js/catalogo.js"></script>
+  <script src="/js/global.js"></script>
 </body>
 </html>
