@@ -71,16 +71,32 @@ ${p.talla.map(t=>`<option>${t}</option>`).join("")}
 }
 
 div.innerHTML = `
-<img src="${p.imagenurl}" class="producto-img">
-<h3>${p.nombre}</h3>
-${tallaHTML}
-<button class="btn-carrito">Agregar</button>
+  <img src="${p.imagenurl}" class="producto-img">
+  <h3>${p.nombre}</h3>
+  ${tallaHTML}
+  <button class="btn-carrito">Agregar</button>
 `;
 
 cont.appendChild(div);
 
+// EVENTO BOTÓN
+const btn = div.querySelector(".btn-carrito");
+
+btn.addEventListener("click", ()=>{
+
+  const select = div.querySelector(".talla-select");
+  const talla = select ? select.value : "";
+
+  agregarCarrito({
+    ref: p.ref,
+    nombre: p.nombre,
+    talla: talla,
+    cantidad: 1,
+    imagenurl: p.imagenurl
+  });
+
+  alert("Producto agregado al carrito");
 });
-}
 
 document.addEventListener("DOMContentLoaded", cargarProductos);
 
