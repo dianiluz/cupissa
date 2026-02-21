@@ -1,22 +1,22 @@
 let carrito = JSON.parse(localStorage.getItem("carrito") || "[]");
 
-function guardarCarrito(){
-  localStorage.setItem("carrito", JSON.stringify(carrito));
-  actualizarContador();
-}
-
 function actualizarContador(){
   const contador = document.getElementById("cartCount");
   if(!contador) return;
 
-  const total = carrito.reduce((acc, item)=> acc + item.cantidad, 0);
+  const total = carrito.reduce((acc,item)=>acc+item.cantidad,0);
   contador.textContent = total;
+}
+
+function guardar(){
+  localStorage.setItem("carrito",JSON.stringify(carrito));
+  actualizarContador();
 }
 
 function agregarCarrito(producto){
 
-  let existente = carrito.find(p => 
-    p.ref === producto.ref && p.talla === producto.talla
+  let existente = carrito.find(p=> 
+    p.ref===producto.ref && p.talla===producto.talla
   );
 
   if(existente){
@@ -25,12 +25,12 @@ function agregarCarrito(producto){
     carrito.push(producto);
   }
 
-  guardarCarrito();
+  guardar();
 }
 
 function abrirCarrito(){
 
-  if(carrito.length === 0){
+  if(carrito.length===0){
     alert("Tu carrito está vacío.");
     return;
   }
