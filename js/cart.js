@@ -2,14 +2,15 @@ let carrito = JSON.parse(localStorage.getItem("carrito") || "[]");
 
 function guardarCarrito(){
   localStorage.setItem("carrito", JSON.stringify(carrito));
-  actualizarContadores();
+  actualizarContador();
 }
 
-function actualizarContadores(){
-  const cartEl = document.getElementById("cartCount");
-  if(cartEl){
-    cartEl.textContent = carrito.reduce((a,b)=>a+b.cantidad,0);
-  }
+function actualizarContador(){
+  const contador = document.getElementById("cartCount");
+  if(!contador) return;
+
+  const total = carrito.reduce((acc, item)=> acc + item.cantidad, 0);
+  contador.textContent = total;
 }
 
 function agregarCarrito(producto){
@@ -20,7 +21,7 @@ function agregarCarrito(producto){
 
   if(existente){
     existente.cantidad += producto.cantidad;
-  }else{
+  } else {
     carrito.push(producto);
   }
 
@@ -37,7 +38,7 @@ function abrirCarrito(){
   let nombre = prompt("¿Cuál es tu nombre?");
   if(!nombre) return;
 
-  let mensaje = `Hola, soy ${nombre}, quiero cotizar los siguientes productos:%0A%0A`;
+  let mensaje = `Hola, soy ${nombre}, quiero cotizar:%0A%0A`;
 
   carrito.forEach(p=>{
     mensaje += `• ${p.nombre}`;
@@ -46,8 +47,7 @@ function abrirCarrito(){
     mensaje += `Ref: ${window.location.origin}${p.imagenurl}%0A%0A`;
   });
 
-  let url = `https://wa.me/573147671380?text=${mensaje}`;
-  window.open(url, "_blank");
+  window.open(`https://wa.me/573147671380?text=${mensaje}`, "_blank");
 }
 
-document.addEventListener("DOMContentLoaded", actualizarContadores);
+document.addEventListener("DOMContentLoaded", actualizarContador);
