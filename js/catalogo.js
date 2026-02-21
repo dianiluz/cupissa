@@ -14,23 +14,23 @@ productosGlobal = filas.map(fila=>{
 const c = fila.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
 
 return{
-ref:c[0]?.trim(),
-nombre:c[1]?.trim(),
-imagenurl:c[2]?.trim(),
-mundo:c[3]?.trim(),
-categoria:c[4]?.trim(),
-subcategoria:c[5]?.trim(),
-tipo:c[6]?.trim(),
-talla:c[7]?.trim() ? c[7].split("|") : [],
-tematica:c[8]?.trim(),
-genero:c[9]?.trim(),
-ocasion:c[10]?.trim(),
-personalizable:c[11]?.trim(),
-palabras_clave:c[12]?.trim(),
-activo:c[13]?.trim()
+ref:c[0]?.replace(/"/g,"").trim(),
+nombre:c[1]?.replace(/"/g,"").trim(),
+imagenurl:c[2]?.replace(/"/g,"").trim(),
+mundo:c[3]?.replace(/"/g,"").trim(),
+categoria:c[4]?.replace(/"/g,"").trim(),
+subcategoria:c[5]?.replace(/"/g,"").trim(),
+tipo:c[6]?.replace(/"/g,"").trim(),
+talla:c[7]?.replace(/"/g,"").trim() ? c[7].replace(/"/g,"").trim().split("|") : [],
+tematica:c[8]?.replace(/"/g,"").trim(),
+genero:c[9]?.replace(/"/g,"").trim(),
+ocasion:c[10]?.replace(/"/g,"").trim(),
+personalizable:c[11]?.replace(/"/g,"").trim(),
+palabras_clave:c[12]?.replace(/"/g,"").trim(),
+activo:c[13]?.replace(/"/g,"").trim()
 };
 
-}).filter(p => p.activo?.toLowerCase() === "si");
+}).filter(p => p.activo && p.activo.toLowerCase().includes("si"));
 
 renderProductos(productosGlobal);
 }
