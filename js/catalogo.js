@@ -41,7 +41,7 @@ function mostrarProductos(productos) {
     container.innerHTML += `
       <div class="card-producto">
 
-        <img src="${producto.imagenurl}" alt="${producto.nombre}">
+        <img src="/assets/img/${producto.imagenurl}"
 
         <h3>${producto.nombre}</h3>
 
