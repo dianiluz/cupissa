@@ -1,95 +1,44 @@
-let productosGlobal = [];
-
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQB2HWydVva17mDTdLcYgY409q5DcJHg3PumZLypAgLiwWs6s8ptH_kC_qjuhZv7W010xobmyFl2d7y/pub?output=csv";
 
-async function cargarProductos(){
+let productosGlobal = [];
 
-  const res = await fetch(sheetURL);
-  const texto = await res.text();
+fetch(sheetURL)
+  .then(res => res.text())
+  .then(data => {
+    const filas = data.split("\n").slice(1);
 
-  const filas = texto.split("\n").slice(1);
+    productosGlobal = filas.map(fila => {
+      const col = fila.split(",");
+      return {
+        ref: col[0],
+        nombre: col[1],
+        imagenurl: col[2],
+        categoria: col[4],
+        palabras_clave: col[12],
+        activo: col[13]?.trim()
+      };
+    }).filter(p => p.activo === "true");
 
-  productosGlobal = filas.map(f=>{
-    const c = f.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+    mostrarProductos(productosGlobal);
+  });
 
-    return{
-      ref:c[0]?.replace(/"/g,"").trim(),
-      nombre:c[1]?.replace(/"/g,"").trim(),
-      imagenurl:c[2]?.replace(/"/g,"").trim(),
-      talla:c[7]?.replace(/"/g,"").trim() ? c[7].replace(/"/g,"").trim().split("|") : [],
-      palabras:c[12]?.replace(/"/g,"").trim(),
-      activo:c[13]?.replace(/"/g,"").trim()
-    };
+function mostrarProductos(productos) {
+  const container = document.getElementById("productos-container");
+  container.innerHTML = "";
 
-  }).filter(p=>p.activo?.toLowerCase().includes("si"));
+  productos.forEach(producto => {
 
-  renderProductos(productosGlobal);
-}
+    const mensaje = `Hola, quiero cotizar el producto ${producto.nombre} Ref: ${producto.ref}`;
+    const link = `https://wa.me/573147671380?text=${encodeURIComponent(mensaje)}`;
 
-function renderProductos(lista){
-
-  const cont = document.getElementById("productos");
-  if(!cont) return;
-
-  cont.innerHTML="";
-
-  lista.forEach(p=>{
-
-    const div=document.createElement("div");
-    div.className="producto";
-
-    let tallaHTML="";
-    if(p.talla.length>0){
-      tallaHTML=`
-        <select class="talla-select">
-        ${p.talla.map(t=>`<option>${t}</option>`).join("")}
-        </select>`;
-    }
-
-    div.innerHTML=`
-      <img src="${p.imagenurl}" class="producto-img">
-      <h3>${p.nombre}</h3>
-      ${tallaHTML}
-      <button class="btn-carrito">Agregar</button>
+    container.innerHTML += `
+      <div>
+        <img src="${producto.imagenurl}" width="100%">
+        <h3>${producto.nombre}</h3>
+        <a href="${link}" target="_blank">
+          <button>Cotizar por WhatsApp</button>
+        </a>
+      </div>
     `;
-
-    cont.appendChild(div);
-
-    // animación entrada
-    div.style.opacity="0";
-    div.style.transform="translateY(20px)";
-    setTimeout(()=>{
-      div.style.transition="all .4s ease";
-      div.style.opacity="1";
-      div.style.transform="translateY(0)";
-    },50);
-
-    const btn=div.querySelector(".btn-carrito");
-
-    btn.addEventListener("click",()=>{
-
-      const select=div.querySelector(".talla-select");
-      const talla=select?select.value:"";
-
-      agregarCarrito({
-        ref:p.ref,
-        nombre:p.nombre,
-        talla:talla,
-        cantidad:1,
-        imagenurl:p.imagenurl
-      });
-
-      btn.innerHTML="✔ Agregado";
-      btn.style.background="#4caf50";
-
-      setTimeout(()=>{
-        btn.innerHTML="Agregar";
-        btn.style.background="#f06596";
-      },1000);
-
-    });
-
   });
 }
-
-document.addEventListener("DOMContentLoaded", cargarProductos);
