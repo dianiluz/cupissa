@@ -82,10 +82,14 @@ ${p.talla.map(t=>`<option>${t}</option>`).join("")}
   cursor:pointer;
 }
 
-const imagenTransformada = p.imagenurl.replace(
-"/upload/",
-"/upload/c_fill,ar_4:5,g_north,z_1.2,f_auto,q_auto/"
-);
+let imagenTransformada = p.imagenurl;
+
+if(p.imagenurl && p.imagenurl.includes("/upload/")){
+  imagenTransformada = p.imagenurl.replace(
+    "/upload/",
+    "/upload/c_fill,ar_4:5,g_north,z_1.2,f_auto,q_auto/"
+  );
+} 
 div.innerHTML = `
 <img src="${imagenTransformada}" 
      class="producto-img"
