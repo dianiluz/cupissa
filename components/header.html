@@ -1,0 +1,39 @@
+<header class="header">
+
+  <div class="nav">
+
+    <!-- LOGO -->
+    <a href="/index.html">
+      <img src="/assets/logo.png" class="logo">
+    </a>
+
+    <!-- NAV -->
+    <nav style="display:flex; gap:18px; font-weight:600;">
+      <a href="/index.html">Universo Cupissa</a>
+      <a href="/catalogo/index.html">Catálogo</a>
+      <a href="/rastreo/index.html">Seguimiento</a>
+    </nav>
+
+    <!-- BUSCADOR -->
+    <div class="search">
+      <input id="globalSearch" placeholder="Buscar productos...">
+    </div>
+
+    <!-- ICONOS -->
+    <div class="nav-icons">
+
+      <div class="icon-btn glow" onclick="abrirFavoritos()">
+        ❤️
+        <span id="favCount" class="counter">0</span>
+      </div>
+
+      <div class="icon-btn glow" onclick="abrirCarrito()">
+        🛒
+        <span id="cartCount" class="counter">0</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</header>
