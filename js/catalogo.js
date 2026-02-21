@@ -5,19 +5,25 @@ let productosGlobal = [];
 fetch(sheetURL)
   .then(res => res.text())
   .then(data => {
-    const filas = data.split("\n").slice(1);
 
-    productosGlobal = filas.map(fila => {
-      const col = fila.split(",");
+    const filas = data.split("\n");
+    const encabezados = filas[0].split(",");
+
+    productosGlobal = filas.slice(1).map(fila => {
+      const valores = fila.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
+
+      if (!valores) return null;
+
       return {
-        ref: col[0],
-        nombre: col[1],
-        imagenurl: col[2],
-        categoria: col[4],
-        palabras_clave: col[12],
-       activo: col[13]?.trim().toLowerCase()
+        ref: valores[0]?.replace(/"/g, ""),
+        nombre: valores[1]?.replace(/"/g, ""),
+        imagenurl: valores[2]?.replace(/"/g, ""),
+        categoria: valores[4]?.replace(/"/g, ""),
+        palabras_clave: valores[12]?.replace(/"/g, ""),
+        activo: valores[13]?.replace(/"/g, "").trim().toLowerCase()
       };
-    }).filter(p => p.activo === "true" || p.activo === "si");
+    })
+    .filter(p => p && (p.activo === "true" || p.activo === "si"));
 
     mostrarProductos(productosGlobal);
   });
@@ -32,11 +38,11 @@ function mostrarProductos(productos) {
     const link = `https://wa.me/573147671380?text=${encodeURIComponent(mensaje)}`;
 
     container.innerHTML += `
-      <div>
-        <img src="${producto.imagenurl}" width="100%">
+      <div style="background:#111;padding:15px;border-radius:15px;">
+        <img src="${producto.imagenurl}" style="width:100%;border-radius:10px;">
         <h3>${producto.nombre}</h3>
         <a href="${link}" target="_blank">
-          <button>Cotizar por WhatsApp</button>
+          <button style="padding:10px;border-radius:20px;">Cotizar por WhatsApp</button>
         </a>
       </div>
     `;
