@@ -99,22 +99,38 @@ Cantidad: ${cantidad}`;
 function agregarAlCarrito(index) {
 
   const producto = productosGlobal[index];
-  const cantidad = document.getElementById(`cantidad-${index}`).textContent;
+  const cantidad = parseInt(document.getElementById(`cantidad-${index}`).textContent);
 
   const selectTalla = document.getElementById(`talla-${index}`);
   const talla = selectTalla ? selectTalla.value : "No aplica";
 
-  carrito.push({
-    nombre: producto.nombre,
-    ref: producto.ref,
-    talla: talla,
-    cantidad: cantidad,
-    imagen: producto.imagenurl
-  });
+  // Buscar si ya existe ese producto en el carrito
+  const productoExistente = carrito.find(item => item.ref === producto.ref);
+
+  if (productoExistente) {
+
+    // Si existe la talla dentro del producto
+    if (productoExistente.tallas[talla]) {
+      productoExistente.tallas[talla] += cantidad;
+    } else {
+      productoExistente.tallas[talla] = cantidad;
+    }
+
+  } else {
+
+    // Crear nuevo producto agrupado
+    carrito.push({
+      nombre: producto.nombre,
+      ref: producto.ref,
+      imagen: producto.imagenurl,
+      tallas: {
+        [talla]: cantidad
+      }
+    });
+
+  }
 
   localStorage.setItem("carrito", JSON.stringify(carrito));
-
   actualizarContadorCarrito();
-
   alert("Producto agregado al carrito");
 }
