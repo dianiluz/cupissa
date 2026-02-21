@@ -19,6 +19,7 @@ fetch(sheetURL)
         nombre: valores[1]?.replace(/"/g, ""),
         imagenurl: valores[2]?.replace(/"/g, ""),
         categoria: valores[4]?.replace(/"/g, ""),
+         talla: valores[7]?.replace(/"/g, ""),
         palabras_clave: valores[12]?.replace(/"/g, ""),
         activo: valores[13]?.replace(/"/g, "").trim().toLowerCase()
       };
@@ -41,7 +42,7 @@ function mostrarProductos(productos) {
     container.innerHTML += `
       <div class="card-producto">
 
-        <img src="/assets/img/${producto.imagenurl}"
+       <img src="/assets/img/${producto.imagenurl}"
 
         <h3>${producto.nombre}</h3>
 
