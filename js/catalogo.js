@@ -1,10 +1,5 @@
-// js/catalogo.js
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQB2HWydVva17mDTdLcYgY409q5DcJHg3PumZLypAgLiwWs6s8ptH_kC_qjuhZv7W010xobmyFl2d7y/pub?output=csv";
-
 const productosContainer = document.getElementById("productos");
-const inputGlobal = document.getElementById("globalSearch");
-
-let productosGlobal = []; // guardamos todos los productos para filtros y buscador
 
 // Cargar productos desde Google Sheet
 async function cargarProductos() {
@@ -13,9 +8,9 @@ async function cargarProductos() {
 
   // Parsear CSV usando PapaParse
   const parsed = Papa.parse(csvText, { header: true, skipEmptyLines: true });
-
+  
   // Mapear productos activos
-  productosGlobal = parsed.data
+  const productos = parsed.data
     .filter(p => p.activo.toLowerCase() === "si")
     .map(p => ({
       ref: p.ref,
@@ -33,8 +28,8 @@ async function cargarProductos() {
       palabras_clave: p.palabras_clave
     }));
 
-  renderProductos(productosGlobal);
-  generarFiltros(productosGlobal);
+  renderProductos(productos);
+  generarFiltros(productos);
 }
 
 // Renderizar productos en el grid
@@ -71,21 +66,6 @@ function generarFiltros(productos) {
   categorias.forEach(c => selects[1].appendChild(new Option(c, c)));
   subcategorias.forEach(s => selects[2].appendChild(new Option(s, s)));
 }
-
-// Buscador global
-inputGlobal.addEventListener("input", () => {
-  const term = inputGlobal.value.toLowerCase();
-  const filtrados = productosGlobal.filter(p => {
-    return (
-      p.nombre.toLowerCase().includes(term) ||
-      p.mundo.toLowerCase().includes(term) ||
-      p.categoria.toLowerCase().includes(term) ||
-      p.subcategoria.toLowerCase().includes(term) ||
-      (p.palabras_clave && p.palabras_clave.toLowerCase().includes(term))
-    );
-  });
-  renderProductos(filtrados);
-});
 
 // Iniciar carga al abrir la página
 cargarProductos();
