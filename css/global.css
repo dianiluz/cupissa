@@ -5,6 +5,69 @@ body {
   color: white;
 }
 
+/* ===== HEADER ===== */
+
+.header {
+  width: 100%;
+  background: #0b0b1a;
+  box-shadow: 0 2px 15px rgba(255, 0, 200, 0.2);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 5%;
+  gap: 20px;
+}
+
+.logo {
+  height: 50px;
+}
+
+nav a {
+  text-decoration: none;
+  color: white;
+  transition: 0.3s;
+}
+
+nav a:hover {
+  color: #ff00c8;
+}
+
+.search-box input {
+  padding: 8px 12px;
+  border-radius: 20px;
+  border: none;
+  background: #111;
+  color: white;
+  width: 220px;
+}
+
+.nav-icons {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.icon-btn {
+  position: relative;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.counter {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background: #ff00c8;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+}
+
+/* ===== MAIN ===== */
+
 main {
   padding: 40px 5%;
 }
