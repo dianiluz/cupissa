@@ -1,30 +1,50 @@
-document.addEventListener("DOMContentLoaded", ()=>{
+let productosGlobalBusqueda = [];
 
-setTimeout(()=>{
+async function cargarProductosBusqueda(){
 
-const input = document.getElementById("globalSearch");
-if(!input) return;
+  const res = await fetch("https://docs.google.com/spreadsheets/d/e/2PACX-1vQB2HWydVva17mDTdLcYgY409q5DcJHg3PumZLypAgLiwWs6s8ptH_kC_qjuhZv7W010xobmyFl2d7y/pub?output=csv");
+  const texto = await res.text();
 
-input.addEventListener("input", ()=>{
+  const filas = texto.split("\n").slice(1);
 
-const texto = input.value.toLowerCase();
+  productosGlobalBusqueda = filas.map(f=>{
+    const c = f.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+    return {
+      nombre:c[1]?.replace(/"/g,"").trim(),
+      mundo:c[3]?.replace(/"/g,"").trim(),
+      categoria:c[4]?.replace(/"/g,"").trim(),
+      subcategoria:c[5]?.replace(/"/g,"").trim(),
+      tipo:c[6]?.replace(/"/g,"").trim(),
+      tematica:c[8]?.replace(/"/g,"").trim(),
+      ocasion:c[10]?.replace(/"/g,"").trim(),
+      palabras:c[12]?.replace(/"/g,"").trim(),
+      activo:c[13]?.replace(/"/g,"").trim()
+    };
+  }).filter(p=>p.activo?.toLowerCase().includes("si"));
 
-if(texto.length < 2){
-if(window.productosGlobal) renderProductos(productosGlobal);
-return;
 }
 
-const resultados = productosGlobal.filter(p =>
-(p.nombre && p.nombre.toLowerCase().includes(texto)) ||
-(p.tematica && p.tematica.toLowerCase().includes(texto)) ||
-(p.ocasion && p.ocasion.toLowerCase().includes(texto)) ||
-(p.palabras_clave && p.palabras_clave.toLowerCase().includes(texto))
-);
+document.addEventListener("DOMContentLoaded", ()=>{
 
-renderProductos(resultados);
+  cargarProductosBusqueda();
 
-});
+  const input = document.getElementById("buscadorGlobal");
+  if(!input) return;
 
-},500);
+  input.addEventListener("input", e=>{
+
+    const texto = e.target.value.toLowerCase();
+
+    if(texto.length < 2) return;
+
+    const resultados = productosGlobalBusqueda.filter(p=>
+      p.nombre?.toLowerCase().includes(texto) ||
+      p.tematica?.toLowerCase().includes(texto) ||
+      p.ocasion?.toLowerCase().includes(texto) ||
+      p.palabras?.toLowerCase().includes(texto)
+    );
+
+    console.log("Resultados:", resultados);
+  });
 
 });
