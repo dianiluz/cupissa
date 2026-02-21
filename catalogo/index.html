@@ -2,44 +2,119 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Catálogo</title>
+<title>Catálogo — Cupissa</title>
 
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="/css/theme.css">
+
+<style>
+.catalogo-container{
+  padding:40px 5%;
+}
+
+.filtros{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:30px;
+}
+
+.filtros select,
+.filtros input{
+  padding:8px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+
+.productos-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:20px;
+}
+
+.producto{
+  background:#111;
+  border-radius:12px;
+  padding:10px;
+  color:white;
+}
+
+.producto img{
+  width:100%;
+  border-radius:8px;
+}
+
+.producto h3{
+  font-size:14px;
+  margin:10px 0;
+}
+
+.producto select,
+.producto button{
+  width:100%;
+  margin-top:5px;
+  padding:6px;
+  border-radius:6px;
+}
+
+.btn-carrito{
+  background:#ff3ca6;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+</style>
 
 </head>
 
 <body>
 
-<nav class="navbar">
+<div id="header"></div>
 
-<div class="nav-left">
+<main style="padding:40px;">
 
-<img src="assets/logo.png" id="logo">
+<main class="catalogo-container">
 
-<div class="nav-links">
-<a href="/inicio">Inicio</a>
-<a href="/catalogo">Catálogo</a>
-<a href="/rastreo">Seguimiento</a>
+<h1>Catálogo Cupissa</h1>
+
+<div class="filtros">
+
+<input type="text" placeholder="Buscar producto...">
+
+<select>
+<option>Mundo</option>
+</select>
+
+<select>
+<option>Categoría</option>
+</select>
+
+<select>
+<option>Talla</option>
+</select>
+
 </div>
 
+<div id="productos" class="productos-grid"></div>
+
+</main>
+
+<div id="footer"></div>
+
+<!-- astronauta -->
+<div class="whatsapp">
+
+  <div class="bubble">¿Necesitas ayuda?</div>
+
+  <a href="https://wa.me/573147671380" target="_blank">
+    <div class="astro">🚀</div>
+  </a>
+
 </div>
 
-</nav>
+<script src="/js/components.js"></script>
+<script src="/js/cart.js"></script>
 
-<div id="catalogo"></div>
-
-<script type="module">
-
-import { cargarProductos, pintarProductos } from "./js/catalogo.js";
-
-cargarProductos().then(data=>pintarProductos(data));
-
-</script>
-
-<a href="https://wa.me/573147671380" class="wpp-float">
-<i class="fa-brands fa-whatsapp"></i>
-</a>
+<script src="../js/catalogo.js"></script>
 
 </body>
 </html>
