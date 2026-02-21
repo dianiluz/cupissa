@@ -82,12 +82,12 @@ function enviarCarritoWhatsApp() {
   let mensaje = "Hola, quiero cotizar:%0A%0A";
 
   carrito.forEach((item, i) => {
-    mensaje += `${i+1}. ${item.nombre}%0A`;
-    mensaje += `Ref: ${item.ref}%0A`;
-    mensaje += `Talla: ${item.talla}%0A`;
-    mensaje += `Cantidad: ${item.cantidad}%0A`;
-    mensaje += `Imagen: https://cupissa.com/assets/img/${item.imagen}%0A%0A`;
+    mensaje += (i + 1) + ". " + item.nombre + "%0A";
+    mensaje += "Ref: " + item.ref + "%0A";
+    mensaje += "Talla: " + item.talla + "%0A";
+    mensaje += "Cantidad: " + item.cantidad + "%0A";
+    mensaje += "Imagen: " + window.location.origin + "/assets/img/" + item.imagen + "%0A%0A";
   });
 
-  window.open(`https://wa.me/573147671380?text=${mensaje}`, "_blank");
+  window.open("https://wa.me/573147671380?text=" + mensaje, "_blank");
 }
