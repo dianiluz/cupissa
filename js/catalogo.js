@@ -58,8 +58,8 @@ function mostrarProductos(productos) {
           <button onclick="cambiarCantidad(${index}, 1)">+</button>
         </div>
 
-        <button class="btn-cotizar" onclick="cotizarProducto(${index})">
-          Cotizar por WhatsApp
+        <button class="btn-cotizar" onclick="agregarAlCarrito(${index})">
+          Agregar al carrito
         </button>
 
       </div>
@@ -94,4 +94,27 @@ Cantidad: ${cantidad}`;
   const link = `https://wa.me/573147671380?text=${encodeURIComponent(mensaje)}`;
 
   window.open(link, "_blank");
+}
+
+function agregarAlCarrito(index) {
+
+  const producto = productosGlobal[index];
+  const cantidad = document.getElementById(`cantidad-${index}`).textContent;
+
+  const selectTalla = document.getElementById(`talla-${index}`);
+  const talla = selectTalla ? selectTalla.value : "No aplica";
+
+  carrito.push({
+    nombre: producto.nombre,
+    ref: producto.ref,
+    talla: talla,
+    cantidad: cantidad,
+    imagen: producto.imagenurl
+  });
+
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+
+  actualizarContadorCarrito();
+
+  alert("Producto agregado al carrito");
 }
