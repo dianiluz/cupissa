@@ -24,23 +24,63 @@ fetch("/components/footer.html")
   });
 
   function abrirCarrito() {
+  document.getElementById("carritoPanel").classList.add("activo");
+  renderizarCarrito();
+}
+
+function cerrarCarrito() {
+  document.getElementById("carritoPanel").classList.remove("activo");
+}
+
+  function renderizarCarrito() {
+  const container = document.getElementById("carritoItems");
+  container.innerHTML = "";
 
   if (carrito.length === 0) {
-    alert("El carrito está vacío");
+    container.innerHTML = "<p>Tu carrito está vacío.</p>";
     return;
   }
 
-  let mensaje = "Hola, quiero cotizar los siguientes productos:%0A%0A";
+  carrito.forEach((item, index) => {
+    container.innerHTML += `
+      <div class="item-carrito">
+        <strong>${item.nombre}</strong><br>
+        Ref: ${item.ref}<br>
+        Talla: ${item.talla}<br>
+        Cantidad: ${item.cantidad}<br>
+        <button onclick="eliminarItem(${index})">Eliminar</button>
+      </div>
+    `;
+  });
+}
+
+function eliminarItem(index) {
+  carrito.splice(index, 1);
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+  actualizarContadorCarrito();
+  renderizarCarrito();
+}
+
+function vaciarCarrito() {
+  carrito = [];
+  localStorage.removeItem("carrito");
+  actualizarContadorCarrito();
+  renderizarCarrito();
+}
+
+function enviarCarritoWhatsApp() {
+
+  if (carrito.length === 0) return;
+
+  let mensaje = "Hola, quiero cotizar:%0A%0A";
 
   carrito.forEach((item, i) => {
-    mensaje += `${i + 1}. ${item.nombre}%0A`;
+    mensaje += `${i+1}. ${item.nombre}%0A`;
     mensaje += `Ref: ${item.ref}%0A`;
     mensaje += `Talla: ${item.talla}%0A`;
     mensaje += `Cantidad: ${item.cantidad}%0A`;
-    mensaje += `Imagen: https://cupissa.com/assets/img/${item.imagen}%0A%0A`;
+    mensaje += `Imagen: https://TU-DOMINIO.com/assets/img/${item.imagen}%0A%0A`;
   });
 
-  const link = `https://wa.me/573147671380?text=${mensaje}`;
-
-  window.open(link, "_blank");
+  window.open(`https://wa.me/573147671380?text=${mensaje}`, "_blank");
 }
