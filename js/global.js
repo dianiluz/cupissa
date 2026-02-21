@@ -1,3 +1,26 @@
+/* =========================
+   CARGAR HEADER Y FOOTER
+========================= */
+
+fetch("/components/header.html")
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById("header").innerHTML = data;
+
+    cargarCarritoDesdeStorage();
+    actualizarContadorCarrito();
+  });
+
+fetch("/components/footer.html")
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById("footer").innerHTML = data;
+  });
+
+/* =========================
+   CARRITO
+========================= */
+
 let carrito = [];
 
 function cargarCarritoDesdeStorage() {
@@ -11,24 +34,7 @@ function actualizarContadorCarrito() {
   }
 }
 
-// Cargar Header
-fetch("/components/header.html")
-  .then(res => res.text())
-  .then(data => {
-    document.getElementById("header").innerHTML = data;
-
-    cargarCarritoDesdeStorage();
-    actualizarContadorCarrito();
-  });
-
-// Cargar Footer
-fetch("/components/footer.html")
-  .then(res => res.text())
-  .then(data => {
-    document.getElementById("footer").innerHTML = data;
-  });
-
-  function abrirCarrito() {
+function abrirCarrito() {
   document.getElementById("carritoPanel").classList.add("activo");
   renderizarCarrito();
 }
@@ -37,7 +43,7 @@ function cerrarCarrito() {
   document.getElementById("carritoPanel").classList.remove("activo");
 }
 
-  function renderizarCarrito() {
+function renderizarCarrito() {
   const container = document.getElementById("carritoItems");
   container.innerHTML = "";
 
@@ -46,19 +52,23 @@ function cerrarCarrito() {
     return;
   }
 
-  carrito.forEach((item, index) => {
-    container.innerHTML += `
-  <div class="item-carrito">
+ carrito.forEach(function(item, index) {
 
-    <span class="eliminar-item" onclick="eliminarItem(${index})">✖</span>
+  let detalleTallas = "";
 
-    <strong>${item.nombre}</strong><br>
-    Ref: ${item.ref}<br>
-    Talla: ${item.talla}<br>
-    Cantidad: ${item.cantidad}<br>
+  for (let talla in item.tallas) {
+    detalleTallas += talla + ": " + item.tallas[talla] + "<br>";
+  }
 
-  </div>
-`;
+  container.innerHTML += `
+    <div class="item-carrito">
+      <span class="eliminar-item" onclick="eliminarItem(${index})">✖</span>
+      <strong>${item.nombre}</strong><br>
+      Ref: ${item.ref}<br>
+      ${detalleTallas}
+    </div>
+  `;
+});
 }
 
 function eliminarItem(index) {
@@ -81,12 +91,17 @@ function enviarCarritoWhatsApp() {
 
   let mensaje = "Hola, quiero cotizar:%0A%0A";
 
-  carrito.forEach((item, i) => {
+  carrito.forEach(function(item, i) {
+
     mensaje += (i + 1) + ". " + item.nombre + "%0A";
     mensaje += "Ref: " + item.ref + "%0A";
-    mensaje += "Talla: " + item.talla + "%0A";
-    mensaje += "Cantidad: " + item.cantidad + "%0A";
+
+    for (let talla in item.tallas) {
+      mensaje += "Talla " + talla + ": " + item.tallas[talla] + "%0A";
+    }
+
     mensaje += "Imagen: " + window.location.origin + "/assets/img/" + item.imagen + "%0A%0A";
+
   });
 
   window.open("https://wa.me/573147671380?text=" + mensaje, "_blank");
