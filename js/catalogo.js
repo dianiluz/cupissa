@@ -37,37 +37,73 @@ renderProductos(productosGlobal);
 
 function renderProductos(lista){
 
-const cont = document.getElementById("productos");
-if(!cont) return;
+  const cont = document.getElementById("productos");
+  if(!cont) return;
 
-cont.innerHTML = "";
+  cont.innerHTML = "";
 
-lista.forEach(p=>{
+  lista.forEach(p=>{
 
-const div = document.createElement("div");
-div.className = "producto";
+    const div = document.createElement("div");
+    div.className = "producto";
 
-const img = div.querySelector(".producto-img");
+    let tallaHTML = "";
 
-if(img){
-  img.addEventListener("click", function(){
-    const modal = document.getElementById("imgModal");
-    const modalImg = document.getElementById("imgGrande");
-
-    if(modal && modalImg){
-      modal.style.display = "block";
-      modalImg.src = this.src;
+    if(p.talla.length > 0){
+      tallaHTML = `
+        <select class="talla-select">
+          ${p.talla.map(t=>`<option value="${t}">${t}</option>`).join("")}
+        </select>`;
     }
+
+    div.innerHTML = `
+      <img src="${p.imagenurl}" class="producto-img">
+      <h3>${p.nombre}</h3>
+      ${tallaHTML}
+      <button class="btn-carrito">Agregar</button>
+    `;
+
+    cont.appendChild(div);
+
+    // ANIMACIÓN ENTRADA
+    div.style.opacity = "0";
+    div.style.transform = "translateY(20px)";
+    setTimeout(()=>{
+      div.style.transition = "all .4s ease";
+      div.style.opacity = "1";
+      div.style.transform = "translateY(0)";
+    }, 50);
+
+    // EVENTO BOTÓN
+    const btn = div.querySelector(".btn-carrito");
+
+    btn.addEventListener("click", ()=>{
+
+      const select = div.querySelector(".talla-select");
+      const talla = select ? select.value : "";
+
+      agregarCarrito({
+        ref:p.ref,
+        nombre:p.nombre,
+        talla:talla,
+        cantidad:1,
+        imagenurl:p.imagenurl
+      });
+
+      // Animación premium botón
+      btn.innerHTML = "✔ Agregado";
+      btn.style.background = "#4caf50";
+      btn.style.transform = "scale(1.05)";
+
+      setTimeout(()=>{
+        btn.innerHTML = "Agregar";
+        btn.style.background = "#f06596";
+        btn.style.transform = "scale(1)";
+      }, 1200);
+
+    });
+
   });
-}
-
-let tallaHTML = "";
-
-if(p.talla.length > 0){
-tallaHTML = `
-<select>
-${p.talla.map(t=>`<option>${t}</option>`).join("")}
-</select>`;
 }
 
 div.innerHTML = `
@@ -100,16 +136,21 @@ btn.addEventListener("click", ()=>{
 
 document.addEventListener("DOMContentLoaded", cargarProductos);
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", ()=>{
 
-  const modal = document.getElementById("imgModal");
-  const modalImg = document.getElementById("imgGrande");
-  const closeBtn = document.querySelector(".close");
+  const params = new URLSearchParams(window.location.search);
+  const buscar = params.get("buscar");
 
-  if(closeBtn){
-    closeBtn.addEventListener("click", () => {
-      modal.style.display = "none";
-    });
+  if(buscar){
+    setTimeout(()=>{
+      const filtrados = productosGlobal.filter(p=>
+        p.nombre.toLowerCase().includes(buscar) ||
+        p.tematica.toLowerCase().includes(buscar) ||
+        p.ocasion.toLowerCase().includes(buscar) ||
+        (p.palabras_clave && p.palabras_clave.toLowerCase().includes(buscar))
+      );
+      renderProductos(filtrados);
+    }, 800);
   }
 
 });
