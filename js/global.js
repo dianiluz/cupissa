@@ -1,4 +1,8 @@
-let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+let carrito = [];
+
+function cargarCarritoDesdeStorage() {
+  carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+}
 
 function actualizarContadorCarrito() {
   const contador = document.getElementById("cartCount");
@@ -7,13 +11,14 @@ function actualizarContadorCarrito() {
   }
 }
 
-actualizarContadorCarrito();
-
 // Cargar Header
 fetch("/components/header.html")
   .then(res => res.text())
   .then(data => {
     document.getElementById("header").innerHTML = data;
+
+    cargarCarritoDesdeStorage();
+    actualizarContadorCarrito();
   });
 
 // Cargar Footer
