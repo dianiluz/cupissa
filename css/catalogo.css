@@ -8,8 +8,81 @@
   margin-bottom: 30px;
 }
 
+/* GRID MÁS COMPACTO */
 .grid-productos {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 20px;
+}
+
+/* TARJETA */
+.card-producto {
+  background: #111;
+  border-radius: 18px;
+  padding: 15px;
+  transition: 0.3s;
+  box-shadow: 0 0 12px rgba(255,0,200,0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.card-producto:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 18px rgba(255,0,200,0.5);
+}
+
+.card-producto img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.card-producto h3 {
+  font-size: 16px;
+  margin: 10px 0 5px;
+}
+
+/* SELECT */
+.card-producto select {
+  padding: 6px;
+  border-radius: 15px;
+  border: none;
+  background: #1a1a2e;
+  color: white;
+  margin-top: 8px;
+}
+
+/* CONTADOR */
+.cantidad-box {
+  display: flex;
+  align-items: center;
+  margin-top: 8px;
+  gap: 6px;
+}
+
+.cantidad-box button {
+  background: #ff00c8;
+  border: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+}
+
+.cantidad-box span {
+  min-width: 20px;
+  text-align: center;
+}
+
+/* BOTÓN */
+.btn-cotizar {
+  margin-top: 12px;
+  padding: 8px;
+  border-radius: 20px;
+  border: none;
+  background: linear-gradient(90deg, #ff00c8, #00d4ff);
+  color: white;
+  cursor: pointer;
 }
