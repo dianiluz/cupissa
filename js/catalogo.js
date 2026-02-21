@@ -49,16 +49,17 @@ div.className = "producto";
 
 const img = div.querySelector(".producto-img");
 
-img.addEventListener("click", function(){
-  const modal = document.getElementById("imgModal");
-  const modalImg = document.getElementById("imgGrande");
-  modal.style.display = "block";
-  modalImg.src = this.src;
-});
+if(img){
+  img.addEventListener("click", function(){
+    const modal = document.getElementById("imgModal");
+    const modalImg = document.getElementById("imgGrande");
 
-document.querySelector(".close").onclick = function(){
-  document.getElementById("imgModal").style.display = "none";
-};
+    if(modal && modalImg){
+      modal.style.display = "block";
+      modalImg.src = this.src;
+    }
+  });
+}
 
 let tallaHTML = "";
 
@@ -82,3 +83,17 @@ cont.appendChild(div);
 }
 
 document.addEventListener("DOMContentLoaded", cargarProductos);
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const modal = document.getElementById("imgModal");
+  const modalImg = document.getElementById("imgGrande");
+  const closeBtn = document.querySelector(".close");
+
+  if(closeBtn){
+    closeBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+  }
+
+});
