@@ -56,44 +56,8 @@ ${p.talla.map(t=>`<option>${t}</option>`).join("")}
 </select>`;
 }
 
-.modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.85);
-  backdrop-filter:blur(8px);
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-}
-
-.modal img{
-  max-height:85%;
-  border-radius:15px;
-  box-shadow:0 0 40px rgba(255,255,255,.2);
-}
-
-.cerrar{
-  position:absolute;
-  top:30px;
-  right:40px;
-  font-size:40px;
-  color:white;
-  cursor:pointer;
-}
-
-let imagenTransformada = p.imagenurl;
-
-if(p.imagenurl && p.imagenurl.includes("/upload/")){
-  imagenTransformada = p.imagenurl.replace(
-    "/upload/",
-    "/upload/c_fill,ar_4:5,g_north,z_1.2,f_auto,q_auto/"
-  );
-} 
 div.innerHTML = `
-<img src="${imagenTransformada}" 
-     class="producto-img"
-     data-full="${imagenTransformada}">
+<img src="${p.imagenurl}" class="producto-img">
 <h3>${p.nombre}</h3>
 ${tallaHTML}
 <button class="btn-carrito">Agregar</button>
