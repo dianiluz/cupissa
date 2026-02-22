@@ -70,3 +70,47 @@ function agregarFavoritoAlCarrito(index) {
   actualizarContadorCarrito();
   actualizarContadorFavoritos();
 }
+
+function esFavorito(ref) {
+  const favs = JSON.parse(localStorage.getItem("favoritos")) || [];
+  return favs.some(f => f.ref === ref);
+}
+
+function toggleFavorito(ref, nombre, imagen, elemento) {
+
+  let favs = JSON.parse(localStorage.getItem("favoritos")) || [];
+
+  const index = favs.findIndex(f => f.ref === ref);
+
+  if (index > -1) {
+    favs.splice(index, 1);
+    elemento.classList.remove("activo");
+  } else {
+    favs.push({ ref, nombre, imagen });
+    elemento.classList.add("activo");
+  }
+
+  localStorage.setItem("favoritos", JSON.stringify(favs));
+  actualizarContadorFavoritos();
+}
+
+function agregarTodosFavoritos() {
+
+  favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
+
+  favoritos.forEach(item => {
+    carrito.push({
+      nombre: item.nombre,
+      ref: item.ref,
+      imagen: item.imagen,
+      tallas: { "No aplica": 1 }
+    });
+  });
+
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+  localStorage.setItem("favoritos", JSON.stringify([]));
+
+  actualizarContadorCarrito();
+  actualizarContadorFavoritos();
+  renderizarFavoritos();
+}
