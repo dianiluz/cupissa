@@ -28,19 +28,33 @@ function cargarCarritoDesdeStorage() {
 }
 
 function actualizarContadorCarrito() {
+
   const contador = document.getElementById("cartCount");
-  if (contador) {
-    contador.textContent = carrito.length;
-  }
+
+  if (!contador) return;
+
+  let totalUnidades = 0;
+
+  carrito.forEach(function(item) {
+    for (let talla in item.tallas) {
+      totalUnidades += item.tallas[talla];
+    }
+  });
+
+  contador.textContent = totalUnidades;
 }
 
 function abrirCarrito() {
   document.getElementById("carritoPanel").classList.add("activo");
+  document.getElementById("overlayCarrito").classList.add("activo");
+  document.body.style.overflow = "hidden";
   renderizarCarrito();
 }
 
 function cerrarCarrito() {
   document.getElementById("carritoPanel").classList.remove("activo");
+  document.getElementById("overlayCarrito").classList.remove("activo");
+  document.body.style.overflow = "auto";
 }
 
 function renderizarCarrito() {
@@ -62,10 +76,21 @@ function renderizarCarrito() {
 
   container.innerHTML += `
     <div class="item-carrito">
+
       <span class="eliminar-item" onclick="eliminarItem(${index})">✖</span>
-      <strong>${item.nombre}</strong><br>
-      Ref: ${item.ref}<br>
-      ${detalleTallas}
+
+      <div class="item-carrito-contenido">
+
+        <img src="/assets/img/${item.imagen}" class="miniatura-carrito">
+
+        <div>
+          <strong>${item.nombre}</strong><br>
+          Ref: ${item.ref}<br>
+          ${detalleTallas}
+        </div>
+
+      </div>
+
     </div>
   `;
 });
@@ -100,9 +125,28 @@ function enviarCarritoWhatsApp() {
       mensaje += "Talla " + talla + ": " + item.tallas[talla] + "%0A";
     }
 
-    mensaje += "Imagen: " + window.location.origin + "/assets/img/" + item.imagen + "%0A%0A";
+   mensaje += "Imagen: https://cupissa.com/assets/img/" + item.imagen + "%0A%0A";
 
   });
 
   window.open("https://wa.me/573147671380?text=" + mensaje, "_blank");
 }
+
+/* =========================
+   BUSCADOR GLOBAL (ENTER)
+========================= */
+
+document.addEventListener("keydown", function(e) {
+
+  if (e.target && e.target.id === "buscadorGlobal" && e.key === "Enter") {
+
+    const texto = e.target.value.trim().toLowerCase();
+
+    if (texto.length < 2) return;
+
+    localStorage.setItem("busquedaGlobal", texto);
+
+    window.location.href = "/catalogo/index.html";
+  }
+
+});
