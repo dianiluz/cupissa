@@ -1,13 +1,20 @@
 /* =========================
-   CONFIG
+   CONFIG GOOGLE SHEETS
 ========================= */
 
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQB2HWydVva17mDTdLcYgY409q5DcJHg3PumZLypAgLiwWs6s8ptH_kC_qjuhZv7W010xobmyFl2d7y/pub?output=csv";
 
 let productosGlobal = [];
+let mundoActivo = null;
+
+let filtrosActivos = {
+  categoria: null,
+  genero: null,
+  ocasion: null
+};
 
 /* =========================
-   CARGAR PRODUCTOS
+   CARGA PRINCIPAL
 ========================= */
 
 fetch(sheetURL)
@@ -38,52 +45,7 @@ fetch(sheetURL)
 
     mostrarProductos(productosGlobal);
     cargarMundos();
-    cargarFiltros();
-
-    function cargarMundos() {
-
-  const mundosUnicos = [...new Set(productosGlobal.map(p => p.mundo))];
-  const container = document.getElementById("mundos-container");
-
-  mundosUnicos.forEach(mundo => {
-
-    const card = document.createElement("div");
-    card.className = "mundo-card";
-    card.textContent = mundo;
-
-    card.onclick = function() {
-
-      document.querySelectorAll(".mundo-card").forEach(c => c.classList.remove("activo"));
-      card.classList.add("activo");
-
-      const filtrados = productosGlobal.filter(p => p.mundo === mundo);
-      mostrarProductos(filtrados);
-
-    };
-
-    container.appendChild(card);
-
-  });
-}
-
-    document.getElementById("filtro-categoria").addEventListener("change", aplicarFiltros);
-    document.getElementById("filtro-genero").addEventListener("change", aplicarFiltros);
-    document.getElementById("filtro-ocasion").addEventListener("change", aplicarFiltros);
-
-    // Aplicar búsqueda si existe
-    const busqueda = localStorage.getItem("busquedaGlobal");
-
-    if (busqueda) {
-
-      const filtrados = productosGlobal.filter(p =>
-        p.nombre.toLowerCase().includes(busqueda) ||
-        p.palabras_clave.toLowerCase().includes(busqueda)
-      );
-
-      mostrarProductos(filtrados);
-      localStorage.removeItem("busquedaGlobal");
-    }
-
+    cargarFiltrosLaterales();
   });
 
 /* =========================
@@ -93,6 +55,8 @@ fetch(sheetURL)
 function mostrarProductos(productos) {
 
   const container = document.getElementById("productos-container");
+  if (!container) return;
+
   container.innerHTML = "";
 
   productos.forEach((producto, index) => {
@@ -103,7 +67,16 @@ function mostrarProductos(productos) {
     container.innerHTML += `
       <div class="card-producto">
 
-        <img src="/assets/img/${producto.imagenurl}" alt="${producto.nombre}">
+        <div class="img-container">
+          <img src="/assets/img/${producto.imagenurl}" 
+               alt="${producto.nombre}" 
+               onclick="abrirModal('/assets/img/${producto.imagenurl}')">
+
+          <span class="btn-favorito ${esFavorito(producto.ref) ? 'activo' : ''}"
+            onclick="toggleFavorito('${producto.ref}','${producto.nombre}','${producto.imagenurl}', this)">
+            ♥
+          </span>
+        </div>
 
         <h3>${producto.nombre}</h3>
 
@@ -126,50 +99,46 @@ function mostrarProductos(productos) {
       </div>
     `;
   });
-
 }
 
 /* =========================
-   FILTROS
+   AGREGAR AL CARRITO
 ========================= */
 
-function cargarFiltros() {
+function agregarAlCarrito(index) {
 
-  const categorias = [...new Set(productosGlobal.map(p => p.categoria))];
-  const generos = [...new Set(productosGlobal.map(p => p.genero))];
-  const ocasiones = [...new Set(productosGlobal.map(p => p.ocasion))];
+  const producto = productosGlobal[index];
 
-  categorias.forEach(c => {
-    document.getElementById("filtro-categoria").innerHTML += `<option value="${c}">${c}</option>`;
-  });
+  const cantidadSpan = document.getElementById(`cantidad-${index}`);
+  const cantidad = parseInt(cantidadSpan.textContent);
 
-  generos.forEach(g => {
-    document.getElementById("filtro-genero").innerHTML += `<option value="${g}">${g}</option>`;
-  });
+  const selectTalla = document.getElementById(`talla-${index}`);
+  const tallaSeleccionada = selectTalla ? selectTalla.value : "No aplica";
 
-  ocasiones.forEach(o => {
-    document.getElementById("filtro-ocasion").innerHTML += `<option value="${o}">${o}</option>`;
-  });
+  const itemExistente = carrito.find(item => item.ref === producto.ref);
 
-}
+  if (itemExistente) {
 
-function aplicarFiltros() {
+    if (itemExistente.tallas[tallaSeleccionada]) {
+      itemExistente.tallas[tallaSeleccionada] += cantidad;
+    } else {
+      itemExistente.tallas[tallaSeleccionada] = cantidad;
+    }
 
-  const categoria = document.getElementById("filtro-categoria").value;
-  const genero = document.getElementById("filtro-genero").value;
-  const ocasion = document.getElementById("filtro-ocasion").value;
+  } else {
 
-  const filtrados = productosGlobal.filter(function(p) {
+    carrito.push({
+      ref: producto.ref,
+      nombre: producto.nombre,
+      imagen: producto.imagenurl,
+      tallas: {
+        [tallaSeleccionada]: cantidad
+      }
+    });
+  }
 
-    const cumpleCategoria = categoria === "todos" || p.categoria === categoria;
-    const cumpleGenero = genero === "todos" || p.genero === genero;
-    const cumpleOcasion = ocasion === "todos" || p.ocasion === ocasion;
-
-    return cumpleCategoria && cumpleGenero && cumpleOcasion;
-
-  });
-
-  mostrarProductos(filtrados);
+  localStorage.setItem("carrito", JSON.stringify(carrito));
+  actualizarContadorCarrito();
 }
 
 /* =========================
@@ -188,56 +157,99 @@ function cambiarCantidad(index, cambio) {
 }
 
 /* =========================
-   AGREGAR AL CARRITO
+   FILTROS
 ========================= */
 
-function agregarAlCarrito(index) {
+function cargarMundos() {
 
-  const producto = productosGlobal[index];
-  const cantidad = parseInt(document.getElementById(`cantidad-${index}`).textContent);
+  const container = document.getElementById("mundos-container");
+  if (!container) return;
 
-  const selectTalla = document.getElementById(`talla-${index}`);
-  const talla = selectTalla ? selectTalla.value : "No aplica";
+  container.innerHTML = "";
 
-  const productoExistente = carrito.find(item => item.ref === producto.ref);
+  const mundosUnicos = [...new Set(productosGlobal.map(p => p.mundo))];
 
-  if (productoExistente) {
+  mundosUnicos.forEach(mundo => {
 
-    if (!productoExistente.tallas) {
-      productoExistente.tallas = {};
-    }
+    const card = document.createElement("div");
+    card.className = "mundo-card";
+    card.textContent = mundo;
 
-    if (productoExistente.tallas[talla]) {
-      productoExistente.tallas[talla] += cantidad;
-    } else {
-      productoExistente.tallas[talla] = cantidad;
-    }
+    card.onclick = function() {
+      mundoActivo = mundo;
+      filtrarProductos();
+    };
 
-  } else {
+    container.appendChild(card);
+  });
+}
 
-    carrito.push({
-      nombre: producto.nombre,
-      ref: producto.ref,
-      imagen: producto.imagenurl,
-      tallas: {
-        [talla]: cantidad
-      }
+function cargarFiltrosLaterales() {
+
+  const aside = document.getElementById("filtros-lateral");
+  if (!aside) return;
+
+  aside.innerHTML = "";
+
+  function crearGrupo(titulo, campo) {
+
+    const valores = [...new Set(productosGlobal.map(p => p[campo]).filter(Boolean))];
+
+    const grupo = document.createElement("div");
+    grupo.innerHTML = `<h4>${titulo}</h4>`;
+
+    valores.forEach(valor => {
+
+      const item = document.createElement("div");
+      item.className = "filtro-item";
+      item.textContent = valor;
+
+      item.onclick = function() {
+        filtrosActivos[campo] = valor;
+        filtrarProductos();
+      };
+
+      grupo.appendChild(item);
     });
 
+    aside.appendChild(grupo);
   }
 
-  localStorage.setItem("carrito", JSON.stringify(carrito));
-  actualizarContadorCarrito();
+  crearGrupo("Categorías", "categoria");
+  crearGrupo("Género", "genero");
+  crearGrupo("Ocasión", "ocasion");
+}
 
-  // Animación carrito
-  const iconoCarrito = document.querySelector(".icon-btn.glow:last-child");
+function filtrarProductos() {
 
-  if (iconoCarrito) {
-    iconoCarrito.classList.add("pulse-cart");
+  let resultado = productosGlobal;
 
-    setTimeout(function() {
-      iconoCarrito.classList.remove("pulse-cart");
-    }, 500);
+  if (mundoActivo) {
+    resultado = resultado.filter(p => p.mundo === mundoActivo);
   }
 
+  Object.keys(filtrosActivos).forEach(campo => {
+    if (filtrosActivos[campo]) {
+      resultado = resultado.filter(p => p[campo] === filtrosActivos[campo]);
+    }
+  });
+
+  mostrarProductos(resultado);
+}
+
+/* =========================
+   MODAL ZOOM
+========================= */
+
+function abrirModal(src) {
+
+  const modal = document.getElementById("modalImagen");
+  const img = document.getElementById("imagenZoom");
+
+  modal.style.display = "flex";
+  img.src = src;
+}
+
+function cerrarModal() {
+  document.getElementById("modalImagen").style.display = "none";
 }
