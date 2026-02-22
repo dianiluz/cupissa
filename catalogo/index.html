@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Catálogo | CUPISSA</title>
   <link rel="stylesheet" href="/css/global.css">
   <link rel="stylesheet" href="/css/catalogo.css">
@@ -13,21 +14,24 @@
 
   <main>
    <section class="catalogo-section">
+    <div class="mobile-filtros-btn" onclick="abrirFiltrosMobile()">
+     ☰ Filtros
+    </div>
+      <!-- MUNDOS -->
+     <div id="mundos-container" class="mundos-container"></div>
 
-  <!-- MUNDOS -->
-  <div id="mundos-container" class="mundos-container"></div>
+    <div class="catalogo-layout">
 
-  <div class="catalogo-layout">
+      <!-- FILTROS LATERALES -->
+      <aside class="filtros-lateral" id="filtros-lateral"></aside>
+      <div id="overlayFiltros" class="overlay-filtros" onclick="cerrarFiltrosMobile()"></div>
 
-    <!-- FILTROS LATERALES -->
-    <aside class="filtros-lateral" id="filtros-lateral"></aside>
+      <!-- PRODUCTOS -->
+      <div id="productos-container" class="grid-productos"></div>
 
-    <!-- PRODUCTOS -->
-    <div id="productos-container" class="grid-productos"></div>
+    </div>
 
-  </div>
-
-</section>
+    </section>
   </main>
 
   <div id="modalImagen" class="modal-imagen">
@@ -38,13 +42,14 @@
     <div id="lupa"></div>
   </div>
 
-</div>
+  </div>
 
   <div id="footer"></div>
 
-  <script src="/js/core.js"></script>
-<script src="/js/carrito.js"></script>
-<script src="/js/favoritos.js"></script>
-<script src="/js/catalogo.js"></script>
+      <script src="/js/core.js"></script>
+      <script src="/js/carrito.js"></script>
+      <script src="/js/favoritos.js"></script>
+      <script src="/js/catalogo.js"></script>
+
 </body>
 </html>
