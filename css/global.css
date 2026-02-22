@@ -9,8 +9,12 @@ body {
 
 .header {
   width: 100%;
-  background: #0b0b1a;
+  background: rgba(11, 11, 26, 0.95);
+  backdrop-filter: blur(6px);
   box-shadow: 0 2px 15px rgba(255, 0, 200, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 10000;
 }
 
 .nav {
@@ -76,7 +80,7 @@ nav a:hover {
 /* ===== MAIN ===== */
 
 main {
-  padding: 40px 5%;
+  padding: 120px 5% 40px;
 }
 
 /* ===== PANEL CARRITO ===== */
@@ -216,17 +220,82 @@ main {
 
 @media (max-width: 768px) {
 
-  .carrito-panel {
-    width: 100%;
+  .nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
   }
 
   nav {
     width: 100%;
     justify-content: center;
+    font-size: 14px;
+  }
+
+  .search-box {
+    width: 100%;
   }
 
   .search-box input {
     width: 100%;
   }
 
+  .nav-icons {
+    justify-content: center;
+  }
+
+  .logo {
+    margin: 0 auto;
+  }
+
+  main {
+    padding: 20px 4%;
+  }
+
+ .carrito-panel {
+  right: 0;
+  bottom: -100%;
+  top: auto;
+  width: 100%;
+  height: 75%;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  transition: bottom 0.4s ease;
+}
+
+.carrito-panel.activo {
+  bottom: 0;
+}
+
+@media (max-width: 768px) {
+
+  .carrito-panel {
+    top: auto !important;
+    right: 0 !important;
+    bottom: -100% !important;
+    width: 100% !important;
+    height: 75% !important;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    transition: bottom 0.4s ease !important;
+  }
+
+  .carrito-panel.activo {
+    bottom: 0 !important;
+  }
+
+}
+
+}
+
+/* ===== HEADER STICKY FIX ===== */
+
+#header {
+  position: sticky;
+  top: 0;
+  z-index: 10000;
+}
+
+#header .header {
+  position: relative;
 }
