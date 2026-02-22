@@ -86,3 +86,61 @@
   color: white;
   cursor: pointer;
 }
+
+/* Layout */
+
+.catalogo-layout {
+  display: flex;
+  gap: 30px;
+}
+
+.filtros-lateral {
+  width: 250px;
+  background: #0f0f1f;
+  padding: 20px;
+  border-radius: 15px;
+  height: fit-content;
+}
+
+.grid-productos {
+  flex: 1;
+}
+
+/* Mundos */
+
+.mundos-container {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.mundo-card {
+  padding: 15px 25px;
+  border-radius: 30px;
+  background: #111;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(255,0,200,0.3);
+  transition: 0.3s;
+}
+
+.mundo-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 20px rgba(255,0,200,0.6);
+}
+
+.mundo-card.activo {
+  background: linear-gradient(90deg,#ff00c8,#00d4ff);
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .catalogo-layout {
+    flex-direction: column;
+  }
+
+  .filtros-lateral {
+    width: 100%;
+  }
+}
