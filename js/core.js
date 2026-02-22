@@ -6,8 +6,11 @@ fetch("/components/header.html")
   .then(res => res.text())
   .then(data => {
     document.getElementById("header").innerHTML = data;
+
     actualizarContadorCarrito();
     actualizarContadorFavoritos();
+
+    activarBuscador(); // 👈 IMPORTANTE
   });
 
 fetch("/components/footer.html")
@@ -50,4 +53,28 @@ function actualizarContadorFavoritos() {
 
   favoritos = JSON.parse(localStorage.getItem("favoritos")) || [];
   contador.textContent = favoritos.length;
+}
+
+/* =========================
+   BUSCADOR GLOBAL
+========================= */
+
+function activarBuscador() {
+
+  const input = document.getElementById("buscadorGlobal");
+  if (!input) return;
+
+  input.addEventListener("keypress", function(e) {
+
+    if (e.key === "Enter") {
+
+      const texto = input.value.trim().toLowerCase();
+      if (!texto) return;
+
+      localStorage.setItem("busquedaGlobal", texto);
+      window.location.href = "/catalogo/";
+
+    }
+
+  });
 }
