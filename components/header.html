@@ -47,12 +47,26 @@
   <div id="carritoItems" class="carrito-items"></div>
 
   <div class="carrito-footer">
-    <button onclick="enviarCarritoWhatsApp()" class="btn-enviar">
+    <button onclick="solicitarCotizacion()" class="btn-enviar">
       Solicitar Cotización
     </button>
-
     <button onclick="vaciarCarrito()" class="btn-vaciar">
       Vaciar Carrito
+    </button>
+  </div>
+</div>
+
+<div id="favoritosPanel" class="carrito-panel">
+  <div class="carrito-header">
+    <h2>Favoritos</h2>
+    <span onclick="cerrarFavoritos()" class="cerrar">✖</span>
+  </div>
+
+  <div id="favoritosItems" class="carrito-items"></div>
+
+  <div class="carrito-footer">
+    <button onclick="agregarTodosFavoritos()" class="btn-enviar">
+      Agregar todos al carrito
     </button>
   </div>
 </div>
