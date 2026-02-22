@@ -1,3 +1,4 @@
+console.log("catalogo.js cargado");
 /* =========================
    CONFIG GOOGLE SHEETS
 ========================= */
@@ -46,6 +47,7 @@ fetch(sheetURL)
     mostrarProductos(productosGlobal);
     cargarMundos();
     cargarFiltrosLaterales();
+    aplicarBusquedaInicial();
   });
 
 /* =========================
@@ -57,14 +59,14 @@ function mostrarProductos(productos) {
   const container = document.getElementById("productos-container");
   if (!container) return;
 
-  container.innerHTML = "";
+  let html = "";
 
   productos.forEach((producto, index) => {
 
     const tieneTalla = producto.talla && producto.talla !== "";
     const tallas = tieneTalla ? producto.talla.split("|") : [];
 
-    container.innerHTML += `
+    html += `
       <div class="card-producto">
 
         <div class="img-container">
@@ -99,6 +101,8 @@ function mostrarProductos(productos) {
       </div>
     `;
   });
+
+  container.innerHTML = html;
 }
 
 /* =========================
@@ -139,6 +143,15 @@ function agregarAlCarrito(index) {
 
   localStorage.setItem("carrito", JSON.stringify(carrito));
   actualizarContadorCarrito();
+
+  // Quitar de favoritos si estaba
+let favs = JSON.parse(localStorage.getItem("favoritos")) || [];
+favs = favs.filter(f => f.ref !== producto.ref);
+localStorage.setItem("favoritos", JSON.stringify(favs));
+
+actualizarContadorFavoritos();
+mostrarProductos(productosGlobal);
+
 }
 
 /* =========================
@@ -252,4 +265,38 @@ function abrirModal(src) {
 
 function cerrarModal() {
   document.getElementById("modalImagen").style.display = "none";
+}
+
+function aplicarBusquedaInicial() {
+
+  const busqueda = localStorage.getItem("busquedaGlobal");
+  if (!busqueda) return;
+
+  const texto = busqueda.toLowerCase().trim();
+
+  const filtrados = productosGlobal.filter(p => {
+
+    const nombre = p.nombre.toLowerCase();
+    const palabras = p.palabras_clave ? p.palabras_clave.toLowerCase() : "";
+    const categoria = p.categoria ? p.categoria.toLowerCase() : "";
+    const mundo = p.mundo ? p.mundo.toLowerCase() : "";
+
+    return nombre.includes(texto) ||
+           palabras.includes(texto) ||
+           categoria.includes(texto) ||
+           mundo.includes(texto);
+  });
+
+  mostrarProductos(filtrados);
+  localStorage.removeItem("busquedaGlobal");
+}
+
+function abrirFiltrosMobile() {
+  document.getElementById("filtros-lateral").classList.add("activo");
+  document.getElementById("overlayFiltros").classList.add("activo");
+}
+
+function cerrarFiltrosMobile() {
+  document.getElementById("filtros-lateral").classList.remove("activo");
+  document.getElementById("overlayFiltros").classList.remove("activo");
 }
