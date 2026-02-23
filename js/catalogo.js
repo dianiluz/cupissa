@@ -1,302 +1,228 @@
-console.log("catalogo.js cargado");
-/* =========================
-   CONFIG GOOGLE SHEETS
-========================= */
+/* ===================================================== */
+/* CATALOGO.JS - Arquitectura profesional CUPISSA      */
+/* ===================================================== */
 
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQB2HWydVva17mDTdLcYgY409q5DcJHg3PumZLypAgLiwWs6s8ptH_kC_qjuhZv7W010xobmyFl2d7y/pub?output=csv";
+const sheetURL =
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQB2HWydVva17mDTdLcYgY409q5DcJHg3PumZLypAgLiwWs6s8ptH_kC_qjuhZv7W010xobmyFl2d7y/pub?output=tsv";
 
 let productosGlobal = [];
-let mundoActivo = null;
+let productosFiltrados = [];
+let filtrosActivos = {};
 
-let filtrosActivos = {
-  categoria: null,
-  genero: null,
-  ocasion: null
-};
+/* ========================= */
+/* INIT */
+/* ========================= */
 
-/* =========================
-   CARGA PRINCIPAL
-========================= */
+document.addEventListener("DOMContentLoaded", initCatalogo);
 
-fetch(sheetURL)
-  .then(res => res.text())
-  .then(data => {
-
-    const filas = data.split("\n");
-
-    productosGlobal = filas.slice(1).map(fila => {
-
-      const valores = fila.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g);
-      if (!valores) return null;
-
-      return {
-        ref: valores[0]?.replace(/"/g, ""),
-        nombre: valores[1]?.replace(/"/g, ""),
-        imagenurl: valores[2]?.replace(/"/g, ""),
-        mundo: valores[3]?.replace(/"/g, ""),
-        categoria: valores[4]?.replace(/"/g, ""),
-        talla: valores[7]?.replace(/"/g, ""),
-        genero: valores[9]?.replace(/"/g, ""),
-        ocasion: valores[10]?.replace(/"/g, ""),
-        palabras_clave: valores[12]?.replace(/"/g, ""),
-        activo: valores[13]?.replace(/"/g, "").trim().toLowerCase()
-      };
-
-    }).filter(p => p && (p.activo === "true" || p.activo === "si"));
-
-    mostrarProductos(productosGlobal);
-    cargarMundos();
-    cargarFiltrosLaterales();
+async function initCatalogo() {
+  try {
+    await cargarProductos();
+    renderizarProductos(productosGlobal);
+    inicializarEventosCatalogo();
     aplicarBusquedaInicial();
-  });
-
-/* =========================
-   MOSTRAR PRODUCTOS
-========================= */
-
-function mostrarProductos(productos) {
-
-  const container = document.getElementById("productos-container");
-  if (!container) return;
-
-  let html = "";
-
-  productos.forEach((producto, index) => {
-
-    const tieneTalla = producto.talla && producto.talla !== "";
-    const tallas = tieneTalla ? producto.talla.split("|") : [];
-
-    html += `
-      <div class="card-producto">
-
-        <div class="img-container">
-          <img src="/assets/img/${producto.imagenurl}" 
-               alt="${producto.nombre}" 
-               onclick="abrirModal('/assets/img/${producto.imagenurl}')">
-
-          <span class="btn-favorito ${esFavorito(producto.ref) ? 'activo' : ''}"
-            onclick="toggleFavorito('${producto.ref}','${producto.nombre}','${producto.imagenurl}', this)">
-            ♥
-          </span>
-        </div>
-
-        <h3>${producto.nombre}</h3>
-
-        ${tieneTalla ? `
-          <select id="talla-${index}">
-            ${tallas.map(t => `<option value="${t}">${t}</option>`).join("")}
-          </select>
-        ` : ""}
-
-        <div class="cantidad-box">
-          <button onclick="cambiarCantidad(${index}, -1)">-</button>
-          <span id="cantidad-${index}">1</span>
-          <button onclick="cambiarCantidad(${index}, 1)">+</button>
-        </div>
-
-        <button class="btn-cotizar" onclick="agregarAlCarrito(${index})">
-          Agregar al carrito
-        </button>
-
-      </div>
-    `;
-  });
-
-  container.innerHTML = html;
-}
-
-/* =========================
-   AGREGAR AL CARRITO
-========================= */
-
-function agregarAlCarrito(index) {
-
-  const producto = productosGlobal[index];
-
-  const cantidadSpan = document.getElementById(`cantidad-${index}`);
-  const cantidad = parseInt(cantidadSpan.textContent);
-
-  const selectTalla = document.getElementById(`talla-${index}`);
-  const tallaSeleccionada = selectTalla ? selectTalla.value : "No aplica";
-
-  const itemExistente = carrito.find(item => item.ref === producto.ref);
-
-  if (itemExistente) {
-
-    if (itemExistente.tallas[tallaSeleccionada]) {
-      itemExistente.tallas[tallaSeleccionada] += cantidad;
-    } else {
-      itemExistente.tallas[tallaSeleccionada] = cantidad;
-    }
-
-  } else {
-
-    carrito.push({
-      ref: producto.ref,
-      nombre: producto.nombre,
-      imagen: producto.imagenurl,
-      tallas: {
-        [tallaSeleccionada]: cantidad
-      }
-    });
+  } catch (error) {
+    console.error("Error cargando catálogo:", error);
   }
-
-  localStorage.setItem("carrito", JSON.stringify(carrito));
-  actualizarContadorCarrito();
-
-  // Quitar de favoritos si estaba
-let favs = JSON.parse(localStorage.getItem("favoritos")) || [];
-favs = favs.filter(f => f.ref !== producto.ref);
-localStorage.setItem("favoritos", JSON.stringify(favs));
-
-actualizarContadorFavoritos();
-mostrarProductos(productosGlobal);
-
 }
 
-/* =========================
-   CANTIDAD
-========================= */
+/* ========================= */
+/* CARGA GOOGLE SHEETS */
+/* ========================= */
 
-function cambiarCantidad(index, cambio) {
+async function cargarProductos() {
+  const res = await fetch(sheetURL);
+  if (!res.ok) throw new Error("No se pudo cargar Google Sheets");
 
-  const span = document.getElementById(`cantidad-${index}`);
-  let valor = parseInt(span.textContent);
+  const data = await res.text();
 
-  valor += cambio;
-  if (valor < 1) valor = 1;
+  const filas = data.split("\n");
+  const headers = filas[0].split("\t");
 
-  span.textContent = valor;
+  productosGlobal = filas
+    .slice(1)
+    .map(fila => {
+      const valores = fila.split("\t");
+      const producto = {};
+
+      headers.forEach((h, i) => {
+        producto[h.trim()] = valores[i]?.trim();
+      });
+
+      return producto;
+    })
+    .filter(p => p.activo?.toLowerCase() === "true" || p.activo?.toLowerCase() === "si");
+
+  productosFiltrados = [...productosGlobal];
 }
 
-/* =========================
-   FILTROS
-========================= */
+/* ========================= */
+/* RENDER */
+/* ========================= */
 
-function cargarMundos() {
-
-  const container = document.getElementById("mundos-container");
+function renderizarProductos(lista) {
+  const container = document.getElementById("productos-container");
   if (!container) return;
 
   container.innerHTML = "";
 
-  const mundosUnicos = [...new Set(productosGlobal.map(p => p.mundo))];
+  const fragment = document.createDocumentFragment();
 
-  mundosUnicos.forEach(mundo => {
+  lista.forEach(producto => {
 
     const card = document.createElement("div");
-    card.className = "mundo-card";
-    card.textContent = mundo;
+    card.className = "card-producto";
+    card.dataset.ref = producto.ref;
 
-    card.onclick = function() {
-      mundoActivo = mundo;
-      filtrarProductos();
-    };
+    const imgContainer = document.createElement("div");
+    imgContainer.className = "img-container";
 
-    container.appendChild(card);
-  });
-}
+    const img = document.createElement("img");
+    img.src = `/assets/img/${producto.imagenurl}`;
+    img.alt = producto.nombre;
+    img.dataset.zoom = producto.imagenurl;
 
-function cargarFiltrosLaterales() {
+    const favBtn = document.createElement("span");
+    favBtn.className = "btn-favorito";
+    favBtn.dataset.fav = producto.ref;
 
-  const aside = document.getElementById("filtros-lateral");
-  if (!aside) return;
-
-  aside.innerHTML = "";
-
-  function crearGrupo(titulo, campo) {
-
-    const valores = [...new Set(productosGlobal.map(p => p[campo]).filter(Boolean))];
-
-    const grupo = document.createElement("div");
-    grupo.innerHTML = `<h4>${titulo}</h4>`;
-
-    valores.forEach(valor => {
-
-      const item = document.createElement("div");
-      item.className = "filtro-item";
-      item.textContent = valor;
-
-      item.onclick = function() {
-        filtrosActivos[campo] = valor;
-        filtrarProductos();
-      };
-
-      grupo.appendChild(item);
-    });
-
-    aside.appendChild(grupo);
-  }
-
-  crearGrupo("Categorías", "categoria");
-  crearGrupo("Género", "genero");
-  crearGrupo("Ocasión", "ocasion");
-}
-
-function filtrarProductos() {
-
-  let resultado = productosGlobal;
-
-  if (mundoActivo) {
-    resultado = resultado.filter(p => p.mundo === mundoActivo);
-  }
-
-  Object.keys(filtrosActivos).forEach(campo => {
-    if (filtrosActivos[campo]) {
-      resultado = resultado.filter(p => p[campo] === filtrosActivos[campo]);
+    if (esFavorito(producto.ref)) {
+      favBtn.classList.add("activo");
     }
+
+    imgContainer.appendChild(img);
+    imgContainer.appendChild(favBtn);
+
+    const title = document.createElement("h3");
+    title.textContent = producto.nombre;
+
+    const cantidadBox = document.createElement("div");
+    cantidadBox.className = "cantidad-box";
+
+    const btnMenos = document.createElement("button");
+    btnMenos.textContent = "-";
+    btnMenos.dataset.cantidad = "menos";
+
+    const spanCantidad = document.createElement("span");
+    spanCantidad.textContent = "1";
+
+    const btnMas = document.createElement("button");
+    btnMas.textContent = "+";
+    btnMas.dataset.cantidad = "mas";
+
+    cantidadBox.append(btnMenos, spanCantidad, btnMas);
+
+    const btnAgregar = document.createElement("button");
+    btnAgregar.className = "btn-cotizar";
+    btnAgregar.textContent = "Agregar al carrito";
+    btnAgregar.dataset.agregar = producto.ref;
+
+    card.append(imgContainer, title, cantidadBox, btnAgregar);
+    fragment.appendChild(card);
   });
 
-  mostrarProductos(resultado);
+  container.appendChild(fragment);
 }
 
-/* =========================
-   MODAL ZOOM
-========================= */
+/* ========================= */
+/* EVENTOS (DELEGACIÓN) */
+/* ========================= */
 
-function abrirModal(src) {
+function inicializarEventosCatalogo() {
 
-  const modal = document.getElementById("modalImagen");
-  const img = document.getElementById("imagenZoom");
+  const container = document.getElementById("productos-container");
+  if (!container) return;
 
-  modal.style.display = "flex";
-  img.src = src;
+  container.addEventListener("click", e => {
+
+    const ref = e.target.closest(".card-producto")?.dataset.ref;
+    if (!ref) return;
+
+    // Favorito
+    if (e.target.dataset.fav !== undefined) {
+      const producto = productosGlobal.find(p => p.ref === ref);
+      toggleFavorito(ref, producto.nombre, producto.imagenurl, e.target);
+      return;
+    }
+
+    // Cantidad +
+    if (e.target.dataset.cantidad === "mas") {
+      const span = e.target.previousElementSibling;
+      span.textContent = parseInt(span.textContent) + 1;
+      return;
+    }
+
+    // Cantidad -
+    if (e.target.dataset.cantidad === "menos") {
+      const span = e.target.nextElementSibling;
+      let valor = parseInt(span.textContent);
+      if (valor > 1) span.textContent = valor - 1;
+      return;
+    }
+
+    // Agregar carrito
+    if (e.target.dataset.agregar) {
+      agregarProductoAlCarrito(ref, e.target.closest(".card-producto"));
+      return;
+    }
+
+    // Zoom imagen
+    if (e.target.dataset.zoom) {
+      abrirModal(`/assets/img/${e.target.dataset.zoom}`);
+    }
+
+  });
 }
 
-function cerrarModal() {
-  document.getElementById("modalImagen").style.display = "none";
+/* ========================= */
+/* AGREGAR AL CARRITO */
+/* ========================= */
+
+function agregarProductoAlCarrito(ref, card) {
+
+  const producto = productosGlobal.find(p => p.ref === ref);
+  if (!producto) return;
+
+  const cantidad = parseInt(card.querySelector(".cantidad-box span").textContent);
+
+  const carrito = obtenerCarrito();
+
+  const existente = carrito.find(item => item.ref === ref);
+
+  if (existente) {
+    existente.tallas["No aplica"] =
+      (existente.tallas["No aplica"] || 0) + cantidad;
+  } else {
+    carrito.push({
+      ref: producto.ref,
+      nombre: producto.nombre,
+      imagen: producto.imagenurl,
+      tallas: { "No aplica": cantidad }
+    });
+  }
+
+  guardarCarrito(carrito);
+  actualizarContadores();
+
+  mostrarNotificacion("Producto agregado al carrito");
 }
+
+/* ========================= */
+/* FILTROS */
+/* ========================= */
 
 function aplicarBusquedaInicial() {
+  const texto = localStorage.getItem("busquedaGlobal");
+  if (!texto) return;
 
-  const busqueda = localStorage.getItem("busquedaGlobal");
-  if (!busqueda) return;
+  const t = texto.toLowerCase();
 
-  const texto = busqueda.toLowerCase().trim();
+  productosFiltrados = productosGlobal.filter(p =>
+    p.nombre?.toLowerCase().includes(t) ||
+    p.categoria?.toLowerCase().includes(t) ||
+    p.mundo?.toLowerCase().includes(t)
+  );
 
-  const filtrados = productosGlobal.filter(p => {
-
-    const nombre = p.nombre.toLowerCase();
-    const palabras = p.palabras_clave ? p.palabras_clave.toLowerCase() : "";
-    const categoria = p.categoria ? p.categoria.toLowerCase() : "";
-    const mundo = p.mundo ? p.mundo.toLowerCase() : "";
-
-    return nombre.includes(texto) ||
-           palabras.includes(texto) ||
-           categoria.includes(texto) ||
-           mundo.includes(texto);
-  });
-
-  mostrarProductos(filtrados);
+  renderizarProductos(productosFiltrados);
   localStorage.removeItem("busquedaGlobal");
-}
-
-function abrirFiltrosMobile() {
-  document.getElementById("filtros-lateral").classList.add("activo");
-  document.getElementById("overlayFiltros").classList.add("activo");
-}
-
-function cerrarFiltrosMobile() {
-  document.getElementById("filtros-lateral").classList.remove("activo");
-  document.getElementById("overlayFiltros").classList.remove("activo");
 }
