@@ -36,11 +36,6 @@ function renderHeader() {
           <span class="count" id="cartCount">0</span>
         </div>
 
-        <div class="header-icon" id="favIcon">
-          ❤️
-          <span class="count" id="favCount">0</span>
-        </div>
-
         <div class="header-icon" id="userIcon">
           👤
         </div>
