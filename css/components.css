@@ -1,0 +1,243 @@
+/* ===================================================== */
+/* UNIVERSO CUPISSA — COMPONENTES */
+/* ===================================================== */
+
+/* ========================= */
+/* GRID PRODUCTOS */
+/* ========================= */
+
+.productos-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+  padding: 40px;
+}
+
+/* ========================= */
+/* TARJETA PRODUCTO */
+/* ========================= */
+
+.producto-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-medium);
+  overflow: hidden;
+  transition: transform var(--transition-medium),
+              box-shadow var(--transition-medium);
+  display: flex;
+  flex-direction: column;
+}
+
+.producto-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Imagen cuadrada */
+.producto-img-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.producto-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.producto-img-wrapper:hover img {
+  transform: scale(1.05);
+}
+
+/* Etiqueta personalizable */
+.producto-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--gradient-main);
+  color: #fff;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 50px;
+  font-weight: 500;
+}
+
+/* Información */
+.producto-info {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.producto-nombre {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  min-height: 40px;
+}
+
+/* Botón Agregar */
+.btn-agregar {
+  margin-top: auto;
+  padding: 10px;
+  border-radius: var(--radius-small);
+  background: var(--gradient-main);
+  color: #fff;
+  font-weight: 500;
+  transition: opacity var(--transition-fast),
+              transform var(--transition-fast);
+}
+
+.btn-agregar:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+/* ========================= */
+/* SKELETON LOADER */
+/* ========================= */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 25%,
+    var(--bg-card) 50%,
+    var(--bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.2s infinite linear;
+  border-radius: var(--radius-medium);
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-card {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+}
+
+/* ========================= */
+/* BOTÓN FLOTANTE WHATSAPP */
+/* ========================= */
+
+.whatsapp-float {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background-color: #25D366;
+  color: #fff;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: var(--shadow-soft);
+  z-index: 1200;
+  transition: transform var(--transition-fast);
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.1);
+}
+
+/* ========================= */
+/* HERO */
+/* ========================= */
+
+.hero {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-soft);
+  padding: 40px;
+}
+
+.hero-logo {
+  max-width: 500px;
+  width: 100%;
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+/* ========================= */
+/* MODAL PRODUCTO */
+/* ========================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal {
+  background: var(--bg-card);
+  width: 90%;
+  max-width: 900px;
+  border-radius: var(--radius-medium);
+  display: flex;
+  overflow: hidden;
+}
+
+.modal-img {
+  flex: 1;
+  position: relative;
+}
+
+.modal-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-content {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-select {
+  padding: 10px;
+  border-radius: var(--radius-small);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.modal-qty {
+  width: 80px;
+  padding: 8px;
+}
+
+@media (max-width: 768px) {
+  .modal {
+    flex-direction: column;
+  }
+}
