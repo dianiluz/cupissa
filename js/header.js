@@ -30,6 +30,16 @@ function renderHeader() {
         <input type="text" id="globalSearch" placeholder="Buscar en Universo CUPISSA...">
       </div>
 
+       <div class="header-explora">
+        <a href="/">INICIO</a>
+        </div>   
+        <div class="header-explora">
+        <a href="/catalogo">CATÁLOGO</a>
+        </div>   
+        <div class="header-explora">
+        <a href="/rastreo">SEGUIMIENTO DE PEDIDO</a>
+        </div>   
+
       <div class="header-icons">
         <div class="header-icon" id="cartIcon">
           🛒
