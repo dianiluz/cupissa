@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seguimiento de Pedido</title>
+
+<link rel="icon" href="/assets/favicon.png">
+
+<link rel="stylesheet" href="/css/variables.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/animations.css">
+
+</head>
+
+<div id="header"></div>
+
+<main class="rastreo-container">
+
+  <h1>Seguimiento de Pedido</h1>
+
+  <div class="rastreo-box">
+
+    <input 
+      type="text" 
+      id="inputPedido" 
+      placeholder="Ingresa tu número de pedido o guía"
+    />
+
+    <button id="btnBuscarPedido" class="btn-principal">
+      Buscar pedido
+    </button>
+
+  </div>
+
+  <div id="resultadoRastreo" class="rastreo-resultado"></div>
+
+</main>
+
+<!-- FOOTER INYECTADO -->
+<div id="footer"></div>
+
+<!-- BOTÓN FLOTANTE WHATSAPP -->
+<a href="https://wa.me/573147671380" target="_blank" class="whatsapp-float">
+  💬
+</a>
+
+<!-- JS -->
+<script src="/js/config.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/header.js"></script>
+<script src="/js/sheet.js"></script>
+<script src="/js/rastreo.js"></script>
+
+</body>
+</html>
