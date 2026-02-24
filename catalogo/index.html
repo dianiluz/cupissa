@@ -1,109 +1,77 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <!-- ============================= -->
-  <!-- META BÁSICO -->
-  <!-- ============================= -->
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Catálogo | CUPISSA</title>
-  <meta name="description" content="Explora el catálogo oficial de CUPISSA. Personaliza camisetas, tazas, conjuntos y más con envío rápido y atención personalizada.">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo | Universo CUPISSA</title>
 
-  <!-- ============================= -->
-  <!-- FAVICON -->
-  <!-- ============================= -->
-  <link rel="icon" href="/assets/favicon.png" type="image/png">
+<link rel="icon" href="/assets/favicon.png">
 
-  <!-- ============================= -->
-  <!-- CSS -->
-  <!-- ============================= -->
-  <link rel="stylesheet" href="/css/global.css">
-  <link rel="stylesheet" href="/css/catalogo.css">
+<link rel="stylesheet" href="/css/variables.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/animations.css">
+
 </head>
 
 <body>
 
-  <!-- ============================= -->
-  <!-- HEADER -->
-  <!-- ============================= -->
-  <header id="header"></header>
+<div id="header"></div>
+<div id="mundos"></div>
 
-  <!-- ============================= -->
-  <!-- MUNDOS + FILTROS MOBILE -->
-  <!-- ============================= -->
-  <div class="mundos-container" id="mundos-container" aria-label="Categorías del catálogo">
+<main>
 
-    <button 
-      class="btn-filtros-mobile"
-      id="btnFiltrosMobile"
-      type="button"
-      aria-label="Abrir filtros">
-      ☰ Filtros
-    </button>
+<section class="catalogo-layout">
+
+  <aside class="filtros-lateral" id="filtrosContainer"></aside>
+
+  <div class="catalogo-contenido">
+
+    <div class="filtros-activos" id="filtrosActivos"></div>
+
+    <div class="productos-container" id="productosContainer"></div>
 
   </div>
 
-  <!-- ============================= -->
-  <!-- CONTENIDO PRINCIPAL -->
-  <!-- ============================= -->
-  <main class="catalogo-main" role="main">
+</section>
 
-    <div class="catalogo-layout">
+</main>
 
-      <!-- FILTROS -->
-      <aside 
-        class="filtros-lateral" 
-        id="filtros-lateral"
-        aria-label="Filtros de productos">
-      </aside>
+<div id="footer"></div>
 
-      <!-- PRODUCTOS -->
-      <section 
-        class="productos-wrapper"
-        aria-label="Listado de productos">
+<a href="https://wa.me/573147671380" target="_blank" class="whatsapp-float">
+  💬
+</a>
 
-        <div 
-          id="productos-container" 
-          class="grid-productos">
-        </div>
-
-      </section>
-
-    </div>
-
-  </main>
-
-  <!-- ============================= -->
-  <!-- OVERLAY FILTROS MOBILE -->
-  <!-- ============================= -->
-  <div 
-    id="overlayFiltros" 
-    class="overlay-filtros"
-    aria-hidden="true">
+<div class="carrito-panel" id="carritoPanel">
+  <div class="carrito-header">
+    <span>Lista de cotización</span>
+    <span id="cerrarCarrito" style="cursor:pointer;">✕</span>
   </div>
+  <div class="carrito-body" id="carritoBody"></div>
+  <div class="carrito-footer">
 
-  <!-- ============================= -->
-  <!-- FOOTER DINÁMICO -->
-  <!-- ============================= -->
-  <footer id="footer"></footer>
+  <button onclick="vaciarCarrito()" 
+          style="margin-bottom:10px;width:100%;padding:10px;border-radius:6px;background:#444;color:#fff;">
+    Vaciar Lista
+  </button>
 
-  <!-- ============================= -->
-  <!-- NOSCRIPT FALLBACK -->
-  <!-- ============================= -->
-  <noscript>
-    <p style="text-align:center; padding:20px;">
-      Esta página requiere JavaScript para mostrar el catálogo correctamente.
-    </p>
-  </noscript>
+  <button class="btn-whatsapp" onclick="enviarCarritoWhatsApp()">
+    Cotizar por WhatsApp
+  </button>
 
-  <!-- ============================= -->
-  <!-- JS (DEFER PARA RENDIMIENTO) -->
-  <!-- ============================= -->
-  <script src="/js/core.js" defer></script>
-  <script src="/js/carrito.js" defer></script>
-  <script src="/js/favoritos.js" defer></script>
-  <script src="/js/catalogo.js" defer></script>
+</div>
+  </div>
+</div>
+</div>
 
+<script src="/js/config.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/header.js"></script>
+<script src="/js/sheet.js"></script>
+<script src="/js/modal.js"></script>
+<script src="/js/carrito.js"></script>
 </body>
 </html>
