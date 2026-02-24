@@ -1,83 +1,146 @@
 /* ===================================================== */
-/* CARRITO.JS - Versión profesional CUPISSA            */
+/* UNIVERSO CUPISSA — CARRITO */
 /* ===================================================== */
 
+let carrito = obtenerLocal("cupissa_carrito") || [];
+
+actualizarContadorCarrito();
+
 /* ========================= */
-/* STORAGE */
+/* AGREGAR AL CARRITO */
 /* ========================= */
 
-function obtenerCarrito() {
-  return JSON.parse(localStorage.getItem("carrito")) || [];
+function agregarAlCarrito(producto, variantes = {}, cantidad = 1) {
+
+  const itemExistente = carrito.find(item =>
+    item.ref === producto.ref &&
+    JSON.stringify(item.variantes) === JSON.stringify(variantes)
+  );
+
+  if (itemExistente) {
+    itemExistente.cantidad += parseInt(cantidad);
+  } else {
+    carrito.push({
+      ref: producto.ref,
+      nombre: producto.nombre,
+      imagenurl: producto.imagenurl,
+      variantes: variantes,
+      cantidad: parseInt(cantidad)
+    });
+  }
+
+  guardarLocal("cupissa_carrito", carrito);
+  actualizarContadorCarrito();
+  animarCarrito();
 }
 
-function guardarCarrito(data) {
-  localStorage.setItem("carrito", JSON.stringify(data));
+/* ========================= */
+/* CONTADOR */
+/* ========================= */
+
+function actualizarContadorCarrito() {
+
+  const count = carrito.reduce((total, item) => total + item.cantidad, 0);
+
+  const contador = document.getElementById("cartCount");
+  if (contador) {
+    contador.textContent = count;
+  }
 }
 
 /* ========================= */
-/* RENDER */
+/* ANIMACIÓN */
 /* ========================= */
 
-function renderizarCarrito() {
+function animarCarrito() {
 
-  const container = document.getElementById("carritoItems");
-  if (!container) return;
+  const icon = document.getElementById("cartIcon");
+  if (!icon) return;
 
-  const carrito = obtenerCarrito();
-  container.innerHTML = "";
+  icon.classList.add("cart-animate");
 
-  if (carrito.length === 0) {
-    container.innerHTML = `
-      <p class="carrito-vacio">Tu carrito está vacío.</p>
-    `;
+  setTimeout(() => {
+    icon.classList.remove("cart-animate");
+  }, 500);
+}
+
+/* ========================= */
+/* GENERAR MENSAJE WHATSAPP */
+/* ========================= */
+
+function generarMensajeWhatsApp() {
+
+  if (!carrito.length) return "Hola, quiero cotizar:";
+
+  let mensaje = "Hola, quiero cotizar:%0A%0A";
+
+  carrito.forEach(item => {
+
+    mensaje += "• " + item.nombre + "%0A";
+
+    Object.keys(item.variantes).forEach(key => {
+      mensaje += "   - " + key + ": " + item.variantes[key] + "%0A";
+    });
+
+    mensaje += "   - Cantidad: " + item.cantidad + "%0A";
+    const imagenCompleta = item.imagenurl.startsWith("http")
+    ? item.imagenurl
+    : CONFIG.baseURL + item.imagenurl;
+
+    mensaje += "   - Imagen: " + imagenCompleta + "%0A%0A";
+    });
+
+  return mensaje;
+}
+
+/* ========================= */
+/* ENVIAR A WHATSAPP */
+/* ========================= */
+
+function enviarCarritoWhatsApp() {
+
+  const mensaje = generarMensajeWhatsApp();
+  const url = `https://wa.me/${CONFIG.whatsappNumber}?text=${mensaje}`;
+
+  window.open(url, "_blank");
+}
+
+/* ========================= */
+/* RENDER PANEL */
+/* ========================= */
+
+function renderCarrito() {
+
+  const body = document.getElementById("carritoBody");
+  if (!body) return;
+
+  body.innerHTML = "";
+
+  if (!carrito.length) {
+    body.innerHTML = "<p>Tu lista está vacía.</p>";
     return;
   }
 
-  const fragment = document.createDocumentFragment();
-
   carrito.forEach((item, index) => {
 
-    const card = document.createElement("div");
-    card.className = "item-carrito";
+    const div = document.createElement("div");
+    div.className = "carrito-item";
 
-    const btnEliminar = document.createElement("button");
-    btnEliminar.className = "eliminar-item";
-    btnEliminar.textContent = "✖";
-    btnEliminar.setAttribute("aria-label", "Eliminar producto");
-    btnEliminar.addEventListener("click", () => eliminarItem(index));
+    let html = `<strong>${item.nombre}</strong><br>`;
 
-    const contenido = document.createElement("div");
-    contenido.className = "item-carrito-contenido";
+    Object.keys(item.variantes).forEach(key => {
+      html += `- ${key}: ${item.variantes[key]}<br>`;
+    });
 
-    const img = document.createElement("img");
-    img.className = "miniatura-carrito";
-    img.src = `/assets/img/${item.imagen}`;
-    img.alt = item.nombre;
+    html += `Cantidad: ${item.cantidad}<br>`;
+    html += `<button onclick="eliminarItem(${index})">Eliminar</button>`;
 
-    const info = document.createElement("div");
+    div.innerHTML = html;
 
-    const nombre = document.createElement("strong");
-    nombre.textContent = item.nombre;
+    body.appendChild(div);
 
-    info.appendChild(nombre);
-    info.appendChild(document.createElement("br"));
-
-    for (let talla in item.tallas) {
-      const linea = document.createElement("div");
-      linea.textContent = `${talla}: ${item.tallas[talla]}`;
-      info.appendChild(linea);
-    }
-
-    contenido.appendChild(img);
-    contenido.appendChild(info);
-
-    card.appendChild(btnEliminar);
-    card.appendChild(contenido);
-
-    fragment.appendChild(card);
   });
 
-  container.appendChild(fragment);
 }
 
 /* ========================= */
@@ -85,94 +148,33 @@ function renderizarCarrito() {
 /* ========================= */
 
 function eliminarItem(index) {
-
-  const carrito = obtenerCarrito();
   carrito.splice(index, 1);
-  guardarCarrito(carrito);
-
-  renderizarCarrito();
-  actualizarContadores();
+  guardarLocal("cupissa_carrito", carrito);
+  actualizarContadorCarrito();
+  renderCarrito();
 }
 
 /* ========================= */
-/* VACIAR */
-/* ========================= */
-
-function vaciarCarrito() {
-
-  guardarCarrito([]);
-  renderizarCarrito();
-  actualizarContadores();
-}
-
-/* ========================= */
-/* WHATSAPP COTIZACIÓN */
-/* ========================= */
-
-function solicitarCotizacion() {
-
-  const carrito = obtenerCarrito();
-
-  if (carrito.length === 0) {
-    mostrarNotificacion("Tu carrito está vacío.");
-    return;
-  }
-
-  let mensaje = "Hola, quiero cotizar los siguientes productos:\n\n";
-
-  carrito.forEach(item => {
-
-    mensaje += `Producto: ${item.nombre}\n`;
-
-    for (let talla in item.tallas) {
-      mensaje += `- ${talla}: ${item.tallas[talla]}\n`;
-    }
-
-    mensaje += `Imagen: https://cupissa.com/assets/img/${item.imagen}\n\n`;
-  });
-
-  const link = `https://wa.me/573147671380?text=${encodeURIComponent(mensaje)}`;
-  window.open(link, "_blank");
-}
-
-/* ========================= */
-/* EVENTOS INICIALES */
+/* ABRIR / CERRAR */
 /* ========================= */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const btnVaciar = document.getElementById("btnVaciarCarrito");
-  const btnCotizar = document.getElementById("btnSolicitarCotizacion");
+  const icon = document.getElementById("cartIcon");
+  const panel = document.getElementById("carritoPanel");
+  const cerrar = document.getElementById("cerrarCarrito");
 
-  if (btnVaciar) {
-    btnVaciar.addEventListener("click", vaciarCarrito);
+  if (icon && panel) {
+    icon.addEventListener("click", () => {
+      panel.classList.add("active");
+      renderCarrito();
+    });
   }
 
-  if (btnCotizar) {
-    btnCotizar.addEventListener("click", solicitarCotizacion);
+  if (cerrar) {
+    cerrar.addEventListener("click", () => {
+      panel.classList.remove("active");
+    });
   }
 
-  renderizarCarrito();
 });
-
-/* ========================= */
-/* NOTIFICACIÓN SIMPLE */
-/* ========================= */
-
-function mostrarNotificacion(texto) {
-
-  const toast = document.createElement("div");
-  toast.className = "toast-notificacion";
-  toast.textContent = texto;
-
-  document.body.appendChild(toast);
-
-  setTimeout(() => {
-    toast.classList.add("visible");
-  }, 10);
-
-  setTimeout(() => {
-    toast.classList.remove("visible");
-    setTimeout(() => toast.remove(), 300);
-  }, 2500);
-}
