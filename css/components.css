@@ -344,8 +344,7 @@
 }
 
 .paso.activo .circulo {
-  background: #f4699a;
-
+  background: #f4699a
   box-shadow: 0 0 15px var(--rosa);
 }
 
