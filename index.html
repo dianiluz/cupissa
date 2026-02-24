@@ -1,113 +1,56 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Universo CUPISSA</title>
 
-  <title>CUPISSA | Personaliza tu universo</title>
-  <meta name="description" content="Descubre CUPISSA. Personaliza camisetas, tazas y más. Diseños únicos, envíos en Colombia y atención personalizada.">
+<link rel="icon" href="/assets/favicon.png">
 
-  <link rel="stylesheet" href="/css/global.css">
-  <link rel="stylesheet" href="/css/home.css">
+<!-- CSS -->
+<link rel="stylesheet" href="/css/variables.css">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/animations.css">
+
 </head>
 
 <body>
 
-  <header id="header"></header>
+<!-- HEADER INYECTADO -->
+<div id="header"></div>
 
-  <main class="home-main">
+<!-- BARRA DE MUNDOS -->
+<div id="mundos"></div>
 
-    <!-- HERO -->
-    <section class="hero">
+<main>
 
-  <div class="hero-left">
-    <h1>Todo lo que imaginas, aquí existe.</h1>
-
-    <p>
-      Personalización profesional para quienes saben lo que quieren.
-      Creamos contigo, con detalle y propósito.
-    </p>
-
-    <div class="hero-buttons">
-      <a href="/catalogo/index.html" class="btn-principal">
-        Ver catálogo
-      </a>
-
-      <a href="/catalogo/index.html#mundos" class="btn-secundario">
-        Explorar mundos
-      </a>
-    </div>
+<!-- HERO SECTION -->
+<section class="hero">
+  <div class="hero-content">
+    <img src="/assets/logo.png" alt="Universo CUPISSA Logo" class="hero-logo">
   </div>
-
- <div class="hero-visual">
-  <div class="universe-stage">
-    <div class="glow-core"></div>
-    <img src="/assets/logo.png" alt="Universo Cupissa" class="logo-main">
-  </div>
-</div>
-<div class="gold-sparks"></div>
 </section>
 
-    <!-- MUNDOS DESTACADOS -->
-    <section class="destacados">
+</section>
 
-      <h2>Explora nuestros mundos</h2>
+</main>
 
-      <div class="destacados-grid">
+<!-- FOOTER INYECTADO -->
+<div id="footer"></div>
 
-        <a href="/catalogo/index.html" class="mundo-card-home">
-          <span>Infantil</span>
-        </a>
+<!-- BOTÓN FLOTANTE WHATSAPP -->
+<a href="https://wa.me/573147671380" target="_blank" class="whatsapp-float">
+  💬
+</a>
 
-        <a href="/catalogo/index.html" class="mundo-card-home">
-          <span>Cumpleaños</span>
-        </a>
-
-        <a href="/catalogo/index.html" class="mundo-card-home">
-          <span>Temáticas</span>
-        </a>
-
-        <a href="/catalogo/index.html" class="mundo-card-home">
-          <span>Personalizados</span>
-        </a>
-
-      </div>
-
-    </section>
-
-    <!-- BENEFICIOS -->
-    <section class="beneficios">
-
-      <div class="beneficio">
-        <h3>Personalización Total</h3>
-        <p>Agrega nombres, edades, colores y diseños únicos.</p>
-      </div>
-
-      <div class="beneficio">
-        <h3>Envíos en Colombia</h3>
-        <p>Entrega rápida y opción contraentrega en Barranquilla.</p>
-      </div>
-
-      <div class="beneficio">
-        <h3>Atención Directa</h3>
-        <p>Soporte personalizado por WhatsApp.</p>
-      </div>
-
-    </section>
-
-  </main>
-
-  <footer id="footer"></footer>
-
-    <script src="js/core.js" defer></script>
-  <script src="js/carrito.js" defer></script>
-  <script src="js/favoritos.js" defer></script>
-
-  <!-- THREE JS -->
-  <script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
-  <script src="js/hero3d.js"></script>
+<!-- JS -->
+<script src="/js/config.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/header.js"></script>
+<script src="/js/sheet.js"></script>
 
 </body>
-
-
 </html>
