@@ -331,7 +331,7 @@
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: #000000;
+  background: #141414;
 ;
   margin: auto;
   margin-bottom: 12px;
@@ -345,7 +345,6 @@
 
 .paso.activo .circulo {
   background: #f4699a
-  box-shadow: 0 0 15px var(--rosa);
 }
 
 .paso span {
