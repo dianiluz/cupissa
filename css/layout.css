@@ -49,6 +49,20 @@
   outline: none;
   border-color: var(--color-pink);
 }
+/* HEADER-EXPLORA */
+
+.header-explora {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-family: sans-serif;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.header-explora:hover{
+    color: #f4699a; 
+}
 
 /* Iconos */
 .header-icons {
