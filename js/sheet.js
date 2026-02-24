@@ -22,14 +22,12 @@ async function cargarProductos() {
 
     const response = await fetch(CONFIG.sheetURL);
     const tsv = await response.text();
-
     const data = parseTSV(tsv);
 
     if (!data.length) return;
 
     headersGlobal = Object.keys(data[0]);
 
-    /* Filtrar solo activos */
     productosGlobal = data.filter(p => {
       const activo = p["*activo"]?.toLowerCase();
       return activo === "si" || activo === "sí" || activo === "true";
@@ -45,11 +43,10 @@ async function cargarProductos() {
 }
 
 /* ========================= */
-/* SKELETON LOADER */
+/* SKELETON */
 /* ========================= */
 
 function mostrarSkeleton() {
-
   const container = document.querySelector(".productos-container");
   if (!container) return;
 
@@ -63,7 +60,7 @@ function mostrarSkeleton() {
 }
 
 /* ========================= */
-/* GENERAR MUNDOS */
+/* MUNDOS */
 /* ========================= */
 
 function generarMundos() {
@@ -76,6 +73,7 @@ function generarMundos() {
   mundosBar.innerHTML = "";
 
   mundosUnicos.forEach(mundo => {
+
     const btn = document.createElement("button");
     btn.className = "mundo-item";
     btn.textContent = capitalizar(mundo);
@@ -89,21 +87,12 @@ function generarMundos() {
   });
 }
 
-/* ========================= */
-/* ACTIVAR BOTÓN MUNDO */
-/* ========================= */
-
 function activarMundo(btnActivo) {
   document.querySelectorAll(".mundo-item").forEach(btn => {
     btn.classList.remove("active");
   });
-
   btnActivo.classList.add("active");
 }
-
-/* ========================= */
-/* FILTRAR POR MUNDO */
-/* ========================= */
 
 function filtrarPorMundo(mundo) {
   const filtrados = productosGlobal.filter(p => p.mundo === mundo);
@@ -126,7 +115,6 @@ function renderProductos(lista) {
     const card = document.createElement("div");
     card.className = "producto-card fade-in";
 
-    /* Imagen */
     const imgWrapper = document.createElement("div");
     imgWrapper.className = "producto-img-wrapper";
 
@@ -145,14 +133,12 @@ function renderProductos(lista) {
       imgWrapper.appendChild(badge);
     }
 
-    /* Info */
     const info = document.createElement("div");
     info.className = "producto-info";
 
     const nombre = document.createElement("div");
     nombre.className = "producto-nombre";
     nombre.textContent = producto.nombre || "";
-
     info.appendChild(nombre);
 
     /* Variantes */
@@ -182,19 +168,15 @@ function renderProductos(lista) {
 
         info.appendChild(select);
       }
-
     });
 
-    /* Cantidad */
     const qty = document.createElement("input");
     qty.type = "number";
     qty.min = "1";
     qty.value = "1";
     qty.className = "modal-qty";
-
     info.appendChild(qty);
 
-    /* Botón */
     const btn = document.createElement("button");
     btn.className = "btn-agregar";
     btn.textContent = "Agregar";
@@ -202,7 +184,6 @@ function renderProductos(lista) {
     btn.onclick = () => {
 
       const selects = info.querySelectorAll("select");
-
       let variantesSeleccionadas = {};
 
       for (let select of selects) {
@@ -220,13 +201,13 @@ function renderProductos(lista) {
 
     card.appendChild(imgWrapper);
     card.appendChild(info);
-
     container.appendChild(card);
 
   });
 }
+
 /* ========================= */
-/* GENERAR FILTROS DINÁMICOS */
+/* FILTROS */
 /* ========================= */
 
 function generarFiltros() {
@@ -250,7 +231,6 @@ function generarFiltros() {
 
     const titulo = document.createElement("h4");
     titulo.textContent = capitalizar(header);
-
     grupo.appendChild(titulo);
 
     valoresUnicos.forEach(valor => {
@@ -265,33 +245,19 @@ function generarFiltros() {
       });
 
       grupo.appendChild(btn);
-
     });
 
     filtrosContainer.appendChild(grupo);
-
   });
-
 }
 
-/* ========================= */
-/* ACTIVAR FILTRO */
-/* ========================= */
-
 function activarFiltro(columna, valor) {
-
   filtrosActivos[columna] = valor;
-
   aplicarFiltros();
   mostrarFiltrosActivos();
 }
 
-/* ========================= */
-/* APLICAR FILTROS */
-/* ========================= */
-
 function aplicarFiltros() {
-
   let filtrados = productosGlobal;
 
   Object.keys(filtrosActivos).forEach(col => {
@@ -300,10 +266,6 @@ function aplicarFiltros() {
 
   renderProductos(filtrados);
 }
-
-/* ========================= */
-/* MOSTRAR FILTROS ACTIVOS */
-/* ========================= */
 
 function mostrarFiltrosActivos() {
 
@@ -342,3 +304,29 @@ function mostrarFiltrosActivos() {
     container.appendChild(limpiar);
   }
 }
+
+/* ========================= */
+/* ACTUALIZAR ICONOS FAVORITOS */
+/* ========================= */
+
+window.actualizarIconosFavoritos = function () {
+
+  const favoritosActuales = obtenerLocal("cupissa_favoritos") || [];
+  const corazones = document.querySelectorAll(".producto-fav");
+
+  corazones.forEach(corazon => {
+
+    const ref = corazon.dataset.ref;
+    const existe = favoritosActuales.find(p => p.ref === ref);
+
+    if (existe) {
+      corazon.classList.add("active");
+      corazon.innerHTML = "♥";
+    } else {
+      corazon.classList.remove("active");
+      corazon.innerHTML = "♡";
+    }
+
+  });
+
+};
