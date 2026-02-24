@@ -241,3 +241,122 @@
     flex-direction: column;
   }
 }
+/* ========================= */
+/* RASTREO */
+/* ========================= */
+
+.rastreo-container {
+  padding: 80px 20px;
+  max-width: 600px;
+  margin: auto;
+  text-align: center;
+}
+
+.rastreo-box {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.rastreo-box input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #111;
+  color: #fff;
+}
+
+.rastreo-resultado {
+  margin-top: 30px;
+  padding: 20px;
+  background: #111;
+  border-radius: 10px;
+}
+
+/* ========================= */
+/* RASTREO TRANSPORTADORA */
+/* ========================= */
+
+.rastreo-card {
+  background: linear-gradient(145deg, #0f0f0f, #141414);
+  padding: 50px;
+  border-radius: 20px;
+  box-shadow: 0 0 50px rgba(0,0,0,0.6);
+}
+
+.rastreo-id {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 50px;
+  color: var(--rosa);
+}
+
+.linea-progreso {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 50px;
+}
+
+.linea-progreso::before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #2a2a2a;
+  z-index: 0;
+}
+
+.progreso-fill {
+  position: absolute;
+  top: 22px;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--rosa), var(--azul));
+  z-index: 1;
+  transition: width 0.8s ease;
+}
+
+.paso {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  flex: 1;
+}
+
+.circulo {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #000000;
+;
+  margin: auto;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: white;
+  transition: all 0.4s ease;
+}
+
+.paso.activo .circulo {
+  background: #f4699a;
+
+  box-shadow: 0 0 15px var(--rosa);
+}
+
+.paso span {
+  font-size: 13px;
+}
+
+.datos-cliente,
+.datos-envio {
+  margin-top: 25px;
+  margin-bottom: 25px;
+  font-size: 14px;
+  opacity: 0.95;
+}
