@@ -25,7 +25,10 @@ function abrirModal(producto) {
   const closeBtn = document.createElement("div");
   closeBtn.className = "modal-close";
   closeBtn.textContent = "✕";
-  closeBtn.onclick = () => overlay.remove();
+  closeBtn.onclick = () => {
+    overlay.remove();
+    document.body.style.overflow = "auto";
+  };
 
   const titulo = document.createElement("h2");
   titulo.textContent = producto.nombre;
@@ -33,7 +36,6 @@ function abrirModal(producto) {
   content.appendChild(closeBtn);
   content.appendChild(titulo);
 
-  /* Detectar variantes con # */
   Object.keys(producto).forEach(key => {
 
     const valor = producto[key];
@@ -63,7 +65,6 @@ function abrirModal(producto) {
 
   });
 
-  /* Cantidad */
   const qty = document.createElement("input");
   qty.type = "number";
   qty.min = "1";
@@ -72,7 +73,6 @@ function abrirModal(producto) {
 
   content.appendChild(qty);
 
-  /* Botón agregar */
   const btn = document.createElement("button");
   btn.className = "btn-agregar";
   btn.textContent = "Agregar";
@@ -80,7 +80,6 @@ function abrirModal(producto) {
   btn.onclick = () => {
 
     const selects = content.querySelectorAll("select");
-
     let variantesSeleccionadas = {};
 
     for (let select of selects) {
@@ -91,9 +90,10 @@ function abrirModal(producto) {
       variantesSeleccionadas[select.dataset.columna] = select.value;
     }
 
-    console.log("Producto agregado:", producto.nombre, variantesSeleccionadas, qty.value);
+    agregarAlCarrito(producto, variantesSeleccionadas, qty.value);
 
     overlay.remove();
+    document.body.style.overflow = "auto";
   };
 
   content.appendChild(btn);
@@ -103,4 +103,6 @@ function abrirModal(producto) {
   overlay.appendChild(modal);
 
   document.body.appendChild(overlay);
+  document.body.style.overflow = "hidden";
+
 }
