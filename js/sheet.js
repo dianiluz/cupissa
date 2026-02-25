@@ -215,118 +215,92 @@ function generarFiltros() {
   const filtrosContainer = document.getElementById("filtrosContainer");
   if (!filtrosContainer) return;
 
-  filtrosContainer.innerHTML = "";
+  filtrosContainer.innerHTML = `
+  <div class="filtros-header-mobile">
+    <span>Filtros</span>
+    <span id="cerrarFiltrosMobile" class="cerrar-filtros">✕</span>
+  </div>
+`;
+
+const cerrarBtn = document.getElementById("cerrarFiltrosMobile");
+
+if (cerrarBtn) {
+  cerrarBtn.addEventListener("click", () => {
+    filtrosContainer.classList.remove("active");
+    document.body.style.overflow = "auto";
+  });
+}
 
   headersGlobal.forEach(header => {
 
     if (header.startsWith("*")) return;
     if (header === "imagenurl" || header === "ref" || header === "nombre") return;
 
-    const valoresUnicos = [...new Set(productosGlobal.map(p => p[header]).filter(v => v && !v.startsWith("#")))];
+    const valoresUnicos = [...new Set(
+      productosGlobal
+        .map(p => p[header])
+        .filter(v => v && !v.startsWith("#"))
+    )];
 
     if (!valoresUnicos.length) return;
 
     const grupo = document.createElement("div");
-    grupo.style.marginBottom = "20px";
+    grupo.className = "filtro-grupo";
 
-    const titulo = document.createElement("h4");
+    const titulo = document.createElement("div");
+    titulo.className = "filtro-titulo";
     titulo.textContent = capitalizar(header);
-    grupo.appendChild(titulo);
+
+    const contenido = document.createElement("div");
+    contenido.className = "filtro-contenido";
 
     valoresUnicos.forEach(valor => {
 
       const btn = document.createElement("button");
       btn.textContent = capitalizar(valor);
-      btn.className = "mundo-item";
-      btn.style.marginTop = "5px";
+      btn.className = "filtro-opcion";
 
       btn.addEventListener("click", () => {
         activarFiltro(header, valor);
       });
 
-      grupo.appendChild(btn);
+      contenido.appendChild(btn);
     });
+
+    titulo.addEventListener("click", () => {
+      contenido.classList.toggle("active");
+    });
+
+    grupo.appendChild(titulo);
+    grupo.appendChild(contenido);
 
     filtrosContainer.appendChild(grupo);
+
   });
 }
 
-function activarFiltro(columna, valor) {
-  filtrosActivos[columna] = valor;
-  aplicarFiltros();
-  mostrarFiltrosActivos();
-}
+/* ========================= */
+/* FILTROS MOBILE CONTROL */
+/* ========================= */
 
-function aplicarFiltros() {
-  let filtrados = productosGlobal;
+document.addEventListener("DOMContentLoaded", () => {
 
-  Object.keys(filtrosActivos).forEach(col => {
-    filtrados = filtrados.filter(p => p[col] === filtrosActivos[col]);
+  const btn = document.getElementById("btnFiltrosMobile");
+  const panel = document.getElementById("filtrosContainer");
+  const cerrar = document.getElementById("cerrarFiltrosMobile");
+
+  if (!btn || !panel) return;
+
+  btn.addEventListener("click", () => {
+    panel.classList.add("active");
+    document.body.style.overflow = "hidden";
   });
 
-  renderProductos(filtrados);
-}
-
-function mostrarFiltrosActivos() {
-
-  const container = document.getElementById("filtrosActivos");
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  Object.keys(filtrosActivos).forEach(col => {
-
-    const tag = document.createElement("div");
-    tag.className = "filtro-tag";
-    tag.textContent = capitalizar(col) + ": " + capitalizar(filtrosActivos[col]);
-
-    tag.addEventListener("click", () => {
-      delete filtrosActivos[col];
-      aplicarFiltros();
-      mostrarFiltrosActivos();
+  if (cerrar) {
+    cerrar.addEventListener("click", () => {
+      panel.classList.remove("active");
+      document.body.style.overflow = "auto";
     });
-
-    container.appendChild(tag);
-  });
-
-  if (Object.keys(filtrosActivos).length) {
-
-    const limpiar = document.createElement("div");
-    limpiar.className = "filtro-tag";
-    limpiar.textContent = "Limpiar filtros";
-
-    limpiar.addEventListener("click", () => {
-      filtrosActivos = {};
-      aplicarFiltros();
-      mostrarFiltrosActivos();
-    });
-
-    container.appendChild(limpiar);
   }
-}
 
-/* ========================= */
-/* ACTUALIZAR ICONOS FAVORITOS */
-/* ========================= */
-
-window.actualizarIconosFavoritos = function () {
-
-  const favoritosActuales = obtenerLocal("cupissa_favoritos") || [];
-  const corazones = document.querySelectorAll(".producto-fav");
-
-  corazones.forEach(corazon => {
-
-    const ref = corazon.dataset.ref;
-    const existe = favoritosActuales.find(p => p.ref === ref);
-
-    if (existe) {
-      corazon.classList.add("active");
-      corazon.innerHTML = "♥";
-    } else {
-      corazon.classList.remove("active");
-      corazon.innerHTML = "♡";
-    }
-
-  });
-
-};
+});
