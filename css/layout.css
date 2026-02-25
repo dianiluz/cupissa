@@ -263,7 +263,8 @@
 .carrito-panel {
   position: fixed;
   top: 0;
-  right: -400px;
+  transform: translateX(100%);
+  right: 0;
   width: 380px;
   height: 100vh;
   background: var(--bg-card);
@@ -275,7 +276,7 @@
 }
 
 .carrito-panel.active {
-  right: -100%;
+  transform: translateX(0);
 }
 
 .carrito-header {
@@ -418,13 +419,19 @@
     max-width: 100%;
   }
 
-  
-  /* ========================= */
+}
+
+/* ========================= */
 /* HEADER FILTROS MOBILE */
 /* ========================= */
 
 .filtros-header-mobile {
   display: none;
+}
+
+.cerrar-filtros {
+  font-size: 22px;
+  cursor: pointer;
 }
 
 @media (max-width: 1024px) {
@@ -436,11 +443,6 @@
     font-weight: 600;
     margin-bottom: 20px;
     font-size: 18px;
-  }
-
-  .cerrar-filtros {
-    font-size: 22px;
-    cursor: pointer;
   }
 
 }
