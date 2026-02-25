@@ -34,6 +34,16 @@ function renderHeader() {
         <input type="text" id="globalSearch" placeholder="Buscar...">
       </div>
 
+      <div class="header-explora">
+        <a href="/">INICIO</a>
+      </div>
+      <div class="header-explora">
+        <a href="/catalogo/">CATÁLOGO</a>
+      </div>
+      <div class="header-explora">
+        <a href="/rastreo/">SEGUIMIENTO DE PEDIDO</a>
+      </div>
+
       <div class="header-icons">
         <div class="header-icon" id="cartIcon">
           🛒
@@ -51,17 +61,44 @@ function renderHeader() {
       <a href="/">Inicio</a>
       <a href="/catalogo/">Catálogo</a>
       <a href="/rastreo/">Seguimiento</a>
+      <button class="menu-filtros" id="menuFiltrosBtn">Filtros</button>
     </div>
   `;
 
-  document.getElementById("themeToggle")
-    .addEventListener("click", alternarTema);
+  /* ===== MENU TOGGLE ===== */
 
-  document.getElementById("menuToggle")
-    .addEventListener("click", () => {
-      document.getElementById("mobileMenu")
-        .classList.toggle("active");
+  const menuToggle = document.getElementById("menuToggle");
+  const mobileMenu = document.getElementById("mobileMenu");
+
+  if (menuToggle && mobileMenu) {
+    menuToggle.addEventListener("click", () => {
+      mobileMenu.classList.toggle("active");
     });
+  }
+
+  /* ===== BOTÓN FILTROS EN MENÚ ===== */
+
+  const menuFiltrosBtn = document.getElementById("menuFiltrosBtn");
+
+  if (menuFiltrosBtn) {
+    menuFiltrosBtn.addEventListener("click", () => {
+
+      const panel = document.getElementById("filtrosContainer");
+      if (panel) {
+        panel.classList.add("active");
+        document.body.style.overflow = "hidden";
+      }
+
+      mobileMenu.classList.remove("active");
+    });
+  }
+
+  /* ===== TEMA ===== */
+
+  const themeToggle = document.getElementById("themeToggle");
+  if (themeToggle) {
+    themeToggle.addEventListener("click", alternarTema);
+  }
 }
 
 /* ========================= */
