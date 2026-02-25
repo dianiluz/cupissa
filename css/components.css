@@ -3,364 +3,6 @@
 /* ===================================================== */
 
 /* ========================= */
-/* GRID PRODUCTOS */
-/* ========================= */
-
-.productos-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 30px;
-  padding: 40px;
-}
-
-/* ========================= */
-/* TARJETA PRODUCTO */
-/* ========================= */
-
-.producto-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-medium);
-  overflow: hidden;
-  transition: transform var(--transition-medium),
-              box-shadow var(--transition-medium);
-  display: flex;
-  flex-direction: column;
-}
-
-.producto-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-hover);
-}
-
-/* Imagen cuadrada */
-.producto-img-wrapper {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.producto-img-wrapper img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform var(--transition-slow);
-}
-
-.producto-img-wrapper:hover img {
-  transform: scale(1.05);
-}
-
-/* Etiqueta personalizable */
-.producto-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: var(--gradient-main);
-  color: #fff;
-  font-size: 12px;
-  padding: 5px 10px;
-  border-radius: 50px;
-  font-weight: 500;
-}
-
-/* Información */
-.producto-info {
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.producto-nombre {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--text-primary);
-  min-height: 40px;
-}
-
-/* Botón Agregar */
-.btn-agregar {
-  margin-top: auto;
-  padding: 10px;
-  border-radius: var(--radius-small);
-  background: var(--gradient-main);
-  color: #fff;
-  font-weight: 500;
-  transition: opacity var(--transition-fast),
-              transform var(--transition-fast);
-}
-
-.btn-agregar:hover {
-  opacity: 0.9;
-  transform: scale(1.02);
-}
-
-/* ========================= */
-/* SKELETON LOADER */
-/* ========================= */
-
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--bg-secondary) 25%,
-    var(--bg-card) 50%,
-    var(--bg-secondary) 75%
-  );
-  background-size: 200% 100%;
-  animation: skeleton-loading 1.2s infinite linear;
-  border-radius: var(--radius-medium);
-}
-
-@keyframes skeleton-loading {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-.skeleton-card {
-  aspect-ratio: 1 / 1;
-  width: 100%;
-}
-
-/* ========================= */
-/* BOTÓN FLOTANTE WHATSAPP */
-/* ========================= */
-
-.whatsapp-float {
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  background-color: #25D366;
-  color: #fff;
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  box-shadow: var(--shadow-soft);
-  z-index: 1200;
-  transition: transform var(--transition-fast);
-}
-
-.whatsapp-float:hover {
-  transform: scale(1.1);
-}
-
-/* ========================= */
-/* HERO */
-/* ========================= */
-
-.hero {
-  min-height: 80vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--gradient-soft);
-  padding: 40px;
-}
-
-.hero-logo {
-  max-width: 500px;
-  width: 100%;
-  animation: fadeInUp 0.8s ease forwards;
-}
-
-/* ========================= */
-/* MODAL PRODUCTO */
-/* ========================= */
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-}
-
-.modal {
-  background: var(--bg-card);
-  width: 90%;
-  max-width: 900px;
-  border-radius: var(--radius-medium);
-  display: flex;
-  overflow: hidden;
-}
-
-.modal-img {
-  flex: 1;
-  position: relative;
-}
-
-.modal-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.modal-content {
-  flex: 1;
-  padding: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.modal-close {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.modal-select {
-  padding: 10px;
-  border-radius: var(--radius-small);
-  border: 1px solid var(--border-color);
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-}
-
-.modal-qty {
-  width: 80px;
-  padding: 8px;
-}
-
-@media (max-width: 768px) {
-  .modal {
-    flex-direction: column;
-  }
-}
-/* ========================= */
-/* RASTREO */
-/* ========================= */
-
-.rastreo-container {
-  padding: 80px 20px;
-  max-width: 600px;
-  margin: auto;
-  text-align: center;
-}
-
-.rastreo-box {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.rastreo-box input {
-  flex: 1;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid #333;
-  background: #111;
-  color: #fff;
-}
-
-.rastreo-resultado {
-  margin-top: 30px;
-  padding: 20px;
-  background: #111;
-  border-radius: 10px;
-}
-
-/* ========================= */
-/* RASTREO TRANSPORTADORA */
-/* ========================= */
-
-.rastreo-card {
-  background: linear-gradient(145deg, #0f0f0f, #141414);
-  padding: 50px;
-  border-radius: 20px;
-  box-shadow: 0 0 50px rgba(0,0,0,0.6);
-}
-
-.rastreo-id {
-  font-size: 26px;
-  font-weight: bold;
-  margin-bottom: 50px;
-  color: var(--color-pink);
-  
-}
-
-.linea-progreso {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 50px;
-}
-
-.linea-progreso::before {
-  content: "";
-  position: absolute;
-  top: 22px;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--color-pink), var(--color-blue));
-  z-index: 0;
-}
-
-.progreso-fill {
-  position: absolute;
-  top: 22px;
-  left: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--color-pink), var(--color-blue));l));
-  z-index: 1;
-  transition: width 0.8s ease;
-}
-
-.paso {
-  position: relative;
-  z-index: 2;
-  text-align: center;
-  flex: 1;
-}
-
-.circulo {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background: #141414;
-;
-  margin: auto;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: white;
-  transition: all 0.4s ease;
-}
-
-.paso.activo .circulo {
-  background: #f4699a
-}
-
-.paso span {
-  font-size: 13px;
-}
-
-.datos-cliente,
-.datos-envio {
-  margin-top: 25px;
-  margin-bottom: 25px;
-  font-size: 14px;
-  opacity: 0.95;
-}
-
-/* ========================= */
 /* FILTROS ACORDEÓN */
 /* ========================= */
 
@@ -398,17 +40,364 @@
   max-height: 500px;
 }
 
-.filtro-opcion {
+.filtro-opcion.active {
+  background: var(--gradient-main);
+  color: #fff;
+  border: none;
+}
+
+/* ========================= */
+/* FILTROS ACTIVOS */
+/* ========================= */
+
+.filtros-activos-wrapper {
+  position: sticky;
+  top: calc(var(--header-height) + var(--mundos-height));
+  z-index: 900;
+  background: var(--bg-primary);
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.filtro-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-secondary);
   padding: 6px 10px;
-  border-radius: var(--radius-small);
-  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.filtro-tag-close {
+  cursor: pointer;
+  font-weight: bold;
+  opacity: 0.7;
+}
+
+.filtro-tag-close:hover {
+  opacity: 1;
+}
+
+.filtro-tag.limpiar {
+  background: var(--gradient-main);
+  color: #fff;
+  cursor: pointer;
+}
+
+/* ========================= */
+/* MENU FILTROS */
+/* ========================= */
+
+.menu-filtros {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px 12px;
+  border-top: 1px solid var(--border-color);
   background: transparent;
   color: var(--text-secondary);
   text-align: left;
-  transition: all var(--transition-fast);
 }
 
-.filtro-opcion:hover {
-  background: var(--gradient-soft);
+/* ========================= */
+/* GRID PRODUCTOS */
+/* ========================= */
+
+.productos-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+  padding: 40px;
+}
+
+@media (max-width: 768px) {
+  .productos-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 20px;
+  }
+
+  .producto-nombre {
+    font-size: 13px;
+    min-height: 36px;
+  }
+
+  .btn-agregar {
+    padding: 8px;
+    font-size: 13px;
+  }
+}
+
+/* ========================= */
+/* TARJETA PRODUCTO */
+/* ========================= */
+
+.producto-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-medium);
+  overflow: hidden;
+  transition: transform var(--transition-medium),
+              box-shadow var(--transition-medium);
+  display: flex;
+  flex-direction: column;
+}
+
+.producto-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+.producto-img-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.producto-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.producto-img-wrapper:hover img {
+  transform: scale(1.05);
+}
+
+.slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  user-select: none;
+  z-index: 5;
+}
+
+.slider-btn.prev { left: 8px; }
+.slider-btn.next { right: 8px; }
+
+/* ========================= */
+/* SELECT VARIANTES TARJETA */
+/* ========================= */
+
+.producto-select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--radius-small);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
   color: var(--text-primary);
+  font-size: 13px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  transition: border var(--transition-fast),
+              box-shadow var(--transition-fast);
+}
+
+.producto-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(244,105,154,0.2);
+}
+
+/* Flecha personalizada */
+
+.producto-select {
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-secondary) 50%),
+    linear-gradient(135deg, var(--text-secondary) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 13px) calc(50% - 3px);
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+/* ========================= */
+/* INFO PRODUCTO */
+/* ========================= */
+
+.producto-info {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.producto-nombre {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  min-height: 40px;
+}
+
+.btn-agregar {
+  margin-top: auto;
+  padding: 10px;
+  border-radius: var(--radius-small);
+  background: var(--gradient-main);
+  color: #fff;
+  font-weight: 500;
+  transition: opacity var(--transition-fast),
+              transform var(--transition-fast);
+}
+
+.btn-agregar:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+/* ========================= */
+/* MODAL PRODUCTO */
+/* ========================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal {
+  background: var(--bg-card);
+  width: 90%;
+  max-width: 1000px;
+  border-radius: var(--radius-medium);
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 🔥 CONTENCIÓN CORRECTA DEL ZOOM */
+.modal-img {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+.modal-img img {
+  max-width: 100%;
+  max-height: 85vh;
+  transition: transform 0.1s ease-out;
+  transform-origin: center;
+  cursor: crosshair;
+}
+
+/* 🔥 LENTE CUADRADO REAL */
+.zoom-lens {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border: 2px solid var(--color-primary);
+  background: rgba(255,255,255,0.2);
+  pointer-events: none;
+  display: none;
+  z-index: 10;
+}
+
+.modal-slider {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:20px;
+  z-index:6;
+}
+
+.modal-slider.prev { left: 15px; }
+.modal-slider.next { right: 15px; }
+
+.modal-thumbs {
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+
+.modal-thumb {
+  width:60px;
+  height:60px;
+  object-fit:cover;
+  cursor:pointer;
+  opacity:0.6;
+  border-radius:6px;
+  transition: all 0.2s ease;
+}
+
+.modal-thumb.active {
+  opacity:1;
+  border:2px solid var(--color-primary);
+}
+
+.modal-content {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-select {
+  padding: 10px;
+  border-radius: var(--radius-small);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.modal-qty {
+  width: 80px;
+  padding: 8px;
+}
+
+@media (max-width: 768px) {
+  .modal {
+    flex-direction: column;
+  }
+
+  .modal-img img {
+    cursor: default;
+  }
+
+  .zoom-lens {
+    display: none !important;
+  }
 }
