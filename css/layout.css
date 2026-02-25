@@ -275,7 +275,7 @@
 }
 
 .carrito-panel.active {
-  right: 0;
+  right: -100%;
 }
 
 .carrito-header {
@@ -311,4 +311,136 @@
   background: #25D366;
   color: white;
   border-radius: var(--radius-small);
+}
+
+/* ========================= */
+/* HEADER MOBILE */
+/* ========================= */
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.menu-toggle {
+  display: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  width: 100%;
+  background: var(--bg-secondary);
+  flex-direction: column;
+  padding: 20px;
+  gap: 15px;
+  z-index: 998;
+}
+
+.mobile-menu a {
+  font-size: 16px;
+  color: var(--text-primary);
+}
+
+.mobile-menu.active {
+  display: flex;
+}
+
+/* ========================= */
+/* RESPONSIVE HEADER */
+/* ========================= */
+
+@media (max-width: 768px) {
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .header-search {
+    display: none;
+  }
+
+}
+
+/* ========================= */
+/* FILTROS MOBILE */
+/* ========================= */
+
+.btn-filtros-mobile {
+  display: none;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: var(--radius-medium);
+  background: var(--gradient-main);
+  color: #fff;
+  font-weight: 500;
+}
+
+@media (max-width: 1024px) {
+
+  .btn-filtros-mobile {
+    display: block;
+  }
+
+  .filtros-lateral {
+    position: fixed;
+    top: var(--header-height);
+    left: -100%;
+    width: 100%;
+    height: calc(100vh - var(--header-height));
+    background: var(--bg-primary);
+    padding: 30px;
+    overflow-y: auto;
+    z-index: 2000;
+    transition: left var(--transition-medium);
+  }
+
+  .filtros-lateral.active {
+    left: 0;
+  }
+
+}
+
+/* ========================= */
+/* CARRITO MOBILE */
+/* ========================= */
+
+@media (max-width: 768px) {
+
+  .carrito-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  
+  /* ========================= */
+/* HEADER FILTROS MOBILE */
+/* ========================= */
+
+.filtros-header-mobile {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+
+  .filtros-header-mobile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-size: 18px;
+  }
+
+  .cerrar-filtros {
+    font-size: 22px;
+    cursor: pointer;
+  }
+
 }
