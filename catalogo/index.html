@@ -27,17 +27,18 @@
   <aside class="filtros-lateral" id="filtrosContainer">
     <div class="filtros-header-mobile">
       <span>Filtros</span>
-     <span id="cerrarFiltrosMobile" class="cerrar-filtros">✕</span>
+      <span id="cerrarFiltrosMobile" class="cerrar-filtros">✕</span>
     </div>
   </aside>
 
   <div class="catalogo-contenido">
 
-    <button class="btn-filtros-mobile" id="btnFiltrosMobile">
-     Filtrar
-    </button>
+    <!-- 🔥 ELIMINADO BOTÓN VIEJO -->
+    <!-- <button class="btn-filtros-mobile" id="btnFiltrosMobile">Filtrar</button> -->
 
-    <div class="filtros-activos" id="filtrosActivos"></div>
+    <div class="filtros-activos-wrapper">
+      <div class="filtros-activos" id="filtrosActivos"></div>
+    </div>
 
     <div class="productos-container" id="productosContainer"></div>
 
@@ -58,21 +59,21 @@
     <span>Lista de cotización</span>
     <span id="cerrarCarrito" style="cursor:pointer;">✕</span>
   </div>
+
   <div class="carrito-body" id="carritoBody"></div>
+
   <div class="carrito-footer">
 
-  <button onclick="vaciarCarrito()" 
-          style="margin-bottom:10px;width:100%;padding:10px;border-radius:6px;background:#444;color:#fff;">
-    Vaciar Lista
-  </button>
+    <button onclick="vaciarCarrito()" 
+            style="margin-bottom:10px;width:100%;padding:10px;border-radius:6px;background:#444;color:#fff;">
+      Vaciar Lista
+    </button>
 
-  <button class="btn-whatsapp" onclick="enviarCarritoWhatsApp()">
-    Cotizar por WhatsApp
-  </button>
+    <button class="btn-whatsapp" onclick="enviarCarritoWhatsApp()">
+      Cotizar por WhatsApp
+    </button>
 
-</div>
   </div>
-</div>
 </div>
 
 <script src="/js/config.js"></script>
@@ -82,5 +83,6 @@
 <script src="/js/sheet.js"></script>
 <script src="/js/modal.js"></script>
 <script src="/js/carrito.js"></script>
+
 </body>
 </html>
