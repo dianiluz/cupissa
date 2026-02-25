@@ -20,25 +20,19 @@ function renderHeader() {
   headerContainer.innerHTML = `
     <header class="header">
 
-      <div class="header-logo">
-        <a href="/">
-          <img src="/assets/logo.png" alt="Universo CUPISSA">
-        </a>
+      <div class="header-left">
+        <div class="menu-toggle" id="menuToggle">☰</div>
+
+        <div class="header-logo">
+          <a href="/">
+            <img src="/assets/logo.png" alt="Universo CUPISSA">
+          </a>
+        </div>
       </div>
 
       <div class="header-search">
-        <input type="text" id="globalSearch" placeholder="Buscar en Universo CUPISSA...">
+        <input type="text" id="globalSearch" placeholder="Buscar...">
       </div>
-
-       <div class="header-explora">
-        <a href="/">INICIO</a>
-        </div>   
-        <div class="header-explora">
-        <a href="/catalogo">CATÁLOGO</a>
-        </div>   
-        <div class="header-explora">
-        <a href="/rastreo">SEGUIMIENTO DE PEDIDO</a>
-        </div>   
 
       <div class="header-icons">
         <div class="header-icon" id="cartIcon">
@@ -46,28 +40,32 @@ function renderHeader() {
           <span class="count" id="cartCount">0</span>
         </div>
 
-        <div class="header-icon" id="userIcon">
-          👤
-        </div>
-
-        <div class="header-icon" id="languageToggle">
-        🌐
-        </div>
-
         <div class="header-icon" id="themeToggle">
-        🌙
+          🌙
         </div>
       </div>
 
     </header>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="/">Inicio</a>
+      <a href="/catalogo/">Catálogo</a>
+      <a href="/rastreo/">Seguimiento</a>
+    </div>
   `;
 
-  const themeBtn = document.getElementById("themeToggle");
-  themeBtn.addEventListener("click", alternarTema);
+  document.getElementById("themeToggle")
+    .addEventListener("click", alternarTema);
+
+  document.getElementById("menuToggle")
+    .addEventListener("click", () => {
+      document.getElementById("mobileMenu")
+        .classList.toggle("active");
+    });
 }
 
 /* ========================= */
-/* BARRA DE MUNDOS */
+/* MUNDOS */
 /* ========================= */
 
 function renderMundos() {
@@ -76,9 +74,7 @@ function renderMundos() {
   if (!mundosContainer) return;
 
   mundosContainer.innerHTML = `
-    <div class="mundos-bar" id="mundosBar">
-      <!-- Mundos dinámicos se cargarán aquí -->
-    </div>
+    <div class="mundos-bar" id="mundosBar"></div>
   `;
 }
 
@@ -142,6 +138,7 @@ function renderFooter() {
           <p style="margin-top:10px; font-size:12px;">
             Pago contraentrega disponible para Barranquilla y municipios cercanos.
             Para envíos nacionales se requiere pago anticipado del flete.
+            Algunos productos y servicios requieren anticipos para agendarse.
           </p>
         </div>
 
