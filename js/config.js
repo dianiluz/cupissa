@@ -12,6 +12,7 @@ const CONFIG = {
   whatsappNumber: "573147671380",
   baseURL: "https://cupissa.com",
   contactEmail: "contacto@cupissa.com",
+  city: "Barranquilla, Colombia",
 
   /* ========================= */
   /* GOOGLE SHEET */
