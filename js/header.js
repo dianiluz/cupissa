@@ -20,29 +20,21 @@ function renderHeader() {
   headerContainer.innerHTML = `
     <header class="header">
 
-      <div class="header-left">
-        <div class="menu-toggle" id="menuToggle">☰</div>
+  <div class="header-logo">
+    <a href="/">
+      <img src="/assets/logo.png" alt="Universo CUPISSA">
+    </a>
+  </div>
 
-        <div class="header-logo">
-          <a href="/">
-            <img src="/assets/logo.png" alt="Universo CUPISSA">
-          </a>
-        </div>
-      </div>
+  <div class="header-search">
+    <input type="text" id="globalSearch" placeholder="Buscar en Universo CUPISSA...">
+  </div>
 
-      <div class="header-search">
-        <input type="text" id="globalSearch" placeholder="Buscar...">
-      </div>
-
-      <div class="header-explora">
-        <a href="/">INICIO</a>
-      </div>
-      <div class="header-explora">
-        <a href="/catalogo/">CATÁLOGO</a>
-      </div>
-      <div class="header-explora">
-        <a href="/rastreo/">SEGUIMIENTO DE PEDIDO</a>
-      </div>
+  <div class="header-nav">
+    <a href="/" class="nav-link">INICIO</a>
+    <a href="/catalogo" class="nav-link">CATÁLOGO</a>
+    <a href="/rastreo" class="nav-link">SEGUIMIENTO DE PEDIDO</a>
+  </div>
 
       <div class="header-icons">
         <div class="header-icon" id="cartIcon">
@@ -56,53 +48,16 @@ function renderHeader() {
       </div>
 
     </header>
-
-    <div class="mobile-menu" id="mobileMenu">
-      <a href="/">Inicio</a>
-      <a href="/catalogo/">Catálogo</a>
-      <a href="/rastreo/">Seguimiento</a>
-      <button class="menu-filtros" id="menuFiltrosBtn">Filtros</button>
-    </div>
   `;
 
-  /* ===== MENU TOGGLE ===== */
-
-  const menuToggle = document.getElementById("menuToggle");
-  const mobileMenu = document.getElementById("mobileMenu");
-
-  if (menuToggle && mobileMenu) {
-    menuToggle.addEventListener("click", () => {
-      mobileMenu.classList.toggle("active");
-    });
-  }
-
-  /* ===== BOTÓN FILTROS EN MENÚ ===== */
-
-  const menuFiltrosBtn = document.getElementById("menuFiltrosBtn");
-
-  if (menuFiltrosBtn) {
-    menuFiltrosBtn.addEventListener("click", () => {
-
-      const panel = document.getElementById("filtrosContainer");
-      if (panel) {
-        panel.classList.add("active");
-        document.body.style.overflow = "hidden";
-      }
-
-      mobileMenu.classList.remove("active");
-    });
-  }
-
-  /* ===== TEMA ===== */
-
-  const themeToggle = document.getElementById("themeToggle");
-  if (themeToggle) {
-    themeToggle.addEventListener("click", alternarTema);
+  const themeBtn = document.getElementById("themeToggle");
+  if (themeBtn) {
+    themeBtn.addEventListener("click", alternarTema);
   }
 }
 
 /* ========================= */
-/* MUNDOS */
+/* BARRA DE MUNDOS */
 /* ========================= */
 
 function renderMundos() {
@@ -133,7 +88,7 @@ function renderFooter() {
 
         <div>
           <h4>Contacto</h4>
-          <p>${CONFIG.city}</p>
+          <p>Barranquilla, Colombia</p>
           <p>+57 314 767 1380</p>
           <p>${CONFIG.contactEmail}</p>
 
@@ -174,8 +129,8 @@ function renderFooter() {
 
           <p style="margin-top:10px; font-size:12px;">
             Pago contraentrega disponible para Barranquilla y municipios cercanos.
+            Algunos productos y servicios requieren anticipos para ser agendados.
             Para envíos nacionales se requiere pago anticipado del flete.
-            Algunos productos y servicios requieren anticipos para agendarse.
           </p>
         </div>
 
