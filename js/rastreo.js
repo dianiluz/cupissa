@@ -66,9 +66,11 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       setTimeout(() => {
-        document.querySelector(".progreso-fill").style.width =
-          calcularProgreso(estado) + "%";
-      }, 100);
+  const fill = document.querySelector(".progreso-fill");
+  if (fill) {
+    fill.style.width = calcularProgreso(estado) + "%";
+  }
+}, 300);
 
     } catch (error) {
       resultado.innerHTML = "<p>Error consultando el pedido.</p>";
@@ -89,7 +91,7 @@ function calcularProgreso(estado) {
 }
 
 /* ========================= */
-/* VISTA */
+/* VISTA RASTREO */
 /* ========================= */
 
 function generarVistaRastreo(id, estado, transportadora, guia, cliente) {
@@ -136,11 +138,22 @@ function generarVistaRastreo(id, estado, transportadora, guia, cliente) {
       </div>
 
       ${transportadora ? `
-        <div class="datos-envio">
-          <p><strong>Transportadora:</strong> ${transportadora}</p>
-          ${guia ? `<p><strong>Guía:</strong> ${guia}</p>` : ""}
-        </div>
-      ` : ""}
+  <div class="datos-envio">
+    <p><strong>Transportadora:</strong> ${transportadora}</p>
+    ${guia ? `<p><strong>Guía:</strong> ${guia}</p>` : ""}
+
+    ${
+      guia && CONFIG.transportadoras[transportadora]
+        ? `<a class="btn-consultar-guia"
+             href="${CONFIG.transportadoras[transportadora]}${guia}"
+             target="_blank">
+             Consultar en ${transportadora}
+           </a>`
+        : ""
+    }
+
+  </div>
+` : ""}
 
       <button class="btn-principal" onclick="window.open('https://wa.me/573147671380')">
         ¿Algo está mal? Haz click aquí para corregir datos.
