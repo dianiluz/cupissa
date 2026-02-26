@@ -62,8 +62,11 @@ function renderHeader() {
 
      <!-- MOBILE SEARCH BAR -->
         <div class="mobile-search-bar">
-         <input type="text" id="mobileSearchInput" placeholder="¿Qué estás buscando hoy?">
-        </div>
+  <div class="mobile-search-wrapper">
+    <input type="text" id="mobileSearchInput" placeholder="¿Qué estás buscando hoy?">
+    <span class="clear-search" id="clearMobileSearch">✕</span>
+  </div>
+</div>
 
     <!-- PANEL CARRITO -->
 <div class="carrito-panel" id="carritoPanel">
@@ -107,8 +110,11 @@ function renderHeader() {
   const mobileMenu = document.getElementById("mobileMenu");
 
   hamburger.addEventListener("click", () => {
-    mobileMenu.classList.toggle("active");
-  });
+  mobileMenu.classList.toggle("active");
+  document.body.style.overflow = mobileMenu.classList.contains("active")
+    ? "hidden"
+    : "auto";
+});
 }
 
 /* ========================= */
