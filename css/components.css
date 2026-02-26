@@ -3,104 +3,6 @@
 /* ===================================================== */
 
 /* ========================= */
-/* FILTROS ACORDEÓN */
-/* ========================= */
-
-.filtro-grupo {
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 10px;
-}
-
-.filtro-titulo {
-  font-weight: 600;
-  cursor: pointer;
-  padding: 8px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.filtro-titulo::after {
-  content: "▾";
-  font-size: 14px;
-  transition: transform var(--transition-fast);
-}
-
-.filtro-contenido {
-  max-height: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: max-height 0.3s ease;
-}
-
-.filtro-contenido.active {
-  max-height: 500px;
-}
-
-.filtro-opcion.active {
-  background: var(--gradient-main);
-  color: #fff;
-  border: none;
-}
-
-/* ========================= */
-/* FILTROS ACTIVOS */
-/* ========================= */
-
-.filtros-activos-wrapper {
-  position: sticky;
-  top: calc(var(--header-height) + var(--mundos-height));
-  z-index: 900;
-  background: var(--bg-primary);
-  padding: 10px 20px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.filtro-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--bg-secondary);
-  padding: 6px 10px;
-  border-radius: 20px;
-  font-size: 13px;
-}
-
-.filtro-tag-close {
-  cursor: pointer;
-  font-weight: bold;
-  opacity: 0.7;
-}
-
-.filtro-tag-close:hover {
-  opacity: 1;
-}
-
-.filtro-tag.limpiar {
-  background: var(--gradient-main);
-  color: #fff;
-  cursor: pointer;
-}
-
-/* ========================= */
-/* MENU FILTROS */
-/* ========================= */
-
-.menu-filtros {
-  display: block;
-  width: 100%;
-  margin-top: 20px;
-  padding: 15px 12px;
-  border-top: 1px solid var(--border-color);
-  background: transparent;
-  color: var(--text-secondary);
-  text-align: left;
-}
-
-/* ========================= */
 /* GRID PRODUCTOS */
 /* ========================= */
 
@@ -109,24 +11,6 @@
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 30px;
   padding: 40px;
-}
-
-@media (max-width: 768px) {
-  .productos-container {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    padding: 20px;
-  }
-
-  .producto-nombre {
-    font-size: 13px;
-    min-height: 36px;
-  }
-
-  .btn-agregar {
-    padding: 8px;
-    font-size: 13px;
-  }
 }
 
 /* ========================= */
@@ -138,16 +22,18 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-medium);
   overflow: hidden;
-  transition: transform var(--transition-medium),
-              box-shadow var(--transition-medium);
   display: flex;
   flex-direction: column;
+  transition: transform var(--transition-medium),
+              box-shadow var(--transition-medium);
 }
 
 .producto-card:hover {
   transform: translateY(-5px);
   box-shadow: var(--shadow-hover);
 }
+
+/* Imagen cuadrada */
 
 .producto-img-wrapper {
   position: relative;
@@ -161,76 +47,22 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--transition-slow);
 }
 
-.producto-img-wrapper:hover img {
-  transform: scale(1.05);
-}
+/* Badge */
 
-.slider-btn {
+.producto-badge {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0,0,0,0.5);
-  color: white;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 18px;
-  user-select: none;
-  z-index: 5;
+  top: 10px;
+  left: 10px;
+  background: var(--gradient-main);
+  color: #fff;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 50px;
 }
 
-.slider-btn.prev { left: 8px; }
-.slider-btn.next { right: 8px; }
-
-/* ========================= */
-/* SELECT VARIANTES TARJETA */
-/* ========================= */
-
-.producto-select {
-  width: 100%;
-  padding: 8px 12px;
-  border-radius: var(--radius-small);
-  border: 1px solid var(--border-color);
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 13px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  cursor: pointer;
-  transition: border var(--transition-fast),
-              box-shadow var(--transition-fast);
-}
-
-.producto-select:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(244,105,154,0.2);
-}
-
-/* Flecha personalizada */
-
-.producto-select {
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--text-secondary) 50%),
-    linear-gradient(135deg, var(--text-secondary) 50%, transparent 50%);
-  background-position:
-    calc(100% - 18px) calc(50% - 3px),
-    calc(100% - 13px) calc(50% - 3px);
-  background-size: 5px 5px;
-  background-repeat: no-repeat;
-}
-
-/* ========================= */
-/* INFO PRODUCTO */
-/* ========================= */
+/* Info */
 
 .producto-info {
   padding: 15px;
@@ -242,9 +74,10 @@
 .producto-nombre {
   font-size: 15px;
   font-weight: 500;
-  color: var(--text-primary);
   min-height: 40px;
 }
+
+/* Botón agregar */
 
 .btn-agregar {
   margin-top: auto;
@@ -253,17 +86,50 @@
   background: var(--gradient-main);
   color: #fff;
   font-weight: 500;
-  transition: opacity var(--transition-fast),
-              transform var(--transition-fast);
-}
-
-.btn-agregar:hover {
-  opacity: 0.9;
-  transform: scale(1.02);
+  cursor: pointer;
 }
 
 /* ========================= */
-/* MODAL PRODUCTO */
+/* FILTROS */
+/* ========================= */
+
+.filtro-grupo {
+  margin-bottom: 20px;
+}
+
+.filtro-titulo {
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.filtro-contenido {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filtro-contenido.active {
+  display: flex;
+}
+
+.filtro-opcion {
+  padding: 6px 10px;
+  border-radius: var(--radius-small);
+  border: 1px solid var(--border-color);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.filtro-opcion.active {
+  background: var(--gradient-main);
+  color: #fff;
+  border: none;
+}
+
+/* ========================= */
+/* MODAL */
 /* ========================= */
 
 .modal-overlay {
@@ -273,90 +139,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 4000;
 }
 
 .modal {
   background: var(--bg-card);
   width: 90%;
-  max-width: 1000px;
+  max-width: 900px;
   border-radius: var(--radius-medium);
   display: flex;
   overflow: hidden;
-  position: relative;
 }
 
-/* 🔥 CONTENCIÓN CORRECTA DEL ZOOM */
 .modal-img {
-  position: relative;
   flex: 1;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #000;
 }
 
 .modal-img img {
-  max-width: 100%;
-  max-height: 85vh;
-  transition: transform 0.1s ease-out;
-  transform-origin: center;
-  cursor: crosshair;
-}
-
-/* 🔥 LENTE CUADRADO REAL */
-.zoom-lens {
-  position: absolute;
-  width: 150px;
-  height: 150px;
-  border: 2px solid var(--color-primary);
-  background: rgba(255,255,255,0.2);
-  pointer-events: none;
-  display: none;
-  z-index: 10;
-}
-
-.modal-slider {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0,0,0,0.5);
-  color: white;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  font-size:20px;
-  z-index:6;
-}
-
-.modal-slider.prev { left: 15px; }
-.modal-slider.next { right: 15px; }
-
-.modal-thumbs {
-  display:flex;
-  gap:8px;
-  margin-top:12px;
-  flex-wrap:wrap;
-}
-
-.modal-thumb {
-  width:60px;
-  height:60px;
-  object-fit:cover;
-  cursor:pointer;
-  opacity:0.6;
-  border-radius:6px;
-  transition: all 0.2s ease;
-}
-
-.modal-thumb.active {
-  opacity:1;
-  border:2px solid var(--color-primary);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .modal-content {
@@ -371,7 +173,6 @@
   position: absolute;
   top: 15px;
   right: 20px;
-  font-size: 20px;
   cursor: pointer;
 }
 
@@ -388,16 +189,243 @@
   padding: 8px;
 }
 
-@media (max-width: 768px) {
-  .modal {
-    flex-direction: column;
-  }
+/* ========================= */
+/* WHATSAPP FLOAT */
+/* ========================= */
 
-  .modal-img img {
-    cursor: default;
-  }
+.whatsapp-float {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background-color: #25D366;
+  color: #fff;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: var(--shadow-soft);
+  z-index: 1200;
+}
 
-  .zoom-lens {
-    display: none !important;
-  }
+/* ========================= */
+/* HERO */
+/* ========================= */
+
+.hero {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-soft);
+  padding: 40px;
+}
+
+.hero-logo {
+  max-width: 500px;
+  width: 100%;
+}
+
+/* ========================= */
+/* RASTREO TRANSPORTADORA PREMIUM */
+/* ========================= */
+
+.rastreo-container {
+  padding: 120px 20px 80px 20px;
+  max-width: 900px;
+  margin: auto;
+  text-align: center;
+}
+
+.rastreo-card {
+  background: linear-gradient(145deg, #0f0f0f, #181818);
+  padding: 60px 40px;
+  border-radius: 25px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+
+.rastreo-id {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 60px;
+  color: var(--color-pink);
+}
+
+/* Línea base */
+.linea-progreso {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 60px;
+}
+
+.linea-progreso::before {
+  content: "";
+  position: absolute;
+  top: 28px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #2a2a2a;
+  z-index: 0;
+}
+
+/* Línea animada */
+.progreso-fill {
+  position: absolute;
+  top: 28px;
+  left: 0;
+  height: 4px;
+  background: var(--gradient-main);
+  z-index: 1;
+  transition: width 1s ease;
+}
+
+/* Pasos */
+.paso {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  text-align: center;
+}
+
+.circulo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #1e1e1e;
+  margin: auto;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: white;
+  transition: all 0.4s ease;
+  border: 2px solid #2a2a2a;
+}
+
+.paso.activo .circulo {
+  background: var(--gradient-main);
+  border: none;
+  box-shadow: 0 0 20px rgba(244,105,154,0.5);
+}
+
+.paso span {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.paso.activo span {
+  color: var(--text-primary);
+}
+
+/* Datos */
+.datos-cliente,
+.datos-envio {
+  margin-top: 30px;
+  font-size: 15px;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.datos-cliente strong,
+.datos-envio strong {
+  color: var(--color-pink);
+}
+
+.btn-principal {
+  margin-top: 30px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  background: var(--gradient-main);
+  color: #fff;
+  font-weight: 500;
+  transition: transform var(--transition-fast);
+}
+
+.btn-principal:hover {
+  transform: scale(1.03);
+}
+
+/* ========================= */
+/* BUSCADOR RASTREO PREMIUM */
+/* ========================= */
+
+.rastreo-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin: 40px 0 60px 0;
+  flex-wrap: wrap;
+}
+
+/* ========================= */
+/* BUSCADOR RASTREO AJUSTE PERFECTO */
+/* ========================= */
+
+.rastreo-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin: 40px 0 60px 0;
+}
+
+.rastreo-box input,
+.rastreo-box button {
+  height: 50px;
+  box-sizing: border-box;
+  font-size: 15px;
+}
+
+.rastreo-box input {
+  width: 320px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: #111;
+  color: var(--text-primary);
+  line-height: normal;
+}
+
+.rastreo-box input:focus {
+  outline: none;
+  border-color: var(--color-pink);
+  box-shadow: 0 0 15px rgba(244,105,154,0.3);
+}
+
+.rastreo-box button {
+  padding: 0 24px;
+  border-radius: 12px;
+  background: var(--gradient-main);
+  color: #fff;
+  font-weight: 500;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rastreo-box button:hover {
+  transform: scale(1.05);
+}
+
+.btn-consultar-guia {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: #222;
+  color: #fff;
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-fast);
+}
+
+.btn-consultar-guia:hover {
+  background: var(--gradient-main);
+  border: none;
 }
