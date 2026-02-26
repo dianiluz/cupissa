@@ -111,8 +111,8 @@
   left: 0;
   width: 100%;
   height: var(--mundos-height);
-  background-color: var(--bg-secondary);
-  border-bottom: 1px solid var(--border-color);
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -121,7 +121,7 @@
   overflow-y: hidden;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  z-index: 900;
+  z-index: 995;
 }
 
 /* Ocultar scrollbar */
@@ -342,11 +342,6 @@ main {
   z-index: 950;
 }
 
-/* Espacio para botón */
-.catalogo-contenido {
-  margin-top: 60px;
-}
-
 .filtros-lateral {
   position: fixed !important;
   top: 0 !important;
@@ -378,6 +373,24 @@ main {
   color: #ffffff;
   font-weight: bold;
   cursor: pointer;
+}
+
+.catalogo-layout {
+  display: block;
+  padding: 0;
+}
+
+.catalogo-contenido {
+  width: 100%;
+}
+
+.catalogo-layout {
+  padding: 0 !important;
+  gap: 0 !important;
+}
+
+.catalogo-contenido {
+  width: 100%;
 }
 
 }
@@ -573,4 +586,228 @@ main {
 .header-icons .search-toggle {
   display: block;
 }
+}
+
+/* ========================= */
+/* CORRECCIÓN FILTROS DESKTOP */
+/* ========================= */
+
+@media (min-width: 1025px) {
+  .filtros-header-mobile {
+    display: none;
+  }
+
+  .filtros-lateral {
+    background: transparent;
+  }
+}
+
+.filtros-contenido-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.filtros-lateral {
+  padding-right: 10px;
+}
+
+.filtros-contenido-scroll {
+  padding: 10px 0;
+}
+
+/* ========================= */
+/* FIX OVERFLOW MÓVIL REAL */
+/* ========================= */
+
+@media (max-width: 1024px) {
+
+  .catalogo-layout {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .catalogo-contenido {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* CLAVE: evitar que el aside afecte el ancho del layout */
+  .filtros-lateral {
+    width: 100vw !important;
+    max-width: 100vw !important;
+  }
+
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+}
+
+/* ========================= */
+/* FOOTER RESPONSIVE FIX */
+/* ========================= */
+
+@media (max-width: 1024px) {
+
+  .footer {
+    padding: 40px 20px 30px;
+  }
+
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
+
+  .footer-bottom {
+    margin-top: 30px;
+    text-align: center;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* ========================= */
+/* FOOTER 2x2 EN CELULAR */
+/* ========================= */
+
+@media (max-width: 768px) {
+
+  .footer {
+    padding: 40px 20px 30px;
+  }
+
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
+
+  .footer-bottom {
+    margin-top: 30px;
+    text-align: center;
+  }
+
+}
+
+/* ========================= */
+/* BUSCADOR MÓVIL CORRECTO */
+/* ========================= */
+
+@media (max-width: 768px) {
+
+  .mobile-search-bar {
+    display: block;
+    position: fixed;
+    top: calc(var(--header-height));
+    left: 0;
+    width: 100%;
+    padding: 10px 20px;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px);
+    z-index: 998;
+  }
+
+  .mobile-search-bar input {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: #111;
+    color: var(--text-primary);
+  }
+
+  main {
+    padding-top: calc(var(--header-height) + 60px + var(--mundos-height));
+  }
+
+}
+
+/* ===================================================== */
+/* MOBILE STACK DEFINITIVO LIMPIO */
+/* ===================================================== */
+
+@media (max-width: 768px) {
+
+  /* Header sólido */
+  .header {
+    background: #000;
+    backdrop-filter: none;
+    border: none;
+    border-bottom: none;
+  }
+
+  /* Buscador */
+  .mobile-search-bar {
+    position: fixed;
+    top: var(--header-height);
+    left: 0;
+    width: 100%;
+    height: 56px;
+    padding: 8px 20px;
+    background: #000;
+    backdrop-filter: none;
+    border: none;
+    z-index: 998;
+  }
+
+  .mobile-search-bar input {
+    height: 40px;
+  }
+
+  /* Mundos */
+  .mundos-bar {
+    position: fixed;
+    top: calc(var(--header-height) + 56px);
+    left: 0;
+    width: 100%;
+   background: #000;
+    backdrop-filter: none;
+    border: none;
+    border: none;
+    z-index: 970;
+  }
+
+  /* Botón filtrar */
+  .btn-filtros-mobile {
+    position: fixed;
+    top: calc(var(--header-height) + 56px + var(--mundos-height));
+    left: 0;
+    width: 100%;
+    z-index: 965;
+  }
+
+  /* Ajuste contenido */
+  main {
+    padding-top: calc(
+      var(--header-height) +
+      56px +
+      var(--mundos-height) +
+      50px
+    );
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .btn-filtros-mobile {
+    margin: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  .mundos-bar {
+    margin-bottom: -1px;
+  }
+
 }
