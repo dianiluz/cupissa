@@ -34,7 +34,7 @@ function renderHeader() {
 
       <!-- DESKTOP SEARCH -->
       <div class="header-search">
-        <input type="text" id="globalSearch" placeholder="Buscar en Universo CUPISSA...">
+        <input type="text" id="globalSearch" placeholder="¿Qué estás bucando?">
       </div>
 
       <!-- DESKTOP NAV -->
@@ -46,10 +46,6 @@ function renderHeader() {
 
       <!-- RIGHT ICONS -->
       <div class="header-icons">
-
-        <div class="header-icon search-toggle" id="searchToggle">
-          🔍
-        </div>
 
         <div class="header-icon" id="cartIcon">
           🛒
@@ -64,10 +60,33 @@ function renderHeader() {
 
     </header>
 
-    <!-- MOBILE SEARCH -->
-    <div class="mobile-search" id="mobileSearch">
-      <input type="text" placeholder="Buscar en Universo CUPISSA...">
-    </div>
+     <!-- MOBILE SEARCH BAR -->
+        <div class="mobile-search-bar">
+         <input type="text" id="mobileSearchInput" placeholder="¿Qué estás buscando hoy?">
+        </div>
+
+    <!-- PANEL CARRITO -->
+<div class="carrito-panel" id="carritoPanel">
+  <div class="carrito-header">
+    <span>Tu carrito</span>
+    <span id="cerrarCarrito" style="cursor:pointer;">✕</span>
+  </div>
+
+  <div class="carrito-body" id="carritoBody">
+    <p>Tu lista está vacía.</p>
+  </div>
+
+  <button onclick="vaciarCarrito()" 
+        style="margin-bottom:10px;width:100%;padding:10px;border-radius:8px;background:#333;color:white;">
+  Vaciar lista
+</button>
+
+  <div class="carrito-footer">
+    <button class="btn-whatsapp" onclick="enviarCarritoWhatsApp()">
+      Solicitar cotización por WhatsApp
+    </button>
+  </div>
+</div>
 
     <!-- MOBILE MENU -->
     <div class="mobile-menu" id="mobileMenu">
@@ -82,14 +101,6 @@ function renderHeader() {
   if (themeBtn) {
     themeBtn.addEventListener("click", alternarTema);
   }
-
-  // Mobile search toggle
-  const searchToggle = document.getElementById("searchToggle");
-  const mobileSearch = document.getElementById("mobileSearch");
-
-  searchToggle.addEventListener("click", () => {
-    mobileSearch.classList.toggle("active");
-  });
 
   // Mobile menu toggle
   const hamburger = document.getElementById("hamburgerBtn");
@@ -187,3 +198,4 @@ function renderFooter() {
     </footer>
   `;
 }
+
