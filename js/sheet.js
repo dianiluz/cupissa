@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   cargarProductos();
   inicializarBuscador();
+  inicializarDrawerMobile();
+
 });
 
 /* ========================= */
@@ -203,6 +205,24 @@ function generarFiltros() {
 
   filtrosContainer.innerHTML = "";
 
+  /* ===== X MOBILE ===== */
+
+  const headerMobile = document.createElement("div");
+  headerMobile.className = "filtros-header-mobile";
+
+  const cerrar = document.createElement("span");
+  cerrar.id = "cerrarFiltrosMobile";
+  cerrar.textContent = "✕";
+
+  cerrar.addEventListener("click", () => {
+    filtrosContainer.classList.remove("active");
+  });
+
+  headerMobile.appendChild(cerrar);
+  filtrosContainer.appendChild(headerMobile);
+
+  /* ===== FILTROS ===== */
+
   headersGlobal.forEach(header => {
 
     if (header.startsWith("*")) return;
@@ -289,6 +309,22 @@ function mostrarFiltrosActivos() {
     });
 
     container.appendChild(limpiar);
+  }
+}
+
+/* ========================= */
+/* DRAWER MOBILE */
+/* ========================= */
+
+function inicializarDrawerMobile() {
+
+  const abrirBtn = document.getElementById("abrirFiltrosMobile");
+  const panel = document.getElementById("filtrosContainer");
+
+  if (abrirBtn && panel) {
+    abrirBtn.addEventListener("click", () => {
+      panel.classList.add("active");
+    });
   }
 }
 
