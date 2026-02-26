@@ -9,6 +9,8 @@ let filtrosActivos = {};
 let mundoActivo = null;
 let busquedaActiva = "";
 
+let searchTimeout = null;
+
 /* ========================= */
 /* INIT */
 /* ========================= */
@@ -75,19 +77,26 @@ function aplicarTodo() {
   let resultado = [...productosGlobal];
 
   if (mundoActivo) {
-    resultado = resultado.filter(p => p.mundo === mundoActivo);
+    resultado = resultado.filter(p =>
+      String(p.mundo).toLowerCase() === String(mundoActivo).toLowerCase()
+    );
   }
 
   Object.keys(filtrosActivos).forEach(col => {
-    resultado = resultado.filter(p => p[col] === filtrosActivos[col]);
+    resultado = resultado.filter(p =>
+      String(p[col]).toLowerCase() === String(filtrosActivos[col]).toLowerCase()
+    );
   });
 
   if (busquedaActiva) {
     const termino = busquedaActiva.toLowerCase();
+
     resultado = resultado.filter(p =>
-      Object.values(p).some(valor =>
-        String(valor).toLowerCase().includes(termino)
-      )
+      [p.nombre, p.mundo]
+        .filter(Boolean)
+        .some(valor =>
+          String(valor).toLowerCase().includes(termino)
+        )
     );
   }
 
@@ -122,9 +131,14 @@ function renderProductos(lista) {
     const img = document.createElement("img");
     img.src = producto.imagenurl || "";
     img.alt = producto.nombre || "";
+    img.loading = "lazy";
 
     imgWrapper.appendChild(img);
-    imgWrapper.addEventListener("click", () => abrirModal(producto));
+    imgWrapper.addEventListener("click", () => {
+      if (typeof abrirModal === "function") {
+        abrirModal(producto);
+      }
+    });
 
     const info = document.createElement("div");
     info.className = "producto-info";
@@ -146,7 +160,9 @@ function renderProductos(lista) {
     btn.textContent = "Agregar";
 
     btn.onclick = () => {
-      agregarAlCarrito(producto, {}, qty.value);
+      if (typeof agregarAlCarrito === "function") {
+        agregarAlCarrito(producto, {}, qty.value);
+      }
     };
 
     info.appendChild(btn);
@@ -156,176 +172,6 @@ function renderProductos(lista) {
     container.appendChild(card);
 
   });
-}
-
-/* ========================= */
-/* MUNDOS */
-/* ========================= */
-
-function generarMundos() {
-
-  const mundosBar = document.getElementById("mundosBar");
-  if (!mundosBar) return;
-
-  const mundosUnicos = [...new Set(productosGlobal.map(p => p.mundo).filter(Boolean))];
-
-  mundosBar.innerHTML = "";
-
-  mundosUnicos.forEach(mundo => {
-
-    const btn = document.createElement("button");
-    btn.className = "mundo-item";
-    btn.textContent = capitalizar(mundo);
-
-    btn.addEventListener("click", () => {
-      mundoActivo = mundo;
-      activarMundo(btn);
-      aplicarTodo();
-    });
-
-    mundosBar.appendChild(btn);
-  });
-}
-
-function activarMundo(btnActivo) {
-  document.querySelectorAll(".mundo-item").forEach(btn =>
-    btn.classList.remove("active")
-  );
-  btnActivo.classList.add("active");
-}
-
-/* ========================= */
-/* FILTROS */
-/* ========================= */
-
-function generarFiltros() {
-
-  const filtrosContainer = document.getElementById("filtrosContainer");
-  if (!filtrosContainer) return;
-
-  filtrosContainer.innerHTML = "";
-
-  /* ===== X MOBILE ===== */
-
-  const headerMobile = document.createElement("div");
-  headerMobile.className = "filtros-header-mobile";
-
-  const cerrar = document.createElement("span");
-  cerrar.id = "cerrarFiltrosMobile";
-  cerrar.textContent = "✕";
-
-  cerrar.addEventListener("click", () => {
-    filtrosContainer.classList.remove("active");
-  });
-
-  headerMobile.appendChild(cerrar);
-  filtrosContainer.appendChild(headerMobile);
-
-  /* ===== FILTROS ===== */
-
-  headersGlobal.forEach(header => {
-
-    if (header.startsWith("*")) return;
-    if (["imagenurl","ref","nombre","mundo"].includes(header)) return;
-
-    const valoresUnicos = [...new Set(
-      productosGlobal
-        .map(p => p[header])
-        .filter(v => v && !v.startsWith("#"))
-    )];
-
-    if (!valoresUnicos.length) return;
-
-    const grupo = document.createElement("div");
-    grupo.className = "filtro-grupo";
-
-    const titulo = document.createElement("div");
-    titulo.className = "filtro-titulo";
-    titulo.textContent = capitalizar(header);
-
-    const contenido = document.createElement("div");
-    contenido.className = "filtro-contenido";
-
-    valoresUnicos.forEach(valor => {
-
-      const btn = document.createElement("button");
-      btn.textContent = capitalizar(valor);
-      btn.className = "filtro-opcion";
-
-      btn.addEventListener("click", () => {
-        filtrosActivos[header] = valor;
-        aplicarTodo();
-      });
-
-      contenido.appendChild(btn);
-    });
-
-    titulo.addEventListener("click", () => {
-      contenido.classList.toggle("active");
-    });
-
-    grupo.appendChild(titulo);
-    grupo.appendChild(contenido);
-    filtrosContainer.appendChild(grupo);
-  });
-}
-
-/* ========================= */
-/* FILTROS ACTIVOS */
-/* ========================= */
-
-function mostrarFiltrosActivos() {
-
-  const container = document.getElementById("filtrosActivos");
-  if (!container) return;
-
-  container.innerHTML = "";
-
-  Object.keys(filtrosActivos).forEach(col => {
-
-    const tag = document.createElement("div");
-    tag.className = "filtro-tag";
-    tag.textContent = capitalizar(col) + ": " + capitalizar(filtrosActivos[col]);
-
-    tag.addEventListener("click", () => {
-      delete filtrosActivos[col];
-      aplicarTodo();
-    });
-
-    container.appendChild(tag);
-  });
-
-  if (container.children.length > 0) {
-
-    const limpiar = document.createElement("div");
-    limpiar.className = "filtro-tag";
-    limpiar.textContent = "Limpiar filtros";
-
-    limpiar.addEventListener("click", () => {
-      filtrosActivos = {};
-      mundoActivo = null;
-      busquedaActiva = "";
-      aplicarTodo();
-    });
-
-    container.appendChild(limpiar);
-  }
-}
-
-/* ========================= */
-/* DRAWER MOBILE */
-/* ========================= */
-
-function inicializarDrawerMobile() {
-
-  const abrirBtn = document.getElementById("abrirFiltrosMobile");
-  const panel = document.getElementById("filtrosContainer");
-
-  if (abrirBtn && panel) {
-    abrirBtn.addEventListener("click", () => {
-      panel.classList.add("active");
-    });
-  }
 }
 
 /* ========================= */
@@ -339,16 +185,23 @@ function inicializarBuscador() {
 
   searchInput.addEventListener("input", function () {
 
-    if (!window.location.pathname.includes("catalogo")) {
+    clearTimeout(searchTimeout);
 
-      if (this.value.trim().length > 2) {
-        window.location.href = `/catalogo/?q=${encodeURIComponent(this.value.trim())}`;
+    searchTimeout = setTimeout(() => {
+
+      if (!window.location.pathname.includes("catalogo")) {
+
+        if (this.value.trim().length > 2) {
+          window.location.href = `/catalogo/?q=${encodeURIComponent(this.value.trim())}`;
+        }
+
+        return;
       }
 
-      return;
-    }
+      busquedaActiva = this.value.trim();
+      aplicarTodo();
 
-    busquedaActiva = this.value.trim();
-    aplicarTodo();
+    }, 300);
+
   });
 }
