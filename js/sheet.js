@@ -380,43 +380,38 @@ function inicializarBuscador() {
 
   const desktopInput = document.getElementById("globalSearch");
   const mobileInput = document.getElementById("mobileSearchInput");
+  const clearBtn = document.getElementById("clearMobileSearch");
+
+  function actualizarBusqueda(valor) {
+    busquedaActiva = valor.trim();
+    aplicarTodo();
+  }
 
   if (desktopInput) {
     desktopInput.addEventListener("input", function () {
-      busquedaActiva = this.value.trim();
-      aplicarTodo();
+      actualizarBusqueda(this.value);
     });
   }
 
   if (mobileInput) {
+
     mobileInput.addEventListener("input", function () {
-      busquedaActiva = this.value.trim();
-      aplicarTodo();
+
+      actualizarBusqueda(this.value);
+
+      if (clearBtn) {
+        clearBtn.style.display = this.value.length ? "block" : "none";
+      }
+
     });
-  }
-}
 
-/* ========================= */
-/* DRAWER MOBILE */
-/* ========================= */
-
-function inicializarDrawerMobile() {
-
-  const abrirBtn = document.getElementById("abrirFiltrosMobile");
-  const cerrarBtn = document.getElementById("cerrarFiltrosMobile");
-  const panel = document.getElementById("filtrosContainer");
-
-  if (abrirBtn && panel) {
-    abrirBtn.addEventListener("click", () => {
-      panel.classList.add("active");
-      document.body.style.overflow = "hidden";
-    });
+    if (clearBtn) {
+      clearBtn.addEventListener("click", function () {
+        mobileInput.value = "";
+        this.style.display = "none";
+        actualizarBusqueda("");
+      });
+    }
   }
 
-  if (cerrarBtn && panel) {
-    cerrarBtn.addEventListener("click", () => {
-      panel.classList.remove("active");
-      document.body.style.overflow = "auto";
-    });
-  }
 }
