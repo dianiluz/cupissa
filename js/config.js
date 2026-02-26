@@ -12,18 +12,15 @@ const CONFIG = {
   whatsappNumber: "573147671380",
   baseURL: "https://cupissa.com",
   contactEmail: "contacto@cupissa.com",
-  city: "Barranquilla, Colombia",
 
   /* ========================= */
   /* GOOGLE SHEET */
   /* ========================= */
 
   sheetURL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQB2HWydVva17mDTdLcYgY409q5DcJHg3PumZLypAgLiwWs6s8ptH_kC_qjuhZv7W010xobmyFl2d7y/pub?output=tsv",
-  sheetPedidos: "PEDIDOS",
-  sheetUsuarios: "USUARIOS",
 
   /* ========================= */
-  /* MODO FUTURO */
+  /* FUTURO (PREPARADO) */
   /* ========================= */
 
   defaultLanguage: "es",
