@@ -20,23 +20,37 @@ function renderHeader() {
   headerContainer.innerHTML = `
     <header class="header">
 
-  <div class="header-logo">
-    <a href="/">
-      <img src="/assets/logo.png" alt="Universo CUPISSA">
-    </a>
-  </div>
+      <!-- MOBILE LEFT -->
+      <div class="header-mobile-left">
+        <div class="hamburger" id="hamburgerBtn">☰</div>
+      </div>
 
-  <div class="header-search">
-    <input type="text" id="globalSearch" placeholder="Buscar en Universo CUPISSA...">
-  </div>
+      <!-- LOGO -->
+      <div class="header-logo">
+        <a href="/">
+          <img src="/assets/logo.png" alt="Universo CUPISSA">
+        </a>
+      </div>
 
-  <div class="header-nav">
-    <a href="/" class="nav-link">INICIO</a>
-    <a href="/catalogo" class="nav-link">CATÁLOGO</a>
-    <a href="/rastreo" class="nav-link">SEGUIMIENTO DE PEDIDO</a>
-  </div>
+      <!-- DESKTOP SEARCH -->
+      <div class="header-search">
+        <input type="text" id="globalSearch" placeholder="Buscar en Universo CUPISSA...">
+      </div>
 
+      <!-- DESKTOP NAV -->
+      <div class="header-nav">
+        <a href="/" class="nav-link">INICIO</a>
+        <a href="/catalogo" class="nav-link">CATÁLOGO</a>
+        <a href="/rastreo" class="nav-link">SEGUIMIENTO DE PEDIDO</a>
+      </div>
+
+      <!-- RIGHT ICONS -->
       <div class="header-icons">
+
+        <div class="header-icon search-toggle" id="searchToggle">
+          🔍
+        </div>
+
         <div class="header-icon" id="cartIcon">
           🛒
           <span class="count" id="cartCount">0</span>
@@ -45,15 +59,45 @@ function renderHeader() {
         <div class="header-icon" id="themeToggle">
           🌙
         </div>
+
       </div>
 
     </header>
+
+    <!-- MOBILE SEARCH -->
+    <div class="mobile-search" id="mobileSearch">
+      <input type="text" placeholder="Buscar en Universo CUPISSA...">
+    </div>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="/">INICIO</a>
+      <a href="/catalogo">CATÁLOGO</a>
+      <a href="/rastreo">SEGUIMIENTO DE PEDIDO</a>
+    </div>
   `;
 
+  // Tema
   const themeBtn = document.getElementById("themeToggle");
   if (themeBtn) {
     themeBtn.addEventListener("click", alternarTema);
   }
+
+  // Mobile search toggle
+  const searchToggle = document.getElementById("searchToggle");
+  const mobileSearch = document.getElementById("mobileSearch");
+
+  searchToggle.addEventListener("click", () => {
+    mobileSearch.classList.toggle("active");
+  });
+
+  // Mobile menu toggle
+  const hamburger = document.getElementById("hamburgerBtn");
+  const mobileMenu = document.getElementById("mobileMenu");
+
+  hamburger.addEventListener("click", () => {
+    mobileMenu.classList.toggle("active");
+  });
 }
 
 /* ========================= */
