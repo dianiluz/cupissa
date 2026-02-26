@@ -30,6 +30,5 @@ function actualizarIconoTema() {
   if (!themeBtn) return;
 
   const esClaro = document.body.classList.contains("light-mode");
-
   themeBtn.textContent = esClaro ? "☀" : "🌙";
 }
