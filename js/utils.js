@@ -24,6 +24,18 @@ function capitalizar(texto) {
 }
 
 /* ========================= */
+/* NORMALIZAR TEXTO (para buscador futuro) */
+/* ========================= */
+
+function normalizarTexto(texto) {
+  return texto
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+/* ========================= */
 /* FORMATEAR TEXTO SEO */
 /* ========================= */
 
@@ -69,21 +81,6 @@ function obtenerLocal(key) {
   return data ? JSON.parse(data) : null;
 }
 
-/* ========================= */
-/* ELIMINAR LOCAL */
-/* ========================= */
-
 function eliminarLocal(key) {
   localStorage.removeItem(key);
-}
-
-/* ========================= */
-/* CREAR ELEMENTO */
-/* ========================= */
-
-function crearElemento(tag, className, contenido = "") {
-  const el = document.createElement(tag);
-  if (className) el.className = className;
-  if (contenido) el.textContent = contenido;
-  return el;
 }
