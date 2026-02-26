@@ -14,54 +14,58 @@
 <link rel="stylesheet" href="/css/animations.css"> 
   </head> 
 
-  <body> 
-    <div id="header"></div> 
-    <div id="mundos"></div> 
-    <main> <section class="catalogo-layout"> 
-      <aside class="filtros-lateral" id="filtrosContainer">
-        <div class="filtros-header-mobile">
-        <span id="cerrarFiltrosMobile">✕</span>
-        </div>
-      </aside> <div class="catalogo-contenido"> 
+  <body>
 
-        <button class="btn-filtros-mobile" id="abrirFiltrosMobile">
-         FILTRAR
+<div id="header"></div>
+<div id="mundos"></div>
+
+<button id="abrirFiltrosMobile" class="btn-filtros-mobile">
+  FILTRAR
+</button>
+
+<main>
+
+  <div class="catalogo-layout">
+
+    <aside class="filtros-lateral" id="filtrosContainer">
+
+      <div class="filtros-header-mobile">
+        <button id="cerrarFiltrosMobile" class="cerrar-filtros">
+          ✕
         </button>
+      </div>
 
-        <div class="filtros-activos" id="filtrosActivos">
+      <div class="filtros-contenido-scroll">
+        <!-- Filtros dinámicos -->
+      </div>
 
-        </div> 
-        <div class="productos-container" id="productosContainer">
+    </aside>
 
-        </div> </div> </section> </main> <div id="footer">
+    <div class="catalogo-contenido">
 
-        </div> <a href="https://wa.me/573147671380" target="_blank" class="whatsapp-float"> 
-          <img src=\assets\whatsapp.png> </a> 
-          <div class="carrito-panel" id="carritoPanel"> 
-            <div class="carrito-header"> 
-              <span>Lista de cotización</span> 
-              <span id="cerrarCarrito" style="cursor:pointer;">✕</span> 
-            </div> <div class="carrito-body" id="carritoBody">
+      <div class="filtros-activos" id="filtrosActivos"></div>
 
-            </div> <div class="carrito-footer"> 
-              <button onclick="vaciarCarrito()" 
-              style=
-              "margin-bottom:10px;
-              width:100%;
-              padding:10px;
-              border-radius:6px;
-              background:#444;
-              color:#fff;
-              "> Vaciar Lista </button> 
-              <button class="btn-whatsapp" onclick="enviarCarritoWhatsApp()">
-                 Cotizar por WhatsApp </button> </div> </div> </div> </div> 
-                 
-                 <script src="/js/config.js"></script>
-                  <script src="/js/utils.js"></script>
+      <div class="productos-container" id="productosContainer"></div>
+
+    </div>
+
+  </div>
+
+</main>
+
+<div id="footer"></div>
+
+<!-- BOTÓN FLOTANTE WHATSAPP -->
+<a href="https://wa.me/573147671380" target="_blank" class="whatsapp-float">
+  <img src=\assets\whatsapp.png>
+</a>
+
+<script src="/js/config.js"></script>
+<script src="/js/utils.js"></script>
 <script src="/js/theme.js"></script>
 <script src="/js/header.js"></script>
-<script src="/js/sheet.js"></script>
-<script src="/js/modal.js"></script>
 <script src="/js/carrito.js"></script>
-                 </body> 
-                 </html>
+<script src="/js/sheet.js"></script>
+
+</body>
+</html>
