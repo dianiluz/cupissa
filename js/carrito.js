@@ -1,13 +1,16 @@
 /* ===================================================== */
-/* UNIVERSO CUPISSA — CARRITO PROFESIONAL CORREGIDO */
+/* UNIVERSO CUPISSA — CARRITO PROFESIONAL */
 /* ===================================================== */
 
 let carrito = obtenerLocal("cupissa_carrito") || [];
 
-actualizarContadorCarrito();
+document.addEventListener("DOMContentLoaded", () => {
+  actualizarContadorCarrito();
+  inicializarPanelCarrito();
+});
 
 /* ========================= */
-/* AGREGAR */
+/* AGREGAR AL CARRITO */
 /* ========================= */
 
 function agregarAlCarrito(producto, variantes = {}, cantidad = 1) {
@@ -32,8 +35,7 @@ function agregarAlCarrito(producto, variantes = {}, cantidad = 1) {
   Object.keys(variantes).forEach(key => {
 
     const valor = variantes[key];
-
-    if (!valor) return; // no guardar vacíos
+    if (!valor) return;
 
     if (!item.variantes[key]) {
       item.variantes[key] = {};
@@ -44,10 +46,10 @@ function agregarAlCarrito(producto, variantes = {}, cantidad = 1) {
     }
 
     item.variantes[key][valor] += cantidad;
-
   });
 
   guardarLocal("cupissa_carrito", carrito);
+
   actualizarContadorCarrito();
   renderCarrito();
   animarCarrito();
@@ -74,7 +76,7 @@ function actualizarContadorCarrito() {
 }
 
 /* ========================= */
-/* RENDER */
+/* RENDER CARRITO */
 /* ========================= */
 
 function renderCarrito() {
@@ -106,11 +108,8 @@ function renderCarrito() {
             ${capitalizar(key)} ${valor}: ${qty}<br>
           `;
         }
-
       });
     });
-
-    if (!variantesHTML) return;
 
     div.innerHTML = `
       <div style="display:flex; gap:12px; align-items:flex-start;">
@@ -128,12 +127,11 @@ function renderCarrito() {
     `;
 
     body.appendChild(div);
-
   });
 }
 
 /* ========================= */
-/* ELIMINAR */
+/* ELIMINAR PRODUCTO */
 /* ========================= */
 
 function eliminarProducto(index) {
@@ -144,7 +142,18 @@ function eliminarProducto(index) {
 }
 
 /* ========================= */
-/* MENSAJE */
+/* VACIAR CARRITO */
+/* ========================= */
+
+function vaciarCarrito() {
+  carrito = [];
+  guardarLocal("cupissa_carrito", carrito);
+  actualizarContadorCarrito();
+  renderCarrito();
+}
+
+/* ========================= */
+/* MENSAJE WHATSAPP */
 /* ========================= */
 
 function generarMensajeWhatsApp() {
@@ -166,7 +175,6 @@ function generarMensajeWhatsApp() {
           mensaje += "   - " + capitalizar(key) + " " + valor +
                      " (" + qty + ")%0A";
         }
-
       });
     });
 
@@ -180,10 +188,6 @@ function generarMensajeWhatsApp() {
   return mensaje;
 }
 
-/* ========================= */
-/* ENVIAR */
-/* ========================= */
-
 function enviarCarritoWhatsApp() {
   const mensaje = generarMensajeWhatsApp();
   const url = `https://wa.me/${CONFIG.whatsappNumber}?text=${mensaje}`;
@@ -191,10 +195,10 @@ function enviarCarritoWhatsApp() {
 }
 
 /* ========================= */
-/* PANEL */
+/* PANEL CARRITO */
 /* ========================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+function inicializarPanelCarrito() {
 
   const icon = document.getElementById("cartIcon");
   const panel = document.getElementById("carritoPanel");
@@ -214,18 +218,19 @@ document.addEventListener("DOMContentLoaded", () => {
       document.body.style.overflow = "auto";
     });
   }
-
-});
+}
 
 /* ========================= */
-/* VACIAR CARRITO */
+/* ANIMACIÓN ICONO */
 /* ========================= */
 
-function vaciarCarrito() {
+function animarCarrito() {
+  const icon = document.getElementById("cartIcon");
+  if (!icon) return;
 
-  carrito = [];
-  guardarLocal("cupissa_carrito", carrito);
-  actualizarContadorCarrito();
-  renderCarrito();
+  icon.classList.add("cart-animate");
 
+  setTimeout(() => {
+    icon.classList.remove("cart-animate");
+  }, 500);
 }
