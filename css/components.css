@@ -436,3 +436,38 @@
   background: var(--gradient-main);
   border: none;
 }
+
+@media (max-width: 768px) {
+
+  .productos-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .producto-card {
+    border-radius: 14px;
+  }
+
+  .producto-info {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .producto-nombre {
+    font-size: 13px;
+    min-height: auto;
+  }
+
+  .modal-select,
+  .modal-qty {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .btn-agregar {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+}
