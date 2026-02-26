@@ -20,6 +20,13 @@ const CONFIG = {
   sheetURL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQB2HWydVva17mDTdLcYgY409q5DcJHg3PumZLypAgLiwWs6s8ptH_kC_qjuhZv7W010xobmyFl2d7y/pub?output=tsv",
 
   /* ========================= */
+  /* BACKEND (APPS SCRIPT) */
+  /* ========================= */
+
+  backendURL: "https://script.google.com/macros/s/AKfycbxarAntDCo15iAJfmRKOnEIFbSmz3YGXfzW9wW5CH4kuzMQy8bciMexxLV7mGVSGhiq/exec",
+  
+  
+  /* ========================= */
   /* FUTURO (PREPARADO) */
   /* ========================= */
 
