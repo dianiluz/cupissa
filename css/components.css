@@ -370,7 +370,7 @@
 .rastreo-box {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: stretch; /* clave */
   gap: 15px;
   margin: 40px 0 60px 0;
 }
@@ -396,6 +396,13 @@
   outline: none;
   border-color: var(--color-pink);
   box-shadow: 0 0 15px rgba(244,105,154,0.3);
+}
+
+/* Eliminar cualquier margen heredado */
+.rastreo-box input,
+.rastreo-box button {
+  margin: 0;
+  vertical-align: middle;
 }
 
 .rastreo-box button {
