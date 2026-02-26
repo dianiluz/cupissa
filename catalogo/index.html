@@ -1,88 +1,60 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catálogo | Universo CUPISSA</title>
-
-<link rel="icon" href="/assets/favicon.png">
-
-<link rel="stylesheet" href="/css/variables.css">
+<!DOCTYPE html> 
+<html lang="es"> 
+  <head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Catálogo | Universo CUPISSA</title> 
+    <link rel="icon" href="/assets/favicon.png"> 
+    <link rel="stylesheet" href="/css/variables.css"> 
+    
+    <link rel="stylesheet" href="/css/variables.css">
 <link rel="stylesheet" href="/css/base.css">
 <link rel="stylesheet" href="/css/layout.css">
 <link rel="stylesheet" href="/css/components.css">
-<link rel="stylesheet" href="/css/animations.css">
+<link rel="stylesheet" href="/css/animations.css"> 
+  </head> 
 
-</head>
+  <body> 
+    <div id="header"></div> 
+    <div id="mundos"></div> 
+    <main> <section class="catalogo-layout"> 
+      <aside class="filtros-lateral" id="filtrosContainer">
 
-<body>
+      </aside> <div class="catalogo-contenido"> 
+        <div class="filtros-activos" id="filtrosActivos">
 
-<div id="header"></div>
-<div id="mundos"></div>
+        </div> 
+        <div class="productos-container" id="productosContainer">
 
-<main>
+        </div> </div> </section> </main> <div id="footer">
 
-<section class="catalogo-layout">
+        </div> <a href="https://wa.me/573147671380" target="_blank" class="whatsapp-float"> 
+          💬 </a> 
+          <div class="carrito-panel" id="carritoPanel"> 
+            <div class="carrito-header"> 
+              <span>Lista de cotización</span> 
+              <span id="cerrarCarrito" style="cursor:pointer;">✕</span> 
+            </div> <div class="carrito-body" id="carritoBody">
 
-  <aside class="filtros-lateral" id="filtrosContainer">
-    <div class="filtros-header-mobile">
-      <span>Filtros</span>
-      <span id="cerrarFiltrosMobile" class="cerrar-filtros">✕</span>
-    </div>
-  </aside>
-
-  <div class="catalogo-contenido">
-
-    <!-- 🔥 ELIMINADO BOTÓN VIEJO -->
-    <!-- <button class="btn-filtros-mobile" id="btnFiltrosMobile">Filtrar</button> -->
-
-    <div class="filtros-activos-wrapper">
-      <div class="filtros-activos" id="filtrosActivos"></div>
-    </div>
-
-    <div class="productos-container" id="productosContainer"></div>
-
-  </div>
-
-</section>
-
-</main>
-
-<div id="footer"></div>
-
-<a href="https://wa.me/573147671380" target="_blank" class="whatsapp-float">
-  💬
-</a>
-
-<div class="carrito-panel" id="carritoPanel">
-  <div class="carrito-header">
-    <span>Lista de cotización</span>
-    <span id="cerrarCarrito" style="cursor:pointer;">✕</span>
-  </div>
-
-  <div class="carrito-body" id="carritoBody"></div>
-
-  <div class="carrito-footer">
-
-    <button onclick="vaciarCarrito()" 
-            style="margin-bottom:10px;width:100%;padding:10px;border-radius:6px;background:#444;color:#fff;">
-      Vaciar Lista
-    </button>
-
-    <button class="btn-whatsapp" onclick="enviarCarritoWhatsApp()">
-      Cotizar por WhatsApp
-    </button>
-
-  </div>
-</div>
-
-<script src="/js/config.js"></script>
-<script src="/js/utils.js"></script>
+            </div> <div class="carrito-footer"> 
+              <button onclick="vaciarCarrito()" 
+              style=
+              "margin-bottom:10px;
+              width:100%;
+              padding:10px;
+              border-radius:6px;
+              background:#444;
+              color:#fff;
+              "> Vaciar Lista </button> 
+              <button class="btn-whatsapp" onclick="enviarCarritoWhatsApp()">
+                 Cotizar por WhatsApp </button> </div> </div> </div> </div> 
+                 
+                 <script src="/js/config.js"></script>
+                  <script src="/js/utils.js"></script>
 <script src="/js/theme.js"></script>
 <script src="/js/header.js"></script>
 <script src="/js/sheet.js"></script>
 <script src="/js/modal.js"></script>
 <script src="/js/carrito.js"></script>
-
-</body>
-</html>
+                 </body> 
+                 </html>
