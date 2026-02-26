@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <title>Crear contraseña - CUPISSA</title>
-<link rel="stylesheet" href="/css/varianles.css">
+<link rel="stylesheet" href="/css/variables.css">
 <link rel="stylesheet" href="/css/base.css">
-
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/components.css">
+<link rel="stylesheet" href="/css/animations.css">
 <style>
 body {
   padding-top: 0 !important;
@@ -17,6 +19,9 @@ body {
 
 <div style="width:320px; background:#111; padding:30px; border-radius:12px; position:relative; z-index:10;">
 
+<!-- HEADER INYECTADO -->
+<div id="header"></div>
+
 <h2>Crear contraseña</h2>
 
 <input type="password" id="password1" placeholder="Nueva contraseña" style="width:100%;margin-bottom:10px;">
@@ -27,6 +32,14 @@ body {
 <p id="mensaje"></p>
 
 </div>
+
+<!-- FOOTER INYECTADO -->
+<div id="footer"></div>
+
+<!-- BOTÓN FLOTANTE WHATSAPP -->
+<a href="https://wa.me/573147671380" target="_blank" class="whatsapp-float">
+  <img src=\assets\whatsapp.png>
+</a>
 
 <script>
 
