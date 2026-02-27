@@ -380,33 +380,52 @@ function inicializarBuscador() {
 
   const desktopInput = document.getElementById("globalSearch");
   const mobileInput = document.getElementById("mobileSearchInput");
-  const clearBtn = document.getElementById("clearMobileSearch");
+
+  const clearMobile = document.getElementById("clearMobileSearch");
+  const clearDesktop = document.getElementById("clearDesktopSearch");
 
   function actualizarBusqueda(valor) {
     busquedaActiva = valor.trim();
     aplicarTodo();
   }
 
+  /* DESKTOP */
   if (desktopInput) {
+
     desktopInput.addEventListener("input", function () {
+
       actualizarBusqueda(this.value);
+
+      if (clearDesktop) {
+        clearDesktop.style.display = this.value.length ? "block" : "none";
+      }
+
     });
+
+    if (clearDesktop) {
+      clearDesktop.addEventListener("click", function () {
+        desktopInput.value = "";
+        this.style.display = "none";
+        actualizarBusqueda("");
+      });
+    }
   }
 
+  /* MOBILE */
   if (mobileInput) {
 
     mobileInput.addEventListener("input", function () {
 
       actualizarBusqueda(this.value);
 
-      if (clearBtn) {
-        clearBtn.style.display = this.value.length ? "block" : "none";
+      if (clearMobile) {
+        clearMobile.style.display = this.value.length ? "block" : "none";
       }
 
     });
 
-    if (clearBtn) {
-      clearBtn.addEventListener("click", function () {
+    if (clearMobile) {
+      clearMobile.addEventListener("click", function () {
         mobileInput.value = "";
         this.style.display = "none";
         actualizarBusqueda("");
