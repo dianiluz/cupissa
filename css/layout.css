@@ -47,6 +47,31 @@
   border-color: var(--color-pink);
 }
 
+.desktop-search-wrapper {
+  position: relative;
+  width: 60%;
+  max-width: 500px;
+}
+
+.desktop-search-wrapper input {
+  width: 100%;
+}
+
+#clearDesktopSearch {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 16px;
+  color: #aaa;
+  display: none;
+}
+
+#clearDesktopSearch:hover {
+  color: #fff;
+}
+
 .header-explora {
   display: flex;
   align-items: center;
