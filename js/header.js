@@ -34,8 +34,11 @@ function renderHeader() {
 
       <!-- DESKTOP SEARCH -->
       <div class="header-search">
-        <input type="text" id="globalSearch" placeholder="¿Qué estás bucando?">
-      </div>
+  <div class="desktop-search-wrapper">
+    <input type="text" id="globalSearch" placeholder="¿Qué estás buscando?">
+    <span class="clear-search" id="clearDesktopSearch">✕</span>
+  </div>
+</div>
 
       <!-- DESKTOP NAV -->
       <div class="header-nav">
