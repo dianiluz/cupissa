@@ -27,10 +27,11 @@ function renderHeader() {
 
       <!-- LOGO -->
       <div class="header-logo">
-        <a href="/">
-          <img src="/assets/logo.png" alt="Universo CUPISSA">
-        </a>
-      </div>
+  <a href="/">
+    <img src="/assets/logo.png" class="logo-dark" alt="Universo CUPISSA">
+    <img src="/assets/logoclaro.png" class="logo-light" alt="Universo CUPISSA">
+  </a>
+</div>
 
       <!-- DESKTOP SEARCH -->
       <div class="header-search">
