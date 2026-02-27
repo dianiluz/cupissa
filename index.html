@@ -10,26 +10,128 @@
 <!-- CSS -->
 <link rel="stylesheet" href="/css/variables.css">
 <link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/home.css">
 <link rel="stylesheet" href="/css/layout.css">
 <link rel="stylesheet" href="/css/components.css">
 <link rel="stylesheet" href="/css/animations.css">
 
 </head>
 
-<body>
-
+<body class="home-page">
+<div class="global-stars"></div>
 <!-- HEADER INYECTADO -->
 <div id="header"></div>
 
 <main>
 
-<!-- HERO SECTION -->
-<section class="hero">
-  <div class="hero-content">
-    <img src="/assets/logo.png" alt="Universo CUPISSA Logo" class="hero-logo">
+<!-- HERO -->
+<section class="home-hero">
+
+  <div class="hero-content-wrapper">
+
+    <div class="hero-text fade-in">
+      <h1>
+        Todo lo que puedas imaginar,<br>
+        aquí existe.
+      </h1>
+
+      <p>
+        Creamos para ti eso que no encuentras en
+        <span>ningún lugar.</span>
+      </p>
+
+      <div class="hero-buttons">
+        <a href="/catalogo" class="btn-primary">
+          Explorar catálogo
+        </a>
+
+        <a href="https://wa.me/573147671380?text=Hola%20Cupissa.%20Tengo%20una%20idea%20y%20quiero%20hacerla%20realidad"
+           target="_blank"
+           class="btn-secondary">
+           Crear diseño personalizado
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+
+  <div class="mockup-rotator" id="mockupRotator">
+
+    <div class="mockup-face mockup-front">
+      <img id="mockupFront" src="/assets/mockups/camiseta.png" alt="Producto CUPISSA">
+    </div>
+
+    <div class="mockup-face mockup-back">
+      <img id="mockupBack" src="/assets/mockups/buzo.png" alt="Producto CUPISSA">
+    </div>
+
+  </div>
+
+</div>
+
+  </div>
+
+</section>
+
+<div class="cupissa-ribbons">
+
+  <div class="ribbon ribbon-white">
+    <div class="ribbon-track">
+      UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦
+      UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦
+      UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦
+    </div>
+  </div>
+
+  <div class="ribbon ribbon-gradient">
+    <div class="ribbon-track">
+      UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦
+      UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦
+      UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦ UNIVERSO CUPISSA ✦
+    </div>
+  </div>
+
+</div>
+<!-- MUNDOS -->
+<section class="home-section">
+  <h2 class="section-title">Explora nuestros mundos</h2>
+  <div id="homeMundos" class="home-mundos-grid"></div>
+</section>
+
+<!-- CATEGORÍAS -->
+<section class="home-section">
+  <h2 class="section-title">Categorías</h2>
+  <div id="homeCategorias" class="home-categorias-scroll"></div>
+</section>
+
+<!-- POR QUÉ ELEGIRNOS -->
+<section class="home-section why-section">
+  <h2 class="section-title">¿Por qué CUPISSA?</h2>
+  <div class="why-grid">
+    <div class="why-card fade-in">Producción a medida</div>
+    <div class="why-card fade-in">Materiales seleccionados</div>
+    <div class="why-card fade-in">Atención directa</div>
+    <div class="why-card fade-in">Diseño sin límites</div>
   </div>
 </section>
 
+<!-- GALERÍA INSTAGRAM -->
+<section class="home-section">
+  <h2 class="section-title">Sumate a Instagram</h2>
+  <div class="instagram-grid">
+    <div class="insta-item"></div>
+    <div class="insta-item"></div>
+    <div class="insta-item"></div>
+    <div class="insta-item"></div>
+    <div class="insta-item"></div>
+    <div class="insta-item"></div>
+  </div>
+</section>
+
+<!-- DESTACADOS -->
+<section class="home-section">
+  <h2 id="temporadaTitulo" class="section-title"></h2>
+  <div id="homeTemporada" class="home-productos-grid"></div>
 </section>
 
 </main>
@@ -39,7 +141,7 @@
 
 <!-- BOTÓN FLOTANTE WHATSAPP -->
 <a href="https://wa.me/573147671380" target="_blank" class="whatsapp-float">
-  <img src=\assets\whatsapp.png>
+  <img src=/assets/whatsapp.png>
 </a>
 
 <!-- JS -->
@@ -48,6 +150,7 @@
 <script src="/js/theme.js"></script>
 <script src="/js/header.js"></script>
 <script src="/js/sheet.js"></script>
+<script src="/js/home.js"></script>
 
 </body>
 </html> 
