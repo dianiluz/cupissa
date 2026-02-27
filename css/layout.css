@@ -22,8 +22,24 @@
 }
 
 .header-logo img {
-  height: 50px;
+  height: 80px;
   object-fit: contain;
+}
+
+.logo-light {
+  display: none;
+  height: 100px;
+  transform: scale(1.1);
+}
+
+.light-mode .logo-dark {
+  display: none;
+}
+
+.light-mode .logo-light {
+  display: block;
+  height: 100px;
+  transform: scale(1.1);
 }
 
 .header-search {
