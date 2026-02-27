@@ -471,3 +471,41 @@
   }
 
 }
+
+/* ========================= */
+/* BOTONES UNIVERSO CUPISSA */
+/* ========================= */
+
+.btn-primary,
+.btn-secondary {
+  padding: 14px 28px;
+  border-radius: 40px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s ease;
+  display: inline-block;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #f4699a, #4cafc9);
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(244,105,154,0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(244,105,154,0.5);
+}
+
+.btn-secondary {
+  border: 1px solid #f4699a;
+  color: #f4699a;
+  background: transparent;
+}
+
+.btn-secondary:hover {
+  background: #f4699a;
+  color: #000;
+  transform: translateY(-3px);
+}
