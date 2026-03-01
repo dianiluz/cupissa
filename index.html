@@ -119,18 +119,52 @@
   </div>
 </section>
 
-<!-- GALERÍA INSTAGRAM -->
 <section class="home-section">
   <h2 class="section-title">Sumate a Instagram</h2>
-  <div class="instagram-grid">
-    <div class="insta-item"></div>
-    <div class="insta-item"></div>
-    <div class="insta-item"></div>
-    <div class="insta-item"></div>
-    <div class="insta-item"></div>
-    <div class="insta-item"></div>
-  </div>
+  <div id="instagram-feed" class="instagram-grid"></div>
 </section>
+
+<script>
+async function cargarInstagram() {
+  const response = await fetch("https://script.google.com/macros/s/AKfycbwj-PLC3wjUG06YaKuhrGVjNk630kENC1SJaCJpXFzvwtb7eyknz9eoLYPZmyHrUjg/exec");
+  
+const posts = await response.json();
+
+  const container = document.getElementById("instagram-feed");
+  container.innerHTML = "";
+
+  posts.forEach(post => {
+    const a = document.createElement("a");
+    a.href = post.permalink;
+    a.target = "_blank";
+
+    if (post.media_type === "VIDEO") {
+      const video = document.createElement("video");
+      video.src = post.media_url;
+      video.muted = true;
+      video.autoplay = true;
+      video.loop = true;
+      video.playsInline = true;
+      video.style.width = "100%";
+      video.style.borderRadius = "15px";
+
+      a.appendChild(video);
+
+    } else {
+      const img = document.createElement("img");
+      img.src = post.media_url;
+      img.alt = post.caption || "Instagram CUPISSA";
+
+      a.appendChild(img);
+    }
+
+    container.appendChild(a);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", cargarInstagram);
+</script>
+
 
 <!-- DESTACADOS -->
 <section class="home-section">
