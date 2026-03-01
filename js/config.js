@@ -18,7 +18,7 @@ const CONFIG = {
   /* ========================= */
 
   sheetURL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQB2HWydVva17mDTdLcYgY409q5DcJHg3PumZLypAgLiwWs6s8ptH_kC_qjuhZv7W010xobmyFl2d7y/pub?output=tsv",
-
+  variacionesURL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQB2HWydVva17mDTdLcYgY409q5DcJHg3PumZLypAgLiwWs6s8ptH_kC_qjuhZv7W010xobmyFl2d7y/pub?gid=1408591435&single=true&output=tsv",
   /* ========================= */
   /* BACKEND (APPS SCRIPT) */
   /* ========================= */
