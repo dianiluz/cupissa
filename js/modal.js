@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* UNIVERSO CUPISSA — MODAL PRODUCTO */
+/* CUPISSA — MODAL PRODUCTO */
 /* ===================================================== */
 
 function abrirModal(producto) {
