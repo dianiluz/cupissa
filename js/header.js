@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* UNIVERSO CUPISSA — HEADER + FOOTER RENDER */
+/* CUPISSA — HEADER + FOOTER RENDER */
 /* ===================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -27,19 +27,19 @@ function renderHeader() {
 
       <!-- LOGO -->
       <div class="header-logo">
-  <a href="/">
-    <img src="/assets/logo.png" class="logo-dark" alt="Universo CUPISSA">
-    <img src="/assets/logoclaro.png" class="logo-light" alt="Universo CUPISSA">
-  </a>
-</div>
+        <a href="/">
+          <img src="/assets/logo.png" class="logo-dark" alt="CUPISSA">
+          <img src="/assets/logoclaro.png" class="logo-light" alt="CUPISSA">
+        </a>
+      </div>
 
       <!-- DESKTOP SEARCH -->
       <div class="header-search">
-  <div class="desktop-search-wrapper">
-    <input type="text" id="globalSearch" placeholder="¿Qué estás buscando?">
-    <span class="clear-search" id="clearDesktopSearch">✕</span>
-  </div>
-</div>
+        <div class="desktop-search-wrapper">
+          <input type="text" id="globalSearch" placeholder="¿Qué estás buscando?">
+          <span class="clear-search" id="clearDesktopSearch">✕</span>
+        </div>
+      </div>
 
       <!-- DESKTOP NAV -->
       <div class="header-nav">
@@ -51,11 +51,18 @@ function renderHeader() {
       <!-- RIGHT ICONS -->
       <div class="header-icons">
 
+        <!-- CART -->
         <div class="header-icon" id="cartIcon">
           🛒
           <span class="count" id="cartCount">0</span>
         </div>
 
+        <!-- USER ICON -->
+        <div class="header-icon" id="userIcon">
+          👤
+        </div>
+
+        <!-- THEME -->
         <div class="header-icon" id="themeToggle">
           🌙
         </div>
@@ -64,36 +71,72 @@ function renderHeader() {
 
     </header>
 
-     <!-- MOBILE SEARCH BAR -->
-        <div class="mobile-search-bar">
-  <div class="mobile-search-wrapper">
-    <input type="text" id="mobileSearchInput" placeholder="¿Qué estás buscando hoy?">
-    <span class="clear-search" id="clearMobileSearch">✕</span>
-  </div>
-</div>
+    <!-- LOGIN MODAL -->
+    <div class="auth-overlay" id="authOverlay">
+      <div class="auth-modal">
+
+        <div class="auth-close" id="cerrarAuth">✕</div>
+
+        <h2>Iniciar sesión</h2>
+
+        <div class="auth-roles">
+          <label>
+            <input type="radio" name="rol" value="CLIENTE" checked>
+            Cliente
+          </label>
+          <label>
+            <input type="radio" name="rol" value="VENDEDOR">
+            Vendedor
+          </label>
+        </div>
+
+        <input type="email" id="authEmail" placeholder="Correo electrónico">
+        <input type="password" id="authPassword" placeholder="Contraseña">
+
+        <button id="btnLogin" class="btn-primary" style="width:100%; margin-top:15px;">
+          Ingresar
+        </button>
+
+        <p style="margin-top:15px; font-size:13px;">
+          ¿Quieres registrarte?
+          <a href="/registro/" style="color:var(--color-pink);">Crear cuenta</a>
+        </p>
+
+        <p id="authError" style="color:red; font-size:13px; display:none;"></p>
+
+      </div>
+    </div>
+
+    <!-- MOBILE SEARCH BAR -->
+    <div class="mobile-search-bar">
+      <div class="mobile-search-wrapper">
+        <input type="text" id="mobileSearchInput" placeholder="¿Qué estás buscando hoy?">
+        <span class="clear-search" id="clearMobileSearch">✕</span>
+      </div>
+    </div>
 
     <!-- PANEL CARRITO -->
-<div class="carrito-panel" id="carritoPanel">
-  <div class="carrito-header">
-    <span>Tu carrito</span>
-    <span id="cerrarCarrito" style="cursor:pointer;">✕</span>
-  </div>
+    <div class="carrito-panel" id="carritoPanel">
+      <div class="carrito-header">
+        <span>Tu carrito</span>
+        <span id="cerrarCarrito" style="cursor:pointer;">✕</span>
+      </div>
 
-  <div class="carrito-body" id="carritoBody">
-    <p>Tu lista está vacía.</p>
-  </div>
+      <div class="carrito-body" id="carritoBody">
+        <p>Tu lista está vacía.</p>
+      </div>
 
-  <button onclick="vaciarCarrito()" 
+      <button onclick="vaciarCarrito()" 
         style="margin-bottom:10px;width:100%;padding:10px;border-radius:8px;background:#333;color:white;">
-  Vaciar lista
-</button>
+        Vaciar lista
+      </button>
 
-  <div class="carrito-footer">
-    <button class="btn-whatsapp" onclick="enviarCarritoWhatsApp()">
-      Solicitar cotización por WhatsApp
-    </button>
-  </div>
-</div>
+      <div class="carrito-footer">
+        <button class="btn-whatsapp" onclick="enviarCarritoWhatsApp()">
+          Solicitar cotización por WhatsApp
+        </button>
+      </div>
+    </div>
 
     <!-- MOBILE MENU -->
     <div class="mobile-menu" id="mobileMenu">
@@ -103,22 +146,18 @@ function renderHeader() {
     </div>
   `;
 
-  // Tema
   const themeBtn = document.getElementById("themeToggle");
-  if (themeBtn) {
-    themeBtn.addEventListener("click", alternarTema);
-  }
+  if (themeBtn) themeBtn.addEventListener("click", alternarTema);
 
-  // Mobile menu toggle
   const hamburger = document.getElementById("hamburgerBtn");
   const mobileMenu = document.getElementById("mobileMenu");
 
   hamburger.addEventListener("click", () => {
-  mobileMenu.classList.toggle("active");
-  document.body.style.overflow = mobileMenu.classList.contains("active")
-    ? "hidden"
-    : "auto";
-});
+    mobileMenu.classList.toggle("active");
+    document.body.style.overflow = mobileMenu.classList.contains("active")
+      ? "hidden"
+      : "auto";
+  });
 }
 
 /* ========================= */
@@ -202,10 +241,9 @@ function renderFooter() {
       </div>
 
       <div class="footer-bottom">
-        © ${year} Universo CUPISSA — Desarrollado por Diani Gonzalez
+        © ${year} CUPISSA — Desarrollado por Diani Gonzalez
       </div>
 
     </footer>
   `;
 }
-
