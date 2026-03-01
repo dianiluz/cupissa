@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* UNIVERSO CUPISSA — COMPONENTES */
+/* CUPISSA — COMPONENTES */
 /* ===================================================== */
 
 /* ========================= */
@@ -55,7 +55,7 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  background: var(--gradient-main);
+  background: var(--color-pink);
   color: #fff;
   font-size: 12px;
   padding: 5px 10px;
@@ -83,7 +83,7 @@
   margin-top: auto;
   padding: 10px;
   border-radius: var(--radius-small);
-  background: var(--gradient-main);
+  background: var(--color-pink);
   color: #fff;
   font-weight: 500;
   cursor: pointer;
@@ -123,7 +123,7 @@
 }
 
 .filtro-opcion.active {
-  background: var(--gradient-main);
+  background: var(--color-pink);
   color: #fff;
   border: none;
 }
@@ -278,7 +278,7 @@
   top: 28px;
   left: 0;
   height: 4px;
-  background: var(--gradient-main);
+  background: var(--color-pink);
   z-index: 1;
   transition: width 1s ease;
 }
@@ -308,9 +308,9 @@
 }
 
 .paso.activo .circulo {
-  background: var(--gradient-main);
+  background: var(--color-pink);
   border: none;
-  box-shadow: 0 0 20px rgba(244,105,154,0.5);
+ box-shadow: 0 0 20px rgba(219,19,122,0.5);
 }
 
 .paso span {
@@ -340,7 +340,7 @@
   margin-top: 30px;
   padding: 14px 20px;
   border-radius: 12px;
-  background: var(--gradient-main);
+  background: var(--color-pink);
   color: #fff;
   font-weight: 500;
   transition: transform var(--transition-fast);
@@ -395,7 +395,7 @@
 .rastreo-box input:focus {
   outline: none;
   border-color: var(--color-pink);
-  box-shadow: 0 0 15px rgba(244,105,154,0.3);
+  box-shadow: 0 0 15px rgba(219,19,122,0.3);
 }
 
 /* Eliminar cualquier margen heredado */
@@ -408,7 +408,7 @@
 .rastreo-box button {
   padding: 0 24px;
   border-radius: 12px;
-  background: var(--gradient-main);
+  background: var(--color-pink);
   color: #fff;
   font-weight: 500;
   border: none;
@@ -433,7 +433,7 @@
 }
 
 .btn-consultar-guia:hover {
-  background: var(--gradient-main);
+  background: var(--color-pink);
   border: none;
 }
 
@@ -473,7 +473,7 @@
 }
 
 /* ========================= */
-/* BOTONES UNIVERSO CUPISSA */
+/* BOTONES CUPISSA */
 /* ========================= */
 
 .btn-primary,
@@ -488,24 +488,24 @@
 }
 
 .btn-primary {
-  background: linear-gradient(90deg, #f4699a, #4cafc9);
+  background: var(--color-pink);
   color: #fff;
-  box-shadow: 0 10px 25px rgba(244,105,154,0.3);
+  box-shadow: 0 10px 25px rgba(219,19,122,0.3);
 }
 
 .btn-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 35px rgba(244,105,154,0.5);
+  box-shadow: 0 15px 35px rgba(219,19,122,0.5);
 }
 
 .btn-secondary {
-  border: 1px solid #f4699a;
-  color: #f4699a;
+  border: 1px solid var(--color-pink);
+  color: var(--color-pink);
   background: transparent;
 }
 
 .btn-secondary:hover {
-  background: #f4699a;
+  background: var(--color-pink);
   color: #000;
   transform: translateY(-3px);
 }
