@@ -83,3 +83,17 @@ function obtenerLocal(key) {
 function eliminarLocal(key) {
   localStorage.removeItem(key);
 }
+
+/* ========================= */
+/* FORMATEAR MONEDA COP */
+/* ========================= */
+
+function formatearCOP(valor) {
+  const numero = Number(valor);
+  if (isNaN(numero)) return "";
+  return numero.toLocaleString("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 0
+  });
+}
