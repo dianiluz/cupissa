@@ -4,6 +4,7 @@
 
 let productosGlobal = [];
 let headersGlobal = [];
+let variacionesGlobal = [];
 
 let filtrosActivos = {};
 let mundoActivo = null;
@@ -13,16 +14,20 @@ let busquedaActiva = "";
 /* INIT */
 /* ========================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
   if (!CONFIG.sheetURL || CONFIG.sheetURL.includes("PEGA_AQUI")) {
     console.warn("⚠️ Configura sheetURL en config.js");
     return;
   }
 
-  cargarProductos();
-  inicializarBuscador();
+await cargarVariaciones();
+await cargarProductos();
+inicializarBuscador();
+
+if (typeof inicializarDrawerMobile === "function") {
   inicializarDrawerMobile();
+}
 
 });
 
@@ -59,6 +64,27 @@ async function cargarProductos() {
 }
 
 /* ========================= */
+/* CARGAR VARIACIONES */
+/* ========================= */
+
+async function cargarVariaciones() {
+
+  if (!CONFIG.variacionesURL) return;
+
+  try {
+
+    const response = await fetch(CONFIG.variacionesURL);
+    const tsv = await response.text();
+    const data = parseTSV(tsv);
+
+    variacionesGlobal = data;
+
+  } catch (error) {
+    console.error("Error cargando variaciones:", error);
+  }
+}
+
+/* ========================= */
 /* FUNCIÓN CENTRAL */
 /* ========================= */
 
@@ -89,6 +115,22 @@ function aplicarTodo() {
         .includes(termino)
     );
   }
+
+/* ========================= */
+/* ORDEN ALEATORIO INICIAL */
+/* ========================= */
+
+const sinFiltros = 
+  !mundoActivo &&
+  Object.keys(filtrosActivos).length === 0 &&
+  !busquedaActiva;
+
+if (sinFiltros) {
+  resultado = resultado
+    .map(p => ({ sort: Math.random(), value: p }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(obj => obj.value);
+}
 
   renderProductos(resultado);
   mostrarFiltrosActivos();
@@ -314,32 +356,50 @@ function renderProductos(lista) {
 
     info.appendChild(nombre);
 
+    /* PRECIO BASE */
+
+if (p["*precio_base"]) {
+
+  const precio = document.createElement("div");
+  precio.className = "producto-precio";
+
+  precio.textContent = formatearCOP(p["*precio_base"]);
+
+  info.appendChild(precio);
+}
+
     /* Variables dinámicas (#) */
-    headersGlobal.forEach(header => {
 
-      if (!header.startsWith("*")) return;
+headersGlobal.forEach(header => {
 
-      const valor = p[header];
-      if (!valor) return;
+  const valor = p[header];
+  if (!valor) return;
 
-      if (valor.startsWith("#")) {
+  if (typeof valor === "string" && valor.startsWith("#")) {
 
-        const select = document.createElement("select");
-        select.className = "modal-select";
+    const label = document.createElement("div");
+    label.style.fontSize = "12px";
+    label.style.marginTop = "6px";
+    label.textContent = capitalizar(header.replace("*",""));
 
-        const opciones = valor.substring(1).split("|");
+    const select = document.createElement("select");
+    select.className = "modal-select";
+    select.dataset.columna = header.replace("*","").trim();
 
-        opciones.forEach(op => {
-          const option = document.createElement("option");
-          option.value = op.trim();
-          option.textContent = op.trim();
-          select.appendChild(option);
-        });
+    const opciones = valor.substring(1).split("|");
 
-        info.appendChild(select);
-      }
-
+    opciones.forEach(op => {
+      const option = document.createElement("option");
+      option.value = op.trim();
+      option.textContent = op.trim();
+      select.appendChild(option);
     });
+
+    info.appendChild(label);
+    info.appendChild(select);
+  }
+
+});
 
     const qty = document.createElement("input");
     qty.type = "number";
@@ -352,14 +412,11 @@ function renderProductos(lista) {
     btn.textContent = "Agregar";
 
     btn.onclick = () => {
-
   const variantesSeleccionadas = {};
-
   info.querySelectorAll("select").forEach(select => {
-    const nombreVariable = select.previousSibling?.textContent || "Variante";
-    variantesSeleccionadas[nombreVariable] = select.value;
+    const columna = select.dataset.columna;
+    variantesSeleccionadas[columna] = select.value;
   });
-
   agregarAlCarrito(p, variantesSeleccionadas, qty.value);
 };
 
