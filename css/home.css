@@ -318,14 +318,27 @@
 .instagram-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 15px;
 }
 
-.insta-item {
-  background: #222;
+.instagram-grid img {
+  width: 100%;
   aspect-ratio: 1/1;
+  object-fit: cover;
+  border-radius: 15px;
+  transition: transform .3s ease;
 }
 
+.instagram-grid img:hover {
+  transform: scale(1.05);
+}
+
+.instagram-grid video {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border-radius: 15px;
+}
 /* TEMPORADA */
 
 .home-productos-grid {
