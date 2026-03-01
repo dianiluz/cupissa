@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* UNIVERSO CUPISSA — CARRITO PROFESIONAL */
+/* CUPISSA — CARRITO PROFESIONAL */
 /* ===================================================== */
 
 let carrito = obtenerLocal("cupissa_carrito") || [];
