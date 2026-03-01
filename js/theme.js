@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* UNIVERSO CUPISSA — THEME (DARK / LIGHT MODE) */
+/* CUPISSA — THEME (DARK DEFAULT / LIGHT OPTIONAL) */
 /* ===================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function inicializarTema() {
   const temaGuardado = obtenerLocal("cupissa_theme");
 
+  // Modo oscuro es default
   if (temaGuardado === "light") {
     document.body.classList.add("light-mode");
   }
