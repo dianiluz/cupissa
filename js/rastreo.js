@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* UNIVERSO CUPISSA — RASTREO TRANSPORTADORA */
+/* CUPISSA — RASTREO TRANSPORTADORA */
 /* ===================================================== */
 
 const sheetRastreoURL =
