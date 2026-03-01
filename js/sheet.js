@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* UNIVERSO CUPISSA — MOTOR CATÁLOGO ESTABLE DEFINITIVO */
+/* CUPISSA — MOTOR CATÁLOGO ESTABLE DEFINITIVO */
 /* ===================================================== */
 
 let productosGlobal = [];
