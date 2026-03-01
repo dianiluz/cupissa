@@ -2,6 +2,10 @@
 /* CUPISSA — MODAL PRODUCTO */
 /* ===================================================== */
 
+/* ===================================================== */
+/* CUPISSA — MODAL PRODUCTO LIMPIO */
+/* ===================================================== */
+
 function abrirModal(producto) {
 
   const overlay = document.createElement("div");
@@ -10,19 +14,92 @@ function abrirModal(producto) {
   const modal = document.createElement("div");
   modal.className = "modal";
 
-  /* ========================= */
-  /* IMAGEN */
-  /* ========================= */
-
   const imgDiv = document.createElement("div");
   imgDiv.className = "modal-img";
 
   const img = document.createElement("img");
   img.src = producto.imagenurl || "";
   img.alt = producto.nombre || "";
-
   imgDiv.appendChild(img);
 
+  const content = document.createElement("div");
+  content.className = "modal-content";
+
+  const closeBtn = document.createElement("div");
+  closeBtn.className = "modal-close";
+  closeBtn.textContent = "✕";
+  closeBtn.onclick = () => overlay.remove();
+
+  const titulo = document.createElement("h2");
+  titulo.textContent = producto.nombre || "";
+
+  content.appendChild(closeBtn);
+  content.appendChild(titulo);
+
+  const selects = [];
+
+  Object.keys(producto).forEach(key => {
+
+    const valor = producto[key];
+
+    if (typeof valor === "string" && valor.startsWith("#")) {
+
+      const opciones = valor.substring(1).split("|");
+
+      const select = document.createElement("select");
+      select.className = "modal-select";
+      select.dataset.columna = key.replace("*","").trim();
+
+      opciones.forEach(op => {
+        const option = document.createElement("option");
+        option.value = op.trim();
+        option.textContent = op.trim();
+        select.appendChild(option);
+      });
+
+      content.appendChild(select);
+      selects.push(select);
+    }
+
+  });
+
+  const qty = document.createElement("input");
+  qty.type = "number";
+  qty.min = "1";
+  qty.value = "1";
+  qty.className = "modal-qty";
+
+  content.appendChild(qty);
+
+  const btn = document.createElement("button");
+  btn.className = "btn-agregar";
+  btn.textContent = "Agregar";
+
+  btn.onclick = () => {
+
+    const variantes = {};
+
+    selects.forEach(select => {
+      variantes[select.dataset.columna] = select.value;
+    });
+
+    agregarAlCarrito(producto, variantes, qty.value);
+    overlay.remove();
+  };
+
+  content.appendChild(btn);
+
+  modal.appendChild(imgDiv);
+  modal.appendChild(content);
+  overlay.appendChild(modal);
+
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) overlay.remove();
+  });
+
+}
   /* ========================= */
   /* CONTENIDO */
   /* ========================= */
@@ -129,4 +206,3 @@ function abrirModal(producto) {
       overlay.remove();
     }
   });
-}
