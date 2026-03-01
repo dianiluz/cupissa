@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* CUPISSA — CARRITO PROFESIONAL */
+/* CUPISSA — CARRITO AGRUPADO ESTABLE DEFINITIVO */
 /* ===================================================== */
 
 let carrito = obtenerLocal("cupissa_carrito") || [];
@@ -9,50 +9,163 @@ document.addEventListener("DOMContentLoaded", () => {
   inicializarPanelCarrito();
 });
 
+function normalizarTexto(texto) {
+  return String(texto)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[¿?]/g, "")
+    .trim();
+}
+
 /* ========================= */
-/* AGREGAR AL CARRITO */
+/* AGREGAR */
 /* ========================= */
 
 function agregarAlCarrito(producto, variantes = {}, cantidad = 1) {
 
   cantidad = parseInt(cantidad);
-  const ref = (producto.ref || "").trim();
+  if (!producto || !producto.ref) return;
 
-  if (!ref) return;
+  const ref = producto.ref.trim();
 
   let item = carrito.find(p => p.ref === ref);
 
   if (!item) {
     item = {
-      ref: ref,
+      ref,
       nombre: producto.nombre,
       imagenurl: producto.imagenurl,
-      variantes: {}
+      precio_base: Number(producto["*precio_base"]) || 0,
+      productoOriginal: producto,
+      combinaciones: [],
+      total_cantidad: 0,
+      subtotal: 0
     };
     carrito.push(item);
   }
 
-  Object.keys(variantes).forEach(key => {
+  // buscar combinación exacta
+  let combo = item.combinaciones.find(c =>
+    JSON.stringify(c.variantes) === JSON.stringify(variantes)
+  );
 
-    const valor = variantes[key];
-    if (!valor) return;
+  if (!combo) {
+    combo = {
+      variantes: { ...variantes },
+      cantidad: 0
+    };
+    item.combinaciones.push(combo);
+  }
 
-    if (!item.variantes[key]) {
-      item.variantes[key] = {};
-    }
+  combo.cantidad += cantidad;
 
-    if (!item.variantes[key][valor]) {
-      item.variantes[key][valor] = 0;
-    }
-
-    item.variantes[key][valor] += cantidad;
-  });
-
+  recalcularTotalesCarrito();
   guardarLocal("cupissa_carrito", carrito);
-
   actualizarContadorCarrito();
   renderCarrito();
   animarCarrito();
+}
+
+window.agregarAlCarrito = agregarAlCarrito;
+
+/* ========================= */
+/* MOTOR VARIACIONES */
+/* ========================= */
+
+function calcularIncremento(productoOriginal, variantesSeleccionadas) {
+
+  if (!variacionesGlobal || !variacionesGlobal.length) return 0;
+
+  let incrementoTotal = 0;
+
+  variacionesGlobal.forEach(regla => {
+
+    const refRegla = normalizarTexto(regla.ref || "");
+    const filtroRaw = normalizarTexto(regla.filtro || "");
+    const valorRaw = normalizarTexto(regla.valor_filtro || "");
+    const incremento = Number(regla.incremento || 0);
+
+    if (refRegla && refRegla === normalizarTexto(productoOriginal.ref)) {
+      incrementoTotal += incremento;
+      return;
+    }
+
+    if (!filtroRaw || !valorRaw) return;
+
+    const filtros = filtroRaw.split("|");
+    const valores = valorRaw.split("|");
+
+    if (filtros.length !== valores.length) return;
+
+    let coincide = true;
+
+    for (let i = 0; i < filtros.length; i++) {
+
+      const columna = filtros[i];
+      const valorEsperado = valores[i];
+
+      let valorReal = null;
+
+      // 1️⃣ buscar en variantes seleccionadas
+      Object.keys(variantesSeleccionadas).forEach(key => {
+  if (normalizarTexto(key) === columna) {
+    valorReal = normalizarTexto(variantesSeleccionadas[key]);
+  }
+});
+
+      // 2️⃣ buscar en producto original
+      if (!valorReal) {
+        Object.keys(productoOriginal).forEach(key => {
+          const keyNormal = normalizarTexto(key.replace("*",""));
+          if (keyNormal === columna) {
+            valorReal = normalizarTexto(productoOriginal[key]);
+          }
+        });
+      }
+
+      if (valorReal !== valorEsperado) {
+        coincide = false;
+        break;
+      }
+
+    }
+
+    if (coincide) incrementoTotal += incremento;
+
+  });
+
+  return incrementoTotal;
+}
+
+/* ========================= */
+/* RECALCULAR */
+/* ========================= */
+
+function recalcularTotalesCarrito() {
+
+  carrito.forEach(item => {
+
+    let subtotal = 0;
+    let totalCantidad = 0;
+
+    item.combinaciones.forEach(combo => {
+
+      const incremento = calcularIncremento(
+        item.productoOriginal,
+        combo.variantes
+      );
+
+      subtotal += (item.precio_base + incremento) * combo.cantidad;
+      totalCantidad += combo.cantidad;
+
+    });
+
+    item.subtotal = subtotal;
+    item.total_cantidad = totalCantidad;
+
+  });
+
 }
 
 /* ========================= */
@@ -62,21 +175,14 @@ function agregarAlCarrito(producto, variantes = {}, cantidad = 1) {
 function actualizarContadorCarrito() {
 
   let total = 0;
-
-  carrito.forEach(item => {
-    Object.values(item.variantes).forEach(grupo => {
-      Object.values(grupo).forEach(qty => {
-        if (qty > 0) total += qty;
-      });
-    });
-  });
+  carrito.forEach(item => total += item.total_cantidad || 0);
 
   const contador = document.getElementById("cartCount");
   if (contador) contador.textContent = total;
 }
 
 /* ========================= */
-/* RENDER CARRITO */
+/* RENDER */
 /* ========================= */
 
 function renderCarrito() {
@@ -93,33 +199,28 @@ function renderCarrito() {
 
   carrito.forEach((item, index) => {
 
+    let variantesHTML = "";
+
+    item.combinaciones.forEach(combo => {
+
+      Object.keys(combo.variantes).forEach(key => {
+        variantesHTML += `${capitalizar(key)} ${combo.variantes[key]}: ${combo.cantidad}<br>`;
+      });
+
+    });
+
     const div = document.createElement("div");
     div.className = "carrito-item";
 
-    let variantesHTML = "";
-
-    Object.keys(item.variantes).forEach(key => {
-      Object.keys(item.variantes[key]).forEach(valor => {
-
-        const qty = item.variantes[key][valor];
-
-        if (qty > 0) {
-          variantesHTML += `
-            ${capitalizar(key)} ${valor}: ${qty}<br>
-          `;
-        }
-      });
-    });
-
     div.innerHTML = `
-      <div style="display:flex; gap:12px; align-items:flex-start;">
-        <img src="${item.imagenurl}" 
+      <div style="display:flex; gap:12px;">
+        <img src="${item.imagenurl}"
              style="width:55px;height:55px;object-fit:cover;border-radius:8px;">
         <div>
           <strong>${item.nombre}</strong><br>
+          $ ${item.subtotal.toLocaleString()}<br>
           ${variantesHTML}
-          <button onclick="eliminarProducto(${index})" 
-                  style="margin-top:6px;font-size:12px;">
+          <button onclick="eliminarProducto(${index})">
             Eliminar
           </button>
         </div>
@@ -131,7 +232,7 @@ function renderCarrito() {
 }
 
 /* ========================= */
-/* ELIMINAR PRODUCTO */
+/* ELIMINAR */
 /* ========================= */
 
 function eliminarProducto(index) {
@@ -142,7 +243,7 @@ function eliminarProducto(index) {
 }
 
 /* ========================= */
-/* VACIAR CARRITO */
+/* VACIAR */
 /* ========================= */
 
 function vaciarCarrito() {
@@ -153,49 +254,7 @@ function vaciarCarrito() {
 }
 
 /* ========================= */
-/* MENSAJE WHATSAPP */
-/* ========================= */
-
-function generarMensajeWhatsApp() {
-
-  if (!carrito.length) return "Hola, quiero cotizar:";
-
-  let mensaje = "Hola, quiero cotizar:%0A%0A";
-
-  carrito.forEach(item => {
-
-    mensaje += "• " + item.nombre + "%0A";
-
-    Object.keys(item.variantes).forEach(key => {
-      Object.keys(item.variantes[key]).forEach(valor => {
-
-        const qty = item.variantes[key][valor];
-
-        if (qty > 0) {
-          mensaje += "   - " + capitalizar(key) + " " + valor +
-                     " (" + qty + ")%0A";
-        }
-      });
-    });
-
-    const imagenCompleta = item.imagenurl.startsWith("http")
-      ? item.imagenurl
-      : CONFIG.baseURL + item.imagenurl;
-
-    mensaje += "   Imagen: " + imagenCompleta + "%0A%0A";
-  });
-
-  return mensaje;
-}
-
-function enviarCarritoWhatsApp() {
-  const mensaje = generarMensajeWhatsApp();
-  const url = `https://wa.me/${CONFIG.whatsappNumber}?text=${mensaje}`;
-  window.open(url, "_blank");
-}
-
-/* ========================= */
-/* PANEL CARRITO */
+/* PANEL */
 /* ========================= */
 
 function inicializarPanelCarrito() {
@@ -221,16 +280,12 @@ function inicializarPanelCarrito() {
 }
 
 /* ========================= */
-/* ANIMACIÓN ICONO */
+/* ANIMACIÓN */
 /* ========================= */
 
 function animarCarrito() {
   const icon = document.getElementById("cartIcon");
   if (!icon) return;
-
   icon.classList.add("cart-animate");
-
-  setTimeout(() => {
-    icon.classList.remove("cart-animate");
-  }, 500);
+  setTimeout(() => icon.classList.remove("cart-animate"), 500);
 }
