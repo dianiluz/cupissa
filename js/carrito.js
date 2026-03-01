@@ -4,6 +4,8 @@
 
 let carrito = obtenerLocal("cupissa_carrito") || [];
 
+let detallesAbiertos = {};
+
 document.addEventListener("DOMContentLoaded", () => {
   actualizarContadorCarrito();
   inicializarPanelCarrito();
@@ -199,14 +201,43 @@ function renderCarrito() {
 
   carrito.forEach((item, index) => {
 
-    let variantesHTML = "";
+    const detalleId = "detalle_" + index;
+    const flechaId = "flecha_" + index;
 
-    item.combinaciones.forEach(combo => {
+    let detalleHTML = "";
 
+    item.combinaciones.forEach((combo, comboIndex) => {
+
+      const incremento = calcularIncremento(
+        item.productoOriginal,
+        combo.variantes
+      );
+
+      const precioUnitario = item.precio_base + incremento;
+      const totalCombo = precioUnitario * combo.cantidad;
+
+      let textoVariante = "";
       Object.keys(combo.variantes).forEach(key => {
-        variantesHTML += `${capitalizar(key)} ${combo.variantes[key]}: ${combo.cantidad}<br>`;
+        textoVariante += `${capitalizar(key)} ${combo.variantes[key]} `;
       });
 
+      detalleHTML += `
+        <div style="font-size:13px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+
+          <div>
+            ${textoVariante.trim()}
+            x ${combo.cantidad}
+            = $ ${totalCombo.toLocaleString()}
+            ${combo.cantidad > 1 ? `($${precioUnitario.toLocaleString()} c/u)` : ""}
+          </div>
+
+          <div style="display:flex;gap:6px;">
+            <button onclick="restarUnidad(${index}, ${comboIndex})">➖</button>
+            <button onclick="eliminarCombinacion(${index}, ${comboIndex})">🗑</button>
+          </div>
+
+        </div>
+      `;
     });
 
     const div = document.createElement("div");
@@ -215,20 +246,95 @@ function renderCarrito() {
     div.innerHTML = `
       <div style="display:flex; gap:12px;">
         <img src="${item.imagenurl}"
-             style="width:55px;height:55px;object-fit:cover;border-radius:8px;">
-        <div>
-          <strong>${item.nombre}</strong><br>
-          $ ${item.subtotal.toLocaleString()}<br>
-          ${variantesHTML}
-          <button onclick="eliminarProducto(${index})">
-            Eliminar
-          </button>
+             style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
+        <div style="flex:1;">
+          <strong>${item.nombre}</strong>
+
+          <div 
+            style="margin-top:4px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;"
+            onclick="toggleDetalle('${detalleId}','${flechaId}', ${index})"
+          >
+            Total: $ ${item.subtotal.toLocaleString()}
+            <span id="${flechaId}" style="transition:transform 0.3s;">▼</span>
+          </div>
+
+          <div id="${detalleId}" style="max-height:0;overflow:hidden;transition:max-height 0.3s ease;margin-top:6px;">
+            ${detalleHTML}
+          </div>
+
         </div>
       </div>
     `;
 
     body.appendChild(div);
+
+    // Restaurar estado abierto si estaba abierto antes
+if (detallesAbiertos[index]) {
+  const el = document.getElementById(detalleId);
+  const flecha = document.getElementById(flechaId);
+  if (el) {
+    el.style.maxHeight = el.scrollHeight + "px";
+    flecha.style.transform = "rotate(180deg)";
+  }
+}
+
   });
+}
+
+function toggleDetalle(id, flechaId, index) {
+
+  const el = document.getElementById(id);
+  const flecha = document.getElementById(flechaId);
+
+  if (!el) return;
+
+  const abierto = el.style.maxHeight && el.style.maxHeight !== "0px";
+
+  if (abierto) {
+    el.style.maxHeight = "0";
+    flecha.style.transform = "rotate(0deg)";
+    detallesAbiertos[index] = false;
+  } else {
+    el.style.maxHeight = el.scrollHeight + "px";
+    flecha.style.transform = "rotate(180deg)";
+    detallesAbiertos[index] = true;
+  }
+}
+
+function restarUnidad(itemIndex, comboIndex) {
+
+  const combo = carrito[itemIndex].combinaciones[comboIndex];
+
+  if (!combo) return;
+
+  combo.cantidad--;
+
+  if (combo.cantidad <= 0) {
+    carrito[itemIndex].combinaciones.splice(comboIndex, 1);
+  }
+
+  if (carrito[itemIndex].combinaciones.length === 0) {
+    carrito.splice(itemIndex, 1);
+  }
+
+  recalcularTotalesCarrito();
+  guardarLocal("cupissa_carrito", carrito);
+  actualizarContadorCarrito();
+  renderCarrito();
+}
+
+function eliminarCombinacion(itemIndex, comboIndex) {
+
+  carrito[itemIndex].combinaciones.splice(comboIndex, 1);
+
+  if (carrito[itemIndex].combinaciones.length === 0) {
+    carrito.splice(itemIndex, 1);
+  }
+
+  recalcularTotalesCarrito();
+  guardarLocal("cupissa_carrito", carrito);
+  actualizarContadorCarrito();
+  renderCarrito();
 }
 
 /* ========================= */
