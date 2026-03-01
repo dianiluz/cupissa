@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* HOME.JS — UNIVERSO CUPISSA */
+/* HOME.JS — CUPISSA */
 /* ===================================================== */
 
 function esperarProductos(callback) {
