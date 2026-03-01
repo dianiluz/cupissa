@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* CUPISSA — MOTOR CATÁLOGO ESTABLE DEFINITIVO */
+/* CUPISSA — MOTOR CATÁLOGO COMPLETO + PRECIO DINÁMICO */
 /* ===================================================== */
 
 let productosGlobal = [];
@@ -21,13 +21,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-await cargarVariaciones();
-await cargarProductos();
-inicializarBuscador();
+  await cargarVariaciones();
+  await cargarProductos();
+  inicializarBuscador();
 
-if (typeof inicializarDrawerMobile === "function") {
-  inicializarDrawerMobile();
-}
+  if (typeof inicializarDrawerMobile === "function") {
+    inicializarDrawerMobile();
+  }
 
 });
 
@@ -72,13 +72,9 @@ async function cargarVariaciones() {
   if (!CONFIG.variacionesURL) return;
 
   try {
-
     const response = await fetch(CONFIG.variacionesURL);
     const tsv = await response.text();
-    const data = parseTSV(tsv);
-
-    variacionesGlobal = data;
-
+    variacionesGlobal = parseTSV(tsv);
   } catch (error) {
     console.error("Error cargando variaciones:", error);
   }
@@ -107,30 +103,11 @@ function aplicarTodo() {
   });
 
   if (busquedaActiva) {
-    const termino = busquedaActiva.toLowerCase().trim();
+    const termino = busquedaActiva.toLowerCase();
     resultado = resultado.filter(p =>
-      Object.values(p)
-        .join(" ")
-        .toLowerCase()
-        .includes(termino)
+      Object.values(p).join(" ").toLowerCase().includes(termino)
     );
   }
-
-/* ========================= */
-/* ORDEN ALEATORIO INICIAL */
-/* ========================= */
-
-const sinFiltros = 
-  !mundoActivo &&
-  Object.keys(filtrosActivos).length === 0 &&
-  !busquedaActiva;
-
-if (sinFiltros) {
-  resultado = resultado
-    .map(p => ({ sort: Math.random(), value: p }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(obj => obj.value);
-}
 
   renderProductos(resultado);
   mostrarFiltrosActivos();
@@ -157,12 +134,10 @@ function generarMundos() {
     btn.textContent = capitalizar(m);
 
     btn.onclick = () => {
-
       document.querySelectorAll(".mundo-item")
         .forEach(b => b.classList.remove("active"));
 
       btn.classList.add("active");
-
       mundoActivo = m;
       aplicarTodo();
     };
@@ -193,9 +168,7 @@ function generarFiltros() {
     if (["imagenurl", "ref", "nombre", "mundo"].includes(header)) return;
 
     const valoresUnicos = [...new Set(
-      productosGlobal
-        .map(p => p[header])
-        .filter(v => v)
+      productosGlobal.map(p => p[header]).filter(v => v)
     )];
 
     if (!valoresUnicos.length) return;
@@ -212,28 +185,25 @@ function generarFiltros() {
 
     valoresUnicos.forEach(valorOriginal => {
 
-  const headerKey = header; // 🔒 variable fija
-  const valor = String(valorOriginal).trim();
+      const valor = String(valorOriginal).trim();
 
-  const btn = document.createElement("button");
-  btn.className = "filtro-opcion";
-  btn.textContent = capitalizar(valor);
+      const btn = document.createElement("button");
+      btn.className = "filtro-opcion";
+      btn.textContent = capitalizar(valor);
 
-  btn.addEventListener("click", () => {
+      btn.addEventListener("click", () => {
 
-    if (filtrosActivos[headerKey] === valor) {
-      delete filtrosActivos[headerKey];
-    } else {
-      filtrosActivos[headerKey] = valor;
-    }
+        if (filtrosActivos[header] === valor) {
+          delete filtrosActivos[header];
+        } else {
+          filtrosActivos[header] = valor;
+        }
 
-    console.log("Ahora filtrosActivos:", filtrosActivos); // debug
+        aplicarTodo();
+      });
 
-    aplicarTodo();
-  });
-
-  contenido.appendChild(btn);
-});
+      contenido.appendChild(btn);
+    });
 
     titulo.addEventListener("click", () => {
       contenido.classList.toggle("active");
@@ -257,11 +227,7 @@ function mostrarFiltrosActivos() {
 
   container.innerHTML = "";
 
-  const claves = Object.keys(filtrosActivos);
-
-  if (claves.length === 0) return;
-
-  claves.forEach(col => {
+  Object.keys(filtrosActivos).forEach(col => {
 
     const valor = filtrosActivos[col];
 
@@ -280,19 +246,6 @@ function mostrarFiltrosActivos() {
 
     container.appendChild(tag);
   });
-
-  const limpiar = document.createElement("div");
-  limpiar.className = "filtro-tag limpiar-todos";
-  limpiar.textContent = "Limpiar filtros";
-
-  limpiar.addEventListener("click", () => {
-    filtrosActivos = {};
-    mundoActivo = null;
-    busquedaActiva = "";
-    aplicarTodo();
-  });
-
-  container.appendChild(limpiar);
 }
 
 /* ========================= */
@@ -304,7 +257,6 @@ function actualizarVisualFiltros() {
   document.querySelectorAll(".filtro-opcion").forEach(btn => {
 
     const texto = btn.textContent.trim().toLowerCase();
-
     let activo = false;
 
     Object.values(filtrosActivos).forEach(valor => {
@@ -356,50 +308,59 @@ function renderProductos(lista) {
 
     info.appendChild(nombre);
 
-    /* PRECIO BASE */
+    const precio = document.createElement("div");
+    precio.className = "producto-precio";
 
-if (p["*precio_base"]) {
+    const precioBase = Number(p["*precio_base"]) || 0;
+    precio.textContent = formatearCOP(precioBase);
 
-  const precio = document.createElement("div");
-  precio.className = "producto-precio";
+    info.appendChild(precio);
 
-  precio.textContent = formatearCOP(p["*precio_base"]);
+    headersGlobal.forEach(header => {
 
-  info.appendChild(precio);
-}
+      const valor = p[header];
+      if (!valor) return;
 
-    /* Variables dinámicas (#) */
+      if (typeof valor === "string" && valor.startsWith("#")) {
 
-headersGlobal.forEach(header => {
+        const label = document.createElement("div");
+        label.style.fontSize = "12px";
+        label.style.marginTop = "6px";
+        label.textContent = capitalizar(header.replace("*",""));
 
-  const valor = p[header];
-  if (!valor) return;
+        const select = document.createElement("select");
+        select.className = "modal-select";
+        select.dataset.columna = header.replace("*","").trim();
 
-  if (typeof valor === "string" && valor.startsWith("#")) {
+        const opciones = valor.substring(1).split("|");
 
-    const label = document.createElement("div");
-    label.style.fontSize = "12px";
-    label.style.marginTop = "6px";
-    label.textContent = capitalizar(header.replace("*",""));
+        opciones.forEach(op => {
+          const option = document.createElement("option");
+          option.value = op.trim();
+          option.textContent = op.trim();
+          select.appendChild(option);
+        });
 
-    const select = document.createElement("select");
-    select.className = "modal-select";
-    select.dataset.columna = header.replace("*","").trim();
+        select.addEventListener("change", () => {
 
-    const opciones = valor.substring(1).split("|");
+          const variantesSeleccionadas = {};
 
-    opciones.forEach(op => {
-      const option = document.createElement("option");
-      option.value = op.trim();
-      option.textContent = op.trim();
-      select.appendChild(option);
+          info.querySelectorAll("select").forEach(s => {
+            variantesSeleccionadas[s.dataset.columna] = s.value;
+          });
+
+          if (typeof calcularIncremento === "function") {
+            const incremento = calcularIncremento(p, variantesSeleccionadas);
+            precio.textContent = formatearCOP(precioBase + incremento);
+          }
+
+        });
+
+        info.appendChild(label);
+        info.appendChild(select);
+      }
+
     });
-
-    info.appendChild(label);
-    info.appendChild(select);
-  }
-
-});
 
     const qty = document.createElement("input");
     qty.type = "number";
@@ -412,13 +373,15 @@ headersGlobal.forEach(header => {
     btn.textContent = "Agregar";
 
     btn.onclick = () => {
-  const variantesSeleccionadas = {};
-  info.querySelectorAll("select").forEach(select => {
-    const columna = select.dataset.columna;
-    variantesSeleccionadas[columna] = select.value;
-  });
-  agregarAlCarrito(p, variantesSeleccionadas, qty.value);
-};
+
+      const variantesSeleccionadas = {};
+
+      info.querySelectorAll("select").forEach(select => {
+        variantesSeleccionadas[select.dataset.columna] = select.value;
+      });
+
+      agregarAlCarrito(p, variantesSeleccionadas, qty.value);
+    };
 
     info.appendChild(qty);
     info.appendChild(btn);
@@ -436,58 +399,10 @@ headersGlobal.forEach(header => {
 function inicializarBuscador() {
 
   const desktopInput = document.getElementById("globalSearch");
-  const mobileInput = document.getElementById("mobileSearchInput");
+  if (!desktopInput) return;
 
-  const clearMobile = document.getElementById("clearMobileSearch");
-  const clearDesktop = document.getElementById("clearDesktopSearch");
-
-  function actualizarBusqueda(valor) {
-    busquedaActiva = valor.trim();
+  desktopInput.addEventListener("input", function () {
+    busquedaActiva = this.value.trim();
     aplicarTodo();
-  }
-
-  /* DESKTOP */
-  if (desktopInput) {
-
-    desktopInput.addEventListener("input", function () {
-
-      actualizarBusqueda(this.value);
-
-      if (clearDesktop) {
-        clearDesktop.style.display = this.value.length ? "block" : "none";
-      }
-
-    });
-
-    if (clearDesktop) {
-      clearDesktop.addEventListener("click", function () {
-        desktopInput.value = "";
-        this.style.display = "none";
-        actualizarBusqueda("");
-      });
-    }
-  }
-
-  /* MOBILE */
-  if (mobileInput) {
-
-    mobileInput.addEventListener("input", function () {
-
-      actualizarBusqueda(this.value);
-
-      if (clearMobile) {
-        clearMobile.style.display = this.value.length ? "block" : "none";
-      }
-
-    });
-
-    if (clearMobile) {
-      clearMobile.addEventListener("click", function () {
-        mobileInput.value = "";
-        this.style.display = "none";
-        actualizarBusqueda("");
-      });
-    }
-  }
-
+  });
 }
