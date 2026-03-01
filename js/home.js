@@ -149,6 +149,18 @@ function renderTemporadaHome() {
 
     info.appendChild(nombre);
 
+    /* PRECIO BASE */
+
+if (p["*precio_base"]) {
+
+  const precio = document.createElement("div");
+  precio.className = "producto-precio";
+
+  precio.textContent = formatearCOP(p["*precio_base"]);
+
+  info.appendChild(precio);
+}
+
     /* Variables dinámicas (#) igual que catálogo */
     headersGlobal.forEach(header => {
 
