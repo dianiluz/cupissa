@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* UNIVERSO CUPISSA — VARIABLES GLOBALES */
+/* CUPISSA — VARIABLES GLOBALES */
 /* ===================================================== */
 
 :root {
@@ -9,16 +9,17 @@
 /* ========================= */
 
 --color-black: #000000;
---color-pink: #f4699a;
---color-blue: #4cafc9;
---color-yellow: #f3de5f;
 --color-white: #ffffff;
+--color-pink: #db137a;
+
+/* Escalas neutras */
+
 --color-gray-light: #f5f5f5;
 --color-gray-medium: #cccccc;
---color-gray-dark: #222222;
+--color-gray-dark: #333333;
 
 /* ========================= */
-/* FONDO MODO OSCURO (DEFAULT) */
+/* FONDO PRINCIPAL (OSCURO DEFAULT) */
 /* ========================= */
 
 --bg-primary: #000000;
@@ -31,18 +32,11 @@
 --border-color: rgba(255,255,255,0.08);
 
 /* ========================= */
-/* DEGRADADOS */
-/* ========================= */
-
---gradient-main: linear-gradient(135deg, #f4699a, #4cafc9);
---gradient-soft: linear-gradient(135deg, rgba(244,105,154,0.15), rgba(76,175,201,0.15));
-
-/* ========================= */
 /* SOMBRAS */
 /* ========================= */
 
---shadow-soft: 0 4px 20px rgba(0,0,0,0.4);
---shadow-hover: 0 8px 30px rgba(0,0,0,0.6);
+--shadow-soft: 0 4px 20px rgba(0,0,0,0.5);
+--shadow-hover: 0 8px 30px rgba(0,0,0,0.7);
 
 /* ========================= */
 /* BORDES */
@@ -70,7 +64,7 @@
 }
 
 /* ===================================================== */
-/* MODO CLARO */
+/* MODO CLARO (OPCIONAL) */
 /* ===================================================== */
 
 body.light-mode {
@@ -85,4 +79,3 @@ body.light-mode {
 --border-color: rgba(0,0,0,0.08);
 
 }
-
