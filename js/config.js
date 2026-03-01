@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* UNIVERSO CUPISSA — CONFIGURACIÓN GLOBAL */
+/* CUPISSA — CONFIGURACIÓN GLOBAL */
 /* ===================================================== */
 
 const CONFIG = {
@@ -8,7 +8,7 @@ const CONFIG = {
   /* INFORMACIÓN GENERAL */
   /* ========================= */
 
-  brandName: "Universo CUPISSA",
+  brandName: "CUPISSA",
   whatsappNumber: "573147671380",
   baseURL: "https://cupissa.com",
   contactEmail: "contacto@cupissa.com",
@@ -23,8 +23,8 @@ const CONFIG = {
   /* BACKEND (APPS SCRIPT) */
   /* ========================= */
 
-  backendURL: "https://script.google.com/macros/s/AKfycbxarAntDCo15iAJfmRKOnEIFbSmz3YGXfzW9wW5CH4kuzMQy8bciMexxLV7mGVSGhiq/exec",
-  
+  backendURL: "https://script.google.com/macros/s/AKfycbyzqj3w2a83cHtAXAP3LKnsj5kel8C5EwRCgFlaEHv5V70SrnxXGt7kOfNmLQCW9dhK/exec",
+
   
   /* ========================= */
   /* FUTURO (PREPARADO) */
