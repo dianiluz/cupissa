@@ -97,38 +97,42 @@ function calcularIncremento(productoOriginal, variantesSeleccionadas) {
 
   variacionesGlobal.forEach(regla => {
 
-    const refRegla = normalizarTexto(regla.ref || "");
-    const filtroRaw = normalizarTexto(regla.filtro || "");
-    const valorRaw = normalizarTexto(regla.valor_filtro || "");
+    const productoRegla = normalizarTexto(regla.producto || "");
+    const columnaRaw = normalizarTexto(regla.columna || "");
+    const valorRaw = normalizarTexto(regla.valor || "");
     const incremento = Number(regla.incremento || 0);
 
-    if (refRegla && refRegla === normalizarTexto(productoOriginal.ref)) {
-      incrementoTotal += incremento;
-      return;
+    // 1️⃣ Si la regla aplica por producto específico
+    if (productoRegla) {
+      if (productoRegla !== normalizarTexto(productoOriginal.ref)) {
+        return;
+      }
     }
 
-    if (!filtroRaw || !valorRaw) return;
+    if (!columnaRaw || !valorRaw) return;
 
-    const filtros = filtroRaw.split("|");
+    const columnas = columnaRaw.split("|");
     const valores = valorRaw.split("|");
 
-    if (filtros.length !== valores.length) return;
+    if (columnas.length !== valores.length) return;
 
     let coincide = true;
 
-    for (let i = 0; i < filtros.length; i++) {
+    for (let i = 0; i < columnas.length; i++) {
 
-      const columna = filtros[i];
+      const columna = columnas[i];
       const valorEsperado = valores[i];
 
       let valorReal = null;
 
+      // 2️⃣ Primero busca en variantes seleccionadas
       Object.keys(variantesSeleccionadas).forEach(key => {
         if (normalizarTexto(key) === columna) {
           valorReal = normalizarTexto(variantesSeleccionadas[key]);
         }
       });
 
+      // 3️⃣ Si no está en variantes, busca en producto original
       if (!valorReal) {
         Object.keys(productoOriginal).forEach(key => {
           const keyNormal = normalizarTexto(key.replace("*",""));
@@ -144,11 +148,15 @@ function calcularIncremento(productoOriginal, variantesSeleccionadas) {
       }
     }
 
-    if (coincide) incrementoTotal += incremento;
+    if (coincide) {
+      incrementoTotal += incremento;
+    }
+
   });
 
   return incrementoTotal;
 }
+
 
 /* ========================= */
 /* RECALCULAR */
@@ -337,34 +345,40 @@ function renderCarrito() {
   const anticipo = Math.round(totalGeneral * 0.20);
 
   const resumenDiv = document.createElement("div");
-  resumenDiv.className = "carrito-resumen";
+resumenDiv.className = "carrito-resumen";
 
-  resumenDiv.innerHTML = `
-    <hr style="margin:16px 0;">
+resumenDiv.innerHTML = `
+  <hr style="margin:16px 0;">
 
-    <div class="resumen-linea total">
-      <span>Total general</span>
-      <span>$ ${totalGeneral.toLocaleString()}</span>
-    </div>
+  <div class="resumen-linea total">
+    <span>Total general</span>
+    <span>$ ${totalGeneral.toLocaleString()}</span>
+  </div>
 
-    <div class="resumen-linea anticipo">
-      <span>Anticipo estimado (20%)</span>
-      <span>$ ${anticipo.toLocaleString()}</span>
-    </div>
+  <div class="resumen-linea anticipo">
+    <span>Anticipo estimado (20%)</span>
+    <span>$ ${anticipo.toLocaleString()}</span>
+  </div>
 
-    <div style="margin-top:10px;">
-  <span 
-    onclick="vaciarCarrito()" 
-    style="font-size:13px; text-decoration:underline; cursor:pointer; color:#aaa;"
-  >
-    Vaciar lista
-  </span>
-</div>
+  <div class="aviso-legal-pagos">
+    ⚠️ Algunos medios de pago como Addi o pagos procesados por Wompi
+    pueden generar un incremento en el valor total debido a costos
+    de transacción. El valor final se mostrará antes de confirmar el pago.
+  </div>
 
-<button class="btn-primary" onclick="irAPago()">
-  Ver opciones de pago
-</button>
-  `;
+  <div style="margin-top:10px;">
+    <span 
+      onclick="vaciarCarrito()" 
+      style="font-size:13px; text-decoration:underline; cursor:pointer; color:#aaa;"
+    >
+      Vaciar lista
+    </span>
+  </div>
+
+  <button class="btn-primary" onclick="irAPago()">
+    Ver opciones de pago
+  </button>
+`;
 
   body.appendChild(resumenDiv);
 }
