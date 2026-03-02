@@ -581,3 +581,18 @@
 .detalle-variantes.abierto {
   max-height: 500px; /* suficiente para que nunca corte */
 }
+
+/* ========================= */
+/* AVISO LEGAL PAGOS */
+/* ========================= */
+
+.aviso-legal-pagos {
+  margin-top: 14px;
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.4;
+  border-radius: 8px;
+  background: rgba(255, 193, 7, 0.08);
+  border: 1px solid rgba(255, 193, 7, 0.25);
+  color: #ffb300;
+}
