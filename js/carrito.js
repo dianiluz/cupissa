@@ -361,11 +361,7 @@ function renderCarrito() {
   </span>
 </div>
 
-<button 
-  class="btn-primary"
-  style="width:100%; margin-top:15px;"
-  onclick="irACheckout()"
->
+<button class="btn-primary" onclick="irAPago()">
   Ver opciones de pago
 </button>
   `;
@@ -475,4 +471,17 @@ function animarCarrito() {
 
 function irACheckout() {
   window.location.href = "/checkout/";
+}
+
+function irAPago() {
+
+  const carrito = obtenerLocal("cupissa_carrito") || [];
+
+  if (!carrito.length) {
+    alert("Tu carrito está vacío.");
+    return;
+  }
+
+  window.location.href = "/pago/";
+
 }
