@@ -596,3 +596,155 @@
   border: 1px solid rgba(255, 193, 7, 0.25);
   color: #ffb300;
 }
+
+/* ===================================================== */
+/* COMPONENTE: FOOTER DINÁMICO */
+/* ===================================================== */
+
+.main-footer {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 60px 20px 30px 20px;
+    margin-top: 80px;
+    border-top: 1px solid var(--border-color);
+    font-family: inherit;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 40px;
+}
+
+.footer-logo {
+    width: 160px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.footer-title {
+    color: var(--color-pink);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.footer-block ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-block ul li {
+    margin-bottom: 12px;
+}
+
+.footer-block ul li a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: var(--transition-fast);
+}
+
+.footer-block ul li a:hover {
+    color: var(--color-pink);
+    padding-left: 5px;
+}
+
+.footer-contact {
+    margin-bottom: 20px !important;
+}
+
+.footer-contact li {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-socials {
+    display: flex;
+    gap: 15px;
+}
+
+.footer-socials a {
+    color: var(--text-primary);
+    font-size: 1.4rem;
+    transition: var(--transition-medium);
+}
+
+.footer-socials a:hover {
+    color: var(--color-pink);
+    transform: translateY(-3px);
+}
+
+/* ESTILOS PAGOS */
+.payment-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.payment-tag {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--bg-card);
+    padding: 4px 8px;
+    border-radius: var(--radius-small);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.payment-detail {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 4px 0 0 5px;
+    line-height: 1.3;
+}
+
+.payment-disclaimer {
+    font-size: 0.7rem;
+    font-style: italic;
+    color: var(--color-pink);
+    margin-top: 10px;
+}
+
+.footer-bottom {
+    max-width: 1200px;
+    margin: 40px auto 0 auto;
+    padding-top: 25px;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.footer-bottom p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .footer-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .footer-title::after {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 2px;
+        background: var(--color-pink);
+        margin: 8px auto;
+    }
+    .footer-contact li, .footer-socials {
+        justify-content: center;
+    }
+    .footer-block ul li a:hover {
+        padding-left: 0;
+    }
+}
