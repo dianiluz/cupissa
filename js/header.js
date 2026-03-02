@@ -126,17 +126,16 @@ function renderHeader() {
         <p>Tu lista está vacía.</p>
       </div>
 
-      <button onclick="vaciarCarrito()" 
-        style="margin-bottom:10px;width:100%;padding:10px;border-radius:8px;background:#333;color:white;">
-        Vaciar lista
-      </button>
+      <div class="carrito-panel" id="carritoPanel">
+  <div class="carrito-header">
+    <span>Tu carrito</span>
+    <span id="cerrarCarrito" style="cursor:pointer;">✕</span>
+  </div>
 
-      <div class="carrito-footer">
-        <button class="btn-whatsapp" onclick="enviarCarritoWhatsApp()">
-          Solicitar cotización por WhatsApp
-        </button>
-      </div>
-    </div>
+  <div class="carrito-body" id="carritoBody">
+    <p>Tu lista está vacía.</p>
+  </div>
+</div>
 
     <!-- MOBILE MENU -->
     <div class="mobile-menu" id="mobileMenu">
