@@ -69,10 +69,8 @@ async function cargarProductos() {
 
 async function cargarVariaciones() {
 
-  if (!CONFIG.variacionesURL) return;
-
   try {
-    const response = await fetch(CONFIG.variacionesURL);
+    const response = await fetch(getSheetURL(CONFIG.gids.VARIACIONES));
     const tsv = await response.text();
     variacionesGlobal = parseTSV(tsv);
   } catch (error) {
@@ -319,6 +317,7 @@ function renderProductos(lista) {
     const img = document.createElement("img");
     img.src = p.imagenurl;
     img.alt = p.nombre;
+    img.onclick = () => abrirModal(p);
 
     imgWrapper.appendChild(img);
 
@@ -331,13 +330,50 @@ function renderProductos(lista) {
 
     info.appendChild(nombre);
 
-    const precio = document.createElement("div");
-    precio.className = "producto-precio";
+    const precioDiv = document.createElement("div");
+    precioDiv.className = "producto-precio";
 
     const precioBase = Number(p["*precio_base"]) || 0;
-    precio.textContent = formatearCOP(precioBase);
+    precioDiv.textContent = formatearCOP(precioBase);
 
-    info.appendChild(precio);
+    info.appendChild(precioDiv);
+
+    /* VARIABLES # */
+    const selects = [];
+
+    Object.keys(p).forEach(key => {
+
+      const valor = p[key];
+
+      if (typeof valor === "string" && valor.startsWith("#")) {
+
+        const opciones = valor.substring(1).split("|");
+
+        const select = document.createElement("select");
+        select.className = "modal-select";
+        select.dataset.columna = key.replace("*","").trim();
+
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Selecciona " + capitalizar(select.dataset.columna);
+        select.appendChild(defaultOption);
+
+        opciones.forEach(op => {
+          const option = document.createElement("option");
+          option.value = op.trim();
+          option.textContent = op.trim();
+          select.appendChild(option);
+        });
+
+        select.addEventListener("change", () => {
+          actualizarPrecioTarjeta(p, selects, precioDiv);
+        });
+
+        selects.push(select);
+        info.appendChild(select);
+      }
+
+    });
 
     const qty = document.createElement("input");
     qty.type = "number";
@@ -345,21 +381,52 @@ function renderProductos(lista) {
     qty.value = "1";
     qty.className = "modal-qty";
 
+    info.appendChild(qty);
+
     const btn = document.createElement("button");
     btn.className = "btn-agregar";
     btn.textContent = "Agregar";
 
     btn.onclick = () => {
-      agregarAlCarrito(p, {}, qty.value);
+
+      const variantes = {};
+
+      for (let select of selects) {
+        if (!select.value) {
+          alert("Debes seleccionar " + select.dataset.columna);
+          return;
+        }
+        variantes[select.dataset.columna] = select.value;
+      }
+
+      agregarAlCarrito(p, variantes, qty.value);
     };
 
-    info.appendChild(qty);
     info.appendChild(btn);
 
     card.appendChild(imgWrapper);
     card.appendChild(info);
     container.appendChild(card);
+
   });
+}
+
+
+function actualizarPrecioTarjeta(producto, selects, precioDiv) {
+
+  const variantes = {};
+
+  selects.forEach(select => {
+    if (select.value) {
+      variantes[select.dataset.columna] = select.value;
+    }
+  });
+
+  const incremento = calcularIncremento(producto, variantes);
+  const precioBase = Number(producto["*precio_base"]) || 0;
+  const nuevoPrecio = precioBase + incremento;
+
+  precioDiv.textContent = formatearCOP(nuevoPrecio);
 }
 
 /* ========================= */
