@@ -515,3 +515,69 @@
   color: #000;
   transform: translateY(-3px);
 }
+
+.carrito-resumen {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.resumen-linea {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.resumen-linea.total {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.resumen-linea.anticipo {
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+.resumen-linea.saldo {
+  color: #555;
+}
+
+#carritoPanel {
+  display: flex;
+  flex-direction: column;
+}
+
+#carritoBody {
+  flex: 1;
+  overflow-y: auto;
+}
+
+#carritoFooter {
+  padding: 15px;
+  border-top: 1px solid #eee;
+  background: #fff;
+}
+
+.carrito-acciones button {
+  padding: 8px 12px;
+  margin-right: 6px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #f5f5f5;
+}
+
+.btn-acelerado {
+  background: #f4699a;
+  color: white;
+}
+
+.detalle-variantes {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  margin-top: 6px;
+}
+
+.detalle-variantes.abierto {
+  max-height: 500px; /* suficiente para que nunca corte */
+}
