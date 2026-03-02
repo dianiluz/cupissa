@@ -1,11 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  setTimeout(() => {
+
     const usuarioGuardado = localStorage.getItem("cupissa_user");
 
-if (usuarioGuardado) {
-  const userData = JSON.parse(usuarioGuardado);
-  renderUsuarioLogueado(userData);
-}
+    if (usuarioGuardado) {
+      const userData = JSON.parse(usuarioGuardado);
+      renderUsuarioLogueado(userData);
+    }
+
+  }, 150);
 
   const userIcon = document.getElementById("userIcon");
   const overlay = document.getElementById("authOverlay");
@@ -69,10 +73,15 @@ if (usuarioGuardado) {
       }
 
       localStorage.setItem("cupissa_user", JSON.stringify({
-        tipo_usuario: data.tipo_usuario,
-        nombre: data.nombre,
-        email: data.email
-      }));
+  tipo_usuario: data.tipo_usuario,
+  nombre: data.nombre,
+  email: data.email,
+  telefono: data.telefono || "",
+  direccion: data.direccion || "",
+  barrio: data.barrio || "",
+  ciudad: data.ciudad || "",
+  departamento: data.departamento || ""
+}));
 
       overlay.classList.remove("active");
       location.reload();
