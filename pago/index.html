@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | CUPISSA</title>
+
+  <link rel="icon" href="/assets/favicon.png">
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/auth.css">
+  <link rel="stylesheet" href="pago.css">
+</head>
+<body>
+
+<div id="header"></div>
+
+<main class="checkout-container">
+
+  <div class="checkout-steps">
+    <div class="step active" data-step="1">Dirección</div>
+    <div class="step" data-step="2">Envío</div>
+    <div class="step" data-step="3">Pago</div>
+    <div class="step" data-step="4">Confirmación</div>
+  </div>
+
+  <div class="checkout-layout">
+
+    <div class="checkout-content">
+
+      <!-- PASO 1 -->
+      <section class="checkout-section active" id="paso-1">
+        <h2>Dirección de entrega</h2>
+
+        <div class="form-grid">
+
+          <input type="text" id="nombre" placeholder="Nombre completo">
+          <input type="email" id="email" placeholder="Correo electrónico">
+          <input type="tel" id="telefono" placeholder="Teléfono">
+
+          <div class="direccion-wrapper">
+            <input type="text" id="direccion" placeholder="Escribe tu dirección" autocomplete="off">
+            <div id="direccionSugerencias" class="direccion-sugerencias"></div>
+          </div>
+
+          <input type="text" id="barrio" placeholder="Barrio">
+
+          <div class="direccion-wrapper">
+            <input type="text" id="ciudad" placeholder="Ciudad o Municipio" autocomplete="off">
+            <div id="ciudadSugerencias" class="direccion-sugerencias"></div>
+          </div>
+
+          <!-- Departamento con buscador -->
+          <input type="text" id="departamentoBuscador" placeholder="Departamento">
+          <div id="departamentoLista" class="departamento-lista"></div>
+
+          <!-- Documento -->
+          <div id="documentoContainer" style="display:none;">
+          <input type="text" id="documento" placeholder="Número de documento">
+          <small>Este documento se usa únicamente para generar la guía de envío en transportadora.</small>
+          </div>
+
+        </div>
+
+        <button class="btn-primary next-step">Continuar a envío</button>
+      </section>
+
+      <!-- PASO 2 -->
+      <section class="checkout-section" id="paso-2">
+        <h2>Método de envío</h2>
+
+        <div id="envioOpciones"></div>
+
+        <button class="btn-secondary prev-step">Volver</button>
+        <button class="btn-primary next-step">Continuar a pago</button>
+      </section>
+
+      <!-- PASO 3 -->
+      <section class="checkout-section" id="paso-3">
+        <h2>Método de pago</h2>
+        <div id="pagoOpciones"></div>
+
+        <button class="btn-secondary prev-step">Volver</button>
+        <button class="btn-primary next-step">Revisar pedido</button>
+      </section>
+
+      <!-- PASO 4 -->
+      <section class="checkout-section" id="paso-4">
+        <h2>Confirmación</h2>
+        <div id="resumenFinal"></div>
+
+        <button class="btn-secondary prev-step">Editar</button>
+        <button class="btn-primary" id="confirmarPedido">Confirmar pedido</button>
+      </section>
+
+    </div>
+
+    <aside class="checkout-resumen">
+      <h3>Resumen de tu pedido</h3>
+      <div id="resumenCarrito"></div>
+    </aside>
+
+  </div>
+
+</main>
+
+<div id="footer"></div>
+
+<script src="/js/config.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/header.js"></script>
+<script src="/js/carrito.js"></script>
+<script src="pago.js"></script>
+<script src="/js/auth.js"></script>
+
+</body>
+</html>
