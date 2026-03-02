@@ -1,5 +1,6 @@
 /* ===================================================== */
 /* CUPISSA — MOTOR CATÁLOGO COMPLETO + PRECIO DINÁMICO */
+/* FIX VISUALIZACIÓN MUNDOS */
 /* ===================================================== */
 
 let productosGlobal = [];
@@ -17,7 +18,6 @@ let busquedaActiva = "";
 document.addEventListener("DOMContentLoaded", async () => {
 
   if (!CONFIG.sheetURL || CONFIG.sheetURL.includes("PEGA_AQUI")) {
-    console.warn("⚠️ Configura sheetURL en config.js");
     return;
   }
 
@@ -51,7 +51,7 @@ async function cargarProductos() {
     headersGlobal = Object.keys(data[0]);
 
     productosGlobal = data.filter(p =>
-      p["*activo"]?.toLowerCase() === "si"
+      String(p["*activo"]).trim().toLowerCase() === "si"
     );
 
     generarMundos();
@@ -59,7 +59,7 @@ async function cargarProductos() {
     aplicarTodo();
 
   } catch (error) {
-    console.error("Error cargando Sheet:", error);
+    console.error(error);
   }
 }
 
@@ -76,7 +76,7 @@ async function cargarVariaciones() {
     const tsv = await response.text();
     variacionesGlobal = parseTSV(tsv);
   } catch (error) {
-    console.error("Error cargando variaciones:", error);
+    console.error(error);
   }
 }
 
@@ -115,17 +115,35 @@ function aplicarTodo() {
 }
 
 /* ========================= */
-/* MUNDOS */
+/* MUNDOS — FIX */
 /* ========================= */
 
 function generarMundos() {
 
-  const bar = document.getElementById("mundosBar");
-  if (!bar) return;
+  const contenedorPadre = document.getElementById("mundos");
+  if (!contenedorPadre) return;
 
-  const mundos = [...new Set(productosGlobal.map(p => p.mundo).filter(Boolean))];
+  // Crear barra interna si no existe
+  let bar = document.getElementById("mundosBar");
+
+  if (!bar) {
+    bar = document.createElement("div");
+    bar.id = "mundosBar";
+    bar.className = "mundos-bar";
+    contenedorPadre.innerHTML = "";
+    contenedorPadre.appendChild(bar);
+  }
+
+  const mundos = [...new Set(
+    productosGlobal
+      .map(p => p.mundo)
+      .filter(Boolean)
+      .map(m => String(m).trim())
+  )];
 
   bar.innerHTML = "";
+
+  if (!mundos.length) return;
 
   mundos.forEach(m => {
 
@@ -134,6 +152,7 @@ function generarMundos() {
     btn.textContent = capitalizar(m);
 
     btn.onclick = () => {
+
       document.querySelectorAll(".mundo-item")
         .forEach(b => b.classList.remove("active"));
 
@@ -144,6 +163,10 @@ function generarMundos() {
 
     bar.appendChild(btn);
   });
+
+  // Activar primero por defecto
+  const primerBtn = bar.querySelector(".mundo-item");
+  if (primerBtn) primerBtn.classList.add("active");
 }
 
 /* ========================= */
@@ -316,52 +339,6 @@ function renderProductos(lista) {
 
     info.appendChild(precio);
 
-    headersGlobal.forEach(header => {
-
-      const valor = p[header];
-      if (!valor) return;
-
-      if (typeof valor === "string" && valor.startsWith("#")) {
-
-        const label = document.createElement("div");
-        label.style.fontSize = "12px";
-        label.style.marginTop = "6px";
-        label.textContent = capitalizar(header.replace("*",""));
-
-        const select = document.createElement("select");
-        select.className = "modal-select";
-        select.dataset.columna = header.replace("*","").trim();
-
-        const opciones = valor.substring(1).split("|");
-
-        opciones.forEach(op => {
-          const option = document.createElement("option");
-          option.value = op.trim();
-          option.textContent = op.trim();
-          select.appendChild(option);
-        });
-
-        select.addEventListener("change", () => {
-
-          const variantesSeleccionadas = {};
-
-          info.querySelectorAll("select").forEach(s => {
-            variantesSeleccionadas[s.dataset.columna] = s.value;
-          });
-
-          if (typeof calcularIncremento === "function") {
-            const incremento = calcularIncremento(p, variantesSeleccionadas);
-            precio.textContent = formatearCOP(precioBase + incremento);
-          }
-
-        });
-
-        info.appendChild(label);
-        info.appendChild(select);
-      }
-
-    });
-
     const qty = document.createElement("input");
     qty.type = "number";
     qty.min = "1";
@@ -373,14 +350,7 @@ function renderProductos(lista) {
     btn.textContent = "Agregar";
 
     btn.onclick = () => {
-
-      const variantesSeleccionadas = {};
-
-      info.querySelectorAll("select").forEach(select => {
-        variantesSeleccionadas[select.dataset.columna] = select.value;
-      });
-
-      agregarAlCarrito(p, variantesSeleccionadas, qty.value);
+      agregarAlCarrito(p, {}, qty.value);
     };
 
     info.appendChild(qty);
