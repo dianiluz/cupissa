@@ -20,12 +20,10 @@ function renderHeader() {
   headerContainer.innerHTML = `
     <header class="header">
 
-      <!-- MOBILE LEFT -->
       <div class="header-mobile-left">
         <div class="hamburger" id="hamburgerBtn">☰</div>
       </div>
 
-      <!-- LOGO -->
       <div class="header-logo">
         <a href="/">
           <img src="/assets/logo.png" class="logo-dark" alt="CUPISSA">
@@ -33,7 +31,6 @@ function renderHeader() {
         </a>
       </div>
 
-      <!-- DESKTOP SEARCH -->
       <div class="header-search">
         <div class="desktop-search-wrapper">
           <input type="text" id="globalSearch" placeholder="¿Qué estás buscando?">
@@ -41,28 +38,21 @@ function renderHeader() {
         </div>
       </div>
 
-      <!-- DESKTOP NAV -->
       <div class="header-nav">
         <a href="/" class="nav-link">INICIO</a>
         <a href="/catalogo" class="nav-link">CATÁLOGO</a>
         <a href="/rastreo" class="nav-link">SEGUIMIENTO DE PEDIDO</a>
       </div>
 
-      <!-- RIGHT ICONS -->
       <div class="header-icons">
 
-        <!-- CART -->
         <div class="header-icon" id="cartIcon">
           🛒
           <span class="count" id="cartCount">0</span>
         </div>
 
-        <!-- USER ICON -->
-        <div class="header-icon" id="userIcon">
-          👤
-        </div>
+        <div class="header-icon" id="userIcon"></div>
 
-        <!-- THEME -->
         <div class="header-icon" id="themeToggle">
           🌙
         </div>
@@ -71,12 +61,22 @@ function renderHeader() {
 
     </header>
 
+    <!-- PANEL CARRITO -->
+    <div class="carrito-panel" id="carritoPanel">
+      <div class="carrito-header">
+        <span>Tu carrito</span>
+        <span id="cerrarCarrito" style="cursor:pointer;">✕</span>
+      </div>
+
+      <div class="carrito-body" id="carritoBody">
+        <p>Tu lista está vacía.</p>
+      </div>
+    </div>
+
     <!-- LOGIN MODAL -->
     <div class="auth-overlay" id="authOverlay">
       <div class="auth-modal">
-
         <div class="auth-close" id="cerrarAuth">✕</div>
-
         <h2>Iniciar sesión</h2>
 
         <div class="auth-roles">
@@ -103,41 +103,9 @@ function renderHeader() {
         </p>
 
         <p id="authError" style="color:red; font-size:13px; display:none;"></p>
-
       </div>
     </div>
 
-    <!-- MOBILE SEARCH BAR -->
-    <div class="mobile-search-bar">
-      <div class="mobile-search-wrapper">
-        <input type="text" id="mobileSearchInput" placeholder="¿Qué estás buscando hoy?">
-        <span class="clear-search" id="clearMobileSearch">✕</span>
-      </div>
-    </div>
-
-    <!-- PANEL CARRITO -->
-    <div class="carrito-panel" id="carritoPanel">
-      <div class="carrito-header">
-        <span>Tu carrito</span>
-        <span id="cerrarCarrito" style="cursor:pointer;">✕</span>
-      </div>
-
-      <div class="carrito-body" id="carritoBody">
-        <p>Tu lista está vacía.</p>
-      </div>
-
-      <div class="carrito-panel" id="carritoPanel">
-  <div class="carrito-header">
-    <span>Tu carrito</span>
-    <span id="cerrarCarrito" style="cursor:pointer;">✕</span>
-  </div>
-
-  <div class="carrito-body" id="carritoBody">
-    <p>Tu lista está vacía.</p>
-  </div>
-</div>
-
-    <!-- MOBILE MENU -->
     <div class="mobile-menu" id="mobileMenu">
       <a href="/">INICIO</a>
       <a href="/catalogo">CATÁLOGO</a>
@@ -145,11 +113,97 @@ function renderHeader() {
     </div>
   `;
 
+  configurarUserIcon();
+configurarHamburger();
+configurarTema();
+
+if (typeof inicializarPanelCarrito === "function") {
+  inicializarPanelCarrito();
+  actualizarContadorCarrito();
+}
+}
+
+/* ========================= */
+/* CARRITO */
+/* ========================= */
+
+function configurarCarrito() {
+
+  const icon = document.getElementById("cartIcon");
+  const panel = document.getElementById("carritoPanel");
+  const cerrar = document.getElementById("cerrarCarrito");
+
+  if (!icon || !panel) return;
+
+  icon.addEventListener("click", () => {
+    panel.classList.add("active");
+    document.body.style.overflow = "hidden";
+  });
+
+  if (cerrar) {
+    cerrar.addEventListener("click", () => {
+      panel.classList.remove("active");
+      document.body.style.overflow = "auto";
+    });
+  }
+}
+
+/* ========================= */
+/* TEMA */
+/* ========================= */
+
+function configurarTema() {
+
   const themeBtn = document.getElementById("themeToggle");
-  if (themeBtn) themeBtn.addEventListener("click", alternarTema);
+  if (!themeBtn) return;
+
+  themeBtn.addEventListener("click", alternarTema);
+}
+
+/* ========================= */
+/* USER ICON */
+/* ========================= */
+
+function configurarUserIcon() {
+
+  const userIcon = document.getElementById("userIcon");
+  const userData = localStorage.getItem("cupissa_user");
+
+  if (!userIcon) return;
+
+  if (userData) {
+
+    const user = JSON.parse(userData);
+
+    userIcon.innerHTML = `
+      <span class="user-name">${user.nombre.split(" ")[0]}</span>
+    `;
+
+    userIcon.onclick = () => {
+      window.location.href = "/panel/";
+    };
+
+  } else {
+
+    userIcon.innerHTML = "👤";
+
+    userIcon.onclick = () => {
+      const overlay = document.getElementById("authOverlay");
+      if (overlay) overlay.classList.add("active");
+    };
+  }
+}
+
+/* ========================= */
+/* HAMBURGER */
+/* ========================= */
+
+function configurarHamburger() {
 
   const hamburger = document.getElementById("hamburgerBtn");
   const mobileMenu = document.getElementById("mobileMenu");
+
+  if (!hamburger || !mobileMenu) return;
 
   hamburger.addEventListener("click", () => {
     mobileMenu.classList.toggle("active");
@@ -159,90 +213,3 @@ function renderHeader() {
   });
 }
 
-/* ========================= */
-/* BARRA DE MUNDOS */
-/* ========================= */
-
-function renderMundos() {
-
-  const mundosContainer = document.getElementById("mundos");
-  if (!mundosContainer) return;
-
-  mundosContainer.innerHTML = `
-    <div class="mundos-bar" id="mundosBar"></div>
-  `;
-}
-
-/* ========================= */
-/* FOOTER */
-/* ========================= */
-
-function renderFooter() {
-
-  const footerContainer = document.getElementById("footer");
-  if (!footerContainer) return;
-
-  const year = new Date().getFullYear();
-
-  footerContainer.innerHTML = `
-    <footer class="footer">
-
-      <div class="footer-grid">
-
-        <div>
-          <h4>Contacto</h4>
-          <p>Barranquilla, Colombia</p>
-          <p>+57 314 767 1380</p>
-          <p>${CONFIG.contactEmail}</p>
-
-          <div style="margin-top:10px; display:flex; gap:10px;">
-            <a href="https://www.instagram.com/cupissa.co/" target="_blank">Instagram</a>
-            <a href="https://www.tiktok.com/@cupissa.co" target="_blank">TikTok</a>
-          </div>
-        </div>
-
-        <div>
-          <h4>Explora</h4>
-          <a href="/">Inicio</a>
-          <a href="/catalogo/">Catálogo</a>
-          <a href="/rastreo/">Rastrear pedido</a>
-        </div>
-
-        <div>
-          <h4>Legales</h4>
-          <a href="/legales/#tratamiento">Tratamiento de datos</a>
-          <a href="/legales/#envios">Políticas de envío</a>
-          <a href="/legales/#terminos">Términos y condiciones</a>
-        </div>
-
-        <div>
-          <h4>Métodos de pago</h4>
-          <div class="footer-payment-grid">
-            <span>Efectivo</span>
-            <span>Wompi</span>
-            <span>Bancolombia</span>
-            <span>Nequi</span>
-            <span>Addi</span>
-            <span>Davivienda</span>
-            <span>Daviplata</span>
-            <span>Mercado Pago</span>
-            <span>BRE-B</span>
-            <span>Grupo Aval</span>
-          </div>
-
-          <p style="margin-top:10px; font-size:12px;">
-            Pago contraentrega disponible para Barranquilla y municipios cercanos.
-            Algunos productos y servicios requieren anticipos para ser agendados.
-            Para envíos nacionales se requiere pago anticipado del flete.
-          </p>
-        </div>
-
-      </div>
-
-      <div class="footer-bottom">
-        © ${year} CUPISSA — Desarrollado por Diani Gonzalez
-      </div>
-
-    </footer>
-  `;
-}
