@@ -1,9 +1,5 @@
 /* ===================================================== */
-/* CUPISSA — MODAL PRODUCTO */
-/* ===================================================== */
-
-/* ===================================================== */
-/* CUPISSA — MODAL PRODUCTO LIMPIO */
+/* CUPISSA — MODAL PRODUCTO DEFINITIVO */
 /* ===================================================== */
 
 function abrirModal(producto) {
@@ -14,13 +10,22 @@ function abrirModal(producto) {
   const modal = document.createElement("div");
   modal.className = "modal";
 
+  /* ========================= */
+  /* IMAGEN */
+  /* ========================= */
+
   const imgDiv = document.createElement("div");
   imgDiv.className = "modal-img";
 
   const img = document.createElement("img");
   img.src = producto.imagenurl || "";
   img.alt = producto.nombre || "";
+
   imgDiv.appendChild(img);
+
+  /* ========================= */
+  /* CONTENIDO */
+  /* ========================= */
 
   const content = document.createElement("div");
   content.className = "modal-content";
@@ -36,6 +41,22 @@ function abrirModal(producto) {
   content.appendChild(closeBtn);
   content.appendChild(titulo);
 
+  /* ========================= */
+  /* PRECIO */
+  /* ========================= */
+
+  const precioBase = Number(producto["*precio_base"]) || 0;
+
+  const precioDiv = document.createElement("div");
+  precioDiv.className = "producto-precio";
+  precioDiv.textContent = formatearCOP(precioBase);
+
+  content.appendChild(precioDiv);
+
+  /* ========================= */
+  /* VARIABLES (#) */
+  /* ========================= */
+
   const selects = [];
 
   Object.keys(producto).forEach(key => {
@@ -50,93 +71,9 @@ function abrirModal(producto) {
       select.className = "modal-select";
       select.dataset.columna = key.replace("*","").trim();
 
-      opciones.forEach(op => {
-        const option = document.createElement("option");
-        option.value = op.trim();
-        option.textContent = op.trim();
-        select.appendChild(option);
-      });
-
-      content.appendChild(select);
-      selects.push(select);
-    }
-
-  });
-
-  const qty = document.createElement("input");
-  qty.type = "number";
-  qty.min = "1";
-  qty.value = "1";
-  qty.className = "modal-qty";
-
-  content.appendChild(qty);
-
-  const btn = document.createElement("button");
-  btn.className = "btn-agregar";
-  btn.textContent = "Agregar";
-
-  btn.onclick = () => {
-
-    const variantes = {};
-
-    selects.forEach(select => {
-      variantes[select.dataset.columna] = select.value;
-    });
-
-    agregarAlCarrito(producto, variantes, qty.value);
-    overlay.remove();
-  };
-
-  content.appendChild(btn);
-
-  modal.appendChild(imgDiv);
-  modal.appendChild(content);
-  overlay.appendChild(modal);
-
-  document.body.appendChild(overlay);
-
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) overlay.remove();
-  });
-
-}
-  /* ========================= */
-  /* CONTENIDO */
-  /* ========================= */
-
-  const content = document.createElement("div");
-  content.className = "modal-content";
-
-  const closeBtn = document.createElement("div");
-  closeBtn.className = "modal-close";
-  closeBtn.textContent = "✕";
-  closeBtn.addEventListener("click", () => overlay.remove());
-
-  const titulo = document.createElement("h2");
-  titulo.textContent = producto.nombre || "";
-
-  content.appendChild(closeBtn);
-  content.appendChild(titulo);
-
-  /* ========================= */
-  /* VARIANTES (detectadas por #) */
-  /* ========================= */
-
-  Object.keys(producto).forEach(key => {
-
-    const valor = producto[key];
-
-    if (valor && typeof valor === "string" && valor.startsWith("#")) {
-
-      const opciones = valor.substring(1).split("|");
-
-      const select = document.createElement("select");
-      select.className = "modal-select";
-      select.dataset.columna = key;
-
       const defaultOption = document.createElement("option");
       defaultOption.value = "";
-      defaultOption.textContent = "Selecciona " + capitalizar(key);
+      defaultOption.textContent = "Selecciona " + capitalizar(select.dataset.columna);
       select.appendChild(defaultOption);
 
       opciones.forEach(op => {
@@ -146,6 +83,11 @@ function abrirModal(producto) {
         select.appendChild(option);
       });
 
+      select.addEventListener("change", () => {
+        actualizarPrecioModal(producto, selects, precioDiv);
+      });
+
+      selects.push(select);
       content.appendChild(select);
     }
 
@@ -171,22 +113,21 @@ function abrirModal(producto) {
   btn.className = "btn-agregar";
   btn.textContent = "Agregar";
 
-  btn.addEventListener("click", () => {
+  btn.onclick = () => {
 
-    const selects = content.querySelectorAll("select");
-    let variantesSeleccionadas = {};
+    const variantes = {};
 
     for (let select of selects) {
       if (!select.value) {
         alert("Debes seleccionar " + select.dataset.columna);
         return;
       }
-      variantesSeleccionadas[select.dataset.columna] = select.value;
+      variantes[select.dataset.columna] = select.value;
     }
 
-    agregarAlCarrito(producto, variantesSeleccionadas, qty.value);
+    agregarAlCarrito(producto, variantes, qty.value);
     overlay.remove();
-  });
+  };
 
   content.appendChild(btn);
 
@@ -200,9 +141,28 @@ function abrirModal(producto) {
 
   document.body.appendChild(overlay);
 
-  /* Cerrar si se hace click fuera del modal */
   overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) {
-      overlay.remove();
+    if (e.target === overlay) overlay.remove();
+  });
+}
+
+/* ========================= */
+/* PRECIO DINÁMICO MODAL */
+/* ========================= */
+
+function actualizarPrecioModal(producto, selects, precioDiv) {
+
+  const variantes = {};
+
+  selects.forEach(select => {
+    if (select.value) {
+      variantes[select.dataset.columna] = select.value;
     }
   });
+
+  const incremento = calcularIncremento(producto, variantes);
+  const precioBase = Number(producto["*precio_base"]) || 0;
+  const nuevoPrecio = precioBase + incremento;
+
+  precioDiv.textContent = formatearCOP(nuevoPrecio);
+}
