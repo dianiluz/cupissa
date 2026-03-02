@@ -4,41 +4,25 @@
 
 const CONFIG = {
 
-  /* ========================= */
-  /* INFORMACIÓN GENERAL */
-  /* ========================= */
-
   brandName: "CUPISSA",
   whatsappNumber: "573147671380",
   baseURL: "https://cupissa.com",
   contactEmail: "contacto@cupissa.com",
 
-  /* ========================= */
-  /* GOOGLE SHEET */
-  /* ========================= */
-
   sheetURL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQB2HWydVva17mDTdLcYgY409q5DcJHg3PumZLypAgLiwWs6s8ptH_kC_qjuhZv7W010xobmyFl2d7y/pub?output=tsv",
-  variacionesURL: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQB2HWydVva17mDTdLcYgY409q5DcJHg3PumZLypAgLiwWs6s8ptH_kC_qjuhZv7W010xobmyFl2d7y/pub?gid=1408591435&single=true&output=tsv",
-  /* ========================= */
-  /* BACKEND (APPS SCRIPT) */
-  /* ========================= */
 
   backendURL: "https://script.google.com/macros/s/AKfycbyzqj3w2a83cHtAXAP3LKnsj5kel8C5EwRCgFlaEHv5V70SrnxXGt7kOfNmLQCW9dhK/exec",
 
-  
-  /* ========================= */
-  /* FUTURO (PREPARADO) */
-  /* ========================= */
-
-  defaultLanguage: "es",
-  supportedLanguages: ["es", "en"],
-
-  defaultCurrency: "COP",
-  supportedCurrencies: ["COP", "USD"],
-
-  /* ========================= */
-  /* TRANSPORTADORAS */
-  /* ========================= */
+  gids: {
+    PRODUCTOS: "0",
+    VARIACIONES: "1408591435",
+    USUARIOS: "93400123",
+    PEDIDOS: "1721653611",
+    PEDIDOS_PRODUCTOS: "1545784056",
+    MARKETING: "1174791065",
+    PUNTOS_CLIENTES: "310660099",
+    TARIFAS_DOMICILIOS: "1358676421"
+  },
 
   transportadoras: {
     "Interrapidisimo": "https://www.interrapidisimo.com/sigue-tu-envio/",
@@ -48,3 +32,10 @@ const CONFIG = {
   }
 
 };
+
+function getSheetURL(gid) {
+  return CONFIG.sheetURL.replace(
+    "output=tsv",
+    `gid=${gid}&single=true&output=tsv`
+  );
+}
