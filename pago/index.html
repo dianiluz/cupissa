@@ -36,9 +36,9 @@
 
         <div class="form-grid">
 
-          <input type="text" id="nombre" placeholder="Nombre completo">
-          <input type="email" id="email" placeholder="Correo electrónico">
-          <input type="tel" id="telefono" placeholder="Teléfono">
+          <input type="text" id="nombre" placeholder="Nombre y Apellido">
+          <input type="email" id="email" placeholder="Correo electrónico activo">
+          <input type="tel" id="telefono" placeholder="Teléfono (número con WhatsApp)">
 
           <div class="direccion-wrapper">
             <input type="text" id="direccion" placeholder="Escribe tu dirección" autocomplete="off">
@@ -53,8 +53,10 @@
           </div>
 
           <!-- Departamento con buscador -->
-          <input type="text" id="departamentoBuscador" placeholder="Departamento">
-          <div id="departamentoLista" class="departamento-lista"></div>
+          <div class="campo-direccion">
+  <input type="text" id="departamentoBuscador" placeholder="Departamento" autocomplete="off">
+  <div id="departamentoLista" class="direccion-sugerencias"></div>
+</div>
 
           <!-- Documento -->
           <div id="documentoContainer" style="display:none;">
