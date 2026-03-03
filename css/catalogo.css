@@ -1,0 +1,268 @@
+/* ===================================================== */
+/* CUPISSA — CATÁLOGO Y FILTROS */
+/* ===================================================== */
+
+.catalogo-wrapper {
+    max-width: 1400px;
+    width: 95%;
+    margin: 3rem auto;
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+/* Sidebar Filtros */
+.catalogo-sidebar {
+    width: 260px;
+    background: var(--color-white);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 100px;
+    flex-shrink: 0;
+}
+
+.filter-group {
+    margin-bottom: 1.5rem;
+}
+
+.filter-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    color: var(--color-black);
+    border-bottom: 2px solid var(--color-pink);
+    display: inline-block;
+    padding-bottom: 3px;
+}
+
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    color: var(--color-gray-dark);
+}
+
+.filter-label input[type="checkbox"] {
+    accent-color: var(--color-pink);
+    width: 16px;
+    height: 16px;
+}
+
+/* Grilla de Productos */
+.catalogo-main {
+    flex: 1;
+}
+
+.catalogo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background: var(--color-white);
+    padding: 1rem 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.catalogo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+/* Tarjeta de Producto */
+.product-card {
+    background: var(--color-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.product-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    background-color: var(--color-gray-light);
+}
+
+.product-info {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.product-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: var(--color-black);
+}
+
+.product-price {
+    font-size: 1.2rem;
+    color: var(--color-pink);
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.btn-add-modal {
+    margin-top: auto;
+    width: 100%;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    border: none;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color var(--transition-fast);
+}
+
+.btn-add-modal:hover {
+    background-color: var(--color-pink);
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3rem;
+    color: var(--color-gray-dark);
+    font-size: 1.2rem;
+    background: var(--color-white);
+    border-radius: var(--radius-lg);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .catalogo-wrapper {
+        flex-direction: column;
+    }
+    .catalogo-sidebar {
+        width: 100%;
+        position: static;
+    }
+}
+
+/* ===================================================== */
+/* ESTILOS NUEVOS: Filtros Colapsables y Tarjeta Dinámica */
+/* ===================================================== */
+
+details.filter-group {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--color-gray-light);
+    padding-bottom: 15px;
+}
+
+details.filter-group summary {
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    outline: none;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--color-black);
+}
+
+details.filter-group summary::-webkit-details-marker {
+    display: none; /* Oculta la flecha fea por defecto */
+}
+
+details.filter-group summary::after {
+    content: '\25BC'; /* Flecha abajo */
+    font-size: 0.8rem;
+    color: var(--color-pink);
+    transition: transform var(--transition-fast);
+}
+
+details[open].filter-group summary::after {
+    transform: rotate(180deg); /* Voltea la flecha al abrir */
+}
+
+.filter-options {
+    margin-top: 15px;
+}
+
+/* Tarjeta Dinámica */
+.card-selects {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.card-selects select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid var(--color-gray-medium);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-primary);
+    font-size: 0.85rem;
+    outline: none;
+}
+
+.card-selects select:focus {
+    border-color: var(--color-pink);
+}
+
+.product-image {
+    cursor: pointer;
+}
+
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.btn-add-direct {
+    flex: 1;
+    background-color: var(--color-pink);
+    color: var(--color-white);
+    border: none;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color var(--transition-fast);
+}
+
+.btn-add-direct:hover {
+    background-color: #b80e64;
+}
+
+.btn-view-modal {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    border: none;
+    padding: 10px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color var(--transition-fast);
+}
+
+.btn-view-modal:hover {
+    background-color: var(--color-gray-dark);
+}
