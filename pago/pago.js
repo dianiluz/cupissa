@@ -277,22 +277,55 @@ function renderResumenFinal() {
 /* ================= CONFIRMAR PEDIDO Y PASARELA ================= */
 
 async function confirmarPedido() {
+
     if (procesandoCompra) return;
     procesandoCompra = true;
 
+    const carritoData = JSON.parse(localStorage.getItem("cupissa_carrito")) || [];
+
+    const params = new URLSearchParams();
+    params.append("action", "registrarPedido");
+    params.append("tipo", checkoutData.tipo);
+    params.append("nombre_cliente", checkoutData.nombre_cliente);
+    params.append("usuario_email", checkoutData.usuario_email);
+    params.append("telefono", checkoutData.telefono);
+    params.append("direccion", checkoutData.direccion);
+    params.append("barrio", checkoutData.barrio);
+    params.append("ciudad", checkoutData.ciudad);
+    params.append("departamento", checkoutData.departamento);
+    params.append("metodo_pago", checkoutData.metodo_pago);
+    params.append("total", checkoutData.total_final);
+
     try {
-        // Si es transferencia directa o contraentrega, registrar sin pasar por pasarela
-        if (checkoutData.metodo_pago === "transferencia") {
-            await registrarPedidoDirecto();
-        } else if (checkoutData.metodo_pago === "wompi") {
-            // Para Wompi, inicializar widget
-            inicializarWompiWidget();
-        } else if (checkoutData.metodo_pago === "addi") {
-            mostrarNotificacion("Redirección a ADDI en desarrollo");
-            procesandoCompra = false;
+
+        const res = await fetch(CONFIG.backendURL + "?" + params.toString());
+        const result = await res.json();
+
+        if (!result.success) throw new Error("No se creó pedido");
+
+        const idPedido = result.id_pedido;
+
+        if (checkoutData.metodo_pago === "wompi") {
+
+            const checkout = new WidgetCheckout({
+                currency: "COP",
+                amountInCents: checkoutData.pago_hoy * 100,
+                reference: idPedido,
+                publicKey: "pub_prod_q69BzlCLtdFiZQEmbQFTMX9uXwr6E4Xg",
+                redirectUrl: window.location.origin + "/rastreo/?id=" + idPedido
+            });
+
+            checkout.open();
+
+        } else {
+
+            window.location.href = "/rastreo/?id=" + idPedido;
+
         }
-    } catch (error) {
-        mostrarNotificacion("Error al procesar: " + error.message);
+
+    } catch (err) {
+
+        mostrarNotificacion("Error: " + err.message);
         procesandoCompra = false;
     }
 }
