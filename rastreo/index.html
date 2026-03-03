@@ -1,64 +1,106 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Seguimiento de Pedido</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rastreo de Pedidos - CUPISSA</title>
+    <link rel="icon" href="/assets/favicon.png">
 
-<link rel="icon" href="/assets/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="/css/variables.css">
-<link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/layout.css">
-<link rel="stylesheet" href="/css/components.css">
-<link rel="stylesheet" href="/css/animations.css">
-<link rel="stylesheet" href="/css/auth.css">
-
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <link rel="stylesheet" href="/css/rastreo.css">
 </head>
+<body>
+    <div id="header"></div>
 
-<div id="header"></div>
+    <main class="rastreo-wrapper">
+        <div class="rastreo-card fade-in">
+            <h1 class="rastreo-title">Sigue tu pedido</h1>
+            <p class="rastreo-subtitle">Ingresa tu número de pedido (Ej: CUP-0001) para conocer su estado actual.</p>
 
-<main class="rastreo-container">
+            <form id="formRastreo" class="rastreo-form">
+                <input type="text" id="inputIdPedido" class="rastreo-input" placeholder="CUP-XXXX" required>
+                <button type="submit" class="btn-rastrear" id="btnRastrear">Buscar</button>
+            </form>
+            <div id="msgError" class="error-msg">No encontramos un pedido con ese ID. Verifica e intenta de nuevo.</div>
 
-  <h1>Seguimiento de Pedido</h1>
+            <div class="rastreo-result" id="resultadoRastreo">
+                <div class="rastreo-header-info">
+                    <div class="info-block">
+                        <span class="info-label">ID de Pedido</span>
+                        <span class="info-value" id="lblPedidoId">---</span>
+                    </div>
+                    <div class="info-block">
+                        <span class="info-label">Cliente</span>
+                        <span class="info-value" id="lblCliente">---</span>
+                    </div>
+                    <div class="info-block">
+                        <span class="info-label">Envío</span>
+                        <span class="info-value" id="lblTipoEnvio">---</span>
+                    </div>
+                </div>
 
-  <div class="rastreo-box">
+                <div class="timeline">
+                    <div class="timeline-step" id="paso-1">
+                        <div class="step-icon"><i class="fas fa-clipboard-list"></i></div>
+                        <div class="step-content-box">
+                            <div class="step-title">Agendado</div>
+                            <div class="step-desc">Tu pedido ha sido registrado y el anticipo/pago confirmado.</div>
+                        </div>
+                    </div>
 
-    <input 
-      type="text" 
-      id="inputPedido" 
-      placeholder="Ingresa tu número de pedido o guía"
-    />
+                    <div class="timeline-step" id="paso-2">
+                        <div class="step-icon"><i class="fas fa-cut"></i></div>
+                        <div class="step-content-box">
+                            <div class="step-title">En Fabricación</div>
+                            <div class="step-desc">Estamos creando tus productos a medida (5 a 8 días hábiles).</div>
+                        </div>
+                    </div>
 
-    <button id="btnBuscarPedido" class="btn-principal">
-      Buscar pedido
-    </button>
+                    <div class="timeline-step" id="paso-3">
+                        <div class="step-icon"><i class="fas fa-box-open"></i></div>
+                        <div class="step-content-box">
+                            <div class="step-title">Listo para Envío/Entrega</div>
+                            <div class="step-desc">Tu pedido ha superado el control de calidad y está empacado.</div>
+                        </div>
+                    </div>
 
-  </div>
+                    <div class="timeline-step" id="paso-4">
+                        <div class="step-icon"><i class="fas fa-truck"></i></div>
+                        <div class="step-content-box">
+                            <div class="step-title" id="tituloPaso4">En Camino</div>
+                            <div class="step-desc" id="descPaso4">Tu pedido está en ruta hacia ti.</div>
+                            <div id="guiaContainer" style="display: none;">
+                                <a href="#" target="_blank" id="linkGuia" class="transportadora-link">Rastrear con Transportadora <i class="fas fa-external-link-alt"></i></a>
+                            </div>
+                        </div>
+                    </div>
 
-  <div id="resultadoRastreo" class="rastreo-resultado"></div>
+                    <div class="timeline-step" id="paso-5">
+                        <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="step-content-box">
+                            <div class="step-title">Entregado</div>
+                            <div class="step-desc">El pedido ha sido entregado exitosamente. ¡Gracias por elegir Cupissa!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
-</main>
+    <div id="footer"></div>
 
-<!-- FOOTER INYECTADO -->
-<div id="footer"></div>
-
-<!-- BOTÓN FLOTANTE WHATSAPP -->
-<a href="https://wa.me/573147671380" target="_blank" class="whatsapp-float">
-  <img src=\assets\whatsapp.png>
-</a>
-
-<!-- JS -->
-<script src="/js/config.js"></script>
-<script src="/js/utils.js"></script>
-<script src="/js/theme.js"></script>
-<script src="/js/header.js"></script>
-<script src="/js/carrito.js"></script>
-<script src="/js/sheet.js"></script>
-<script src="/js/rastreo.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/footer.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/header.js"></script>
+    <script src="/js/carrito.js"></script>
+    <script src="/js/footer.js"></script>
+    <script src="/js/rastreo.js"></script>
 </body>
 </html>
