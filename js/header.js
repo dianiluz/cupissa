@@ -157,7 +157,9 @@ function configurarTema() {
   const themeBtn = document.getElementById("themeToggle");
   if (!themeBtn) return;
 
-  themeBtn.addEventListener("click", alternarTema);
+  if (typeof alternarTema === "function") {
+    alternarTema();
+}
 }
 
 /* ========================= */
