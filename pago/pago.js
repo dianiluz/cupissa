@@ -278,56 +278,30 @@ function renderResumenFinal() {
 
 async function confirmarPedido() {
 
-    if (procesandoCompra) return;
-    procesandoCompra = true;
+   const payload = {
+    action: "registrarPedido",
+    tipo: checkoutData.tipo,
+    nombre_cliente: checkoutData.nombre_cliente,
+    usuario_email: checkoutData.usuario_email,
+    telefono: checkoutData.telefono,
+    direccion: checkoutData.direccion,
+    barrio: checkoutData.barrio,
+    ciudad: checkoutData.ciudad,
+    departamento: checkoutData.departamento,
+    cc: checkoutData.cc,
+    metodo_pago: checkoutData.metodo_pago,
+    total: checkoutData.total_final
+};
 
-    const carritoData = JSON.parse(localStorage.getItem("cupissa_carrito")) || [];
+const res = await fetch(CONFIG.backendURL, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+});
 
-    const params = new URLSearchParams();
-    params.append("action", "registrarPedido");
-    params.append("tipo", checkoutData.tipo);
-    params.append("nombre_cliente", checkoutData.nombre_cliente);
-    params.append("usuario_email", checkoutData.usuario_email);
-    params.append("telefono", checkoutData.telefono);
-    params.append("direccion", checkoutData.direccion);
-    params.append("barrio", checkoutData.barrio);
-    params.append("ciudad", checkoutData.ciudad);
-    params.append("departamento", checkoutData.departamento);
-    params.append("metodo_pago", checkoutData.metodo_pago);
-    params.append("total", checkoutData.total_final);
-
-    try {
-
-        const res = await fetch(CONFIG.backendURL + "?" + params.toString());
-        const result = await res.json();
-
-        if (!result.success) throw new Error("No se creó pedido");
-
-        const idPedido = result.id_pedido;
-
-        if (checkoutData.metodo_pago === "wompi") {
-
-            const checkout = new WidgetCheckout({
-                currency: "COP",
-                amountInCents: checkoutData.pago_hoy * 100,
-                reference: idPedido,
-                publicKey: "pub_prod_q69BzlCLtdFiZQEmbQFTMX9uXwr6E4Xg",
-                redirectUrl: window.location.origin + "/rastreo/?id=" + idPedido
-            });
-
-            checkout.open();
-
-        } else {
-
-            window.location.href = "/rastreo/?id=" + idPedido;
-
-        }
-
-    } catch (err) {
-
-        mostrarNotificacion("Error: " + err.message);
-        procesandoCompra = false;
-    }
+const result = await res.json();
 }
 
 async function inicializarWompiWidget() {
