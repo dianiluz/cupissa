@@ -1,164 +1,98 @@
 /* ===================================================== */
-/* CUPISSA — RASTREO TRANSPORTADORA */
+/* CUPISSA — LÓGICA DE RASTREO PÚBLICO */
 /* ===================================================== */
 
-const sheetRastreoURL =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQB2HWydVva17mDTdLcYgY409q5DcJHg3PumZLypAgLiwWs6s8ptH_kC_qjuhZv7W010xobmyFl2d7y/pub?gid=1721653611&single=true&output=tsv";
+const Rastreo = {
+    init: () => {
+        const form = document.getElementById('formRastreo');
+        form.addEventListener('submit', Rastreo.buscarPedido);
 
-document.addEventListener("DOMContentLoaded", () => {
+        // Si viene un ID por la URL (ej: /rastreo/?id=CUP-0001), buscar automáticamente
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        if (id) {
+            document.getElementById('inputIdPedido').value = id;
+            Rastreo.ejecutarBusqueda(id);
+        }
+    },
 
-  const btn = document.getElementById("btnBuscarPedido");
-  const input = document.getElementById("inputPedido");
-  const resultado = document.getElementById("resultadoRastreo");
+    buscarPedido: (e) => {
+        e.preventDefault();
+        const id = document.getElementById('inputIdPedido').value.trim().toUpperCase();
+        if (id) {
+            Rastreo.ejecutarBusqueda(id);
+        }
+    },
 
-  if (!btn) return;
+    ejecutarBusqueda: async (idPedido) => {
+        const btn = document.getElementById('btnRastrear');
+        const err = document.getElementById('msgError');
+        const resultDiv = document.getElementById('resultadoRastreo');
 
-  btn.addEventListener("click", async () => {
+        btn.disabled = true;
+        btn.innerText = "Buscando...";
+        err.style.display = 'none';
+        resultDiv.classList.remove('active');
 
-    const idPedido = input.value.trim();
-    if (!idPedido) return;
+        try {
+            const fd = new FormData();
+            fd.append('action', 'rastrearPedido'); // Esta función se agregará al backend
+            fd.append('id_pedido', idPedido);
 
-    resultado.innerHTML = "Buscando pedido...";
+            const res = await fetch(CONFIG.backendURL, { method: 'POST', body: fd });
+            const data = await res.json();
 
-    try {
+            if (data.success && data.pedido) {
+                Rastreo.mostrarResultado(data.pedido);
+            } else {
+                err.style.display = 'block';
+            }
+        } catch (error) {
+            err.innerText = "Error de conexión. Intenta nuevamente.";
+            err.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Buscar";
+        }
+    },
 
-      const response = await fetch(sheetRastreoURL);
-      const text = await response.text();
+    mostrarResultado: (pedido) => {
+        document.getElementById('lblPedidoId').innerText = pedido.IDPedido;
+        document.getElementById('lblCliente').innerText = pedido.NombreCliente;
+        document.getElementById('lblTipoEnvio').innerText = pedido.Transportadora && pedido.Transportadora !== '' ? pedido.Transportadora : pedido.Tipo;
 
-      const filas = text.split("\n").map(f => f.split("\t"));
-      const headers = filas[0].map(h => h.trim().toLowerCase());
-      const data = filas.slice(1);
+        const estadoActual = parseInt(pedido.Estado) || 1; // 1: Agendado, 2: Fabricación, 3: Listo, 4: En camino, 5: Entregado
 
-      const colID = headers.findIndex(h => h.includes("idpedido"));
-      const colEstado = headers.findIndex(h => h.includes("estado"));
-      const colNombre = headers.findIndex(h => h.includes("nombrecliente"));
-      const colContacto = headers.findIndex(h => h.includes("telefonoycorreo"));
-      const colDireccion = headers.findIndex(h => h.includes("dire"));
-      const colTransportadora = headers.findIndex(h => h.includes("transportadora"));
-      const colGuia = headers.findIndex(h => h.includes("guia"));
+        // Resetear clases
+        for (let i = 1; i <= 5; i++) {
+            const step = document.getElementById(`paso-${i}`);
+            step.classList.remove('completed', 'active');
+            
+            if (i < estadoActual) {
+                step.classList.add('completed');
+            } else if (i === estadoActual) {
+                step.classList.add('active');
+            }
+        }
 
-      const pedido = data.find(row =>
-        String(row[colID]).trim().toLowerCase() === idPedido.toLowerCase()
-      );
+        // Manejar lógica de guía si está en estado 4 (En Camino) y tiene URL
+        const guiaContainer = document.getElementById('guiaContainer');
+        const tituloPaso4 = document.getElementById('tituloPaso4');
+        const descPaso4 = document.getElementById('descPaso4');
 
-      if (!pedido) {
-        resultado.innerHTML = "<p>No se encontró el pedido.</p>";
-        return;
-      }
+        if (estadoActual >= 4 && pedido.GuiaTransportadora && pedido.URLtransportadora) {
+            tituloPaso4.innerText = "En Camino con Transportadora";
+            descPaso4.innerText = `Guía: ${pedido.GuiaTransportadora}`;
+            document.getElementById('linkGuia').href = pedido.URLtransportadora;
+            guiaContainer.style.display = 'block';
+        } else {
+            tituloPaso4.innerText = "En Camino";
+            descPaso4.innerText = "Tu pedido está en ruta hacia ti.";
+            guiaContainer.style.display = 'none';
+        }
 
-      const estado = String(pedido[colEstado]).trim();
-
-      const cliente = {
-        nombre: colNombre !== -1 ? pedido[colNombre] : "",
-        contacto: colContacto !== -1 ? pedido[colContacto] : "",
-        direccion: colDireccion !== -1 ? pedido[colDireccion] : ""
-      };
-
-      const transportadora = colTransportadora !== -1 ? pedido[colTransportadora] : "";
-      const guia = colGuia !== -1 ? pedido[colGuia] : "";
-
-      resultado.innerHTML = generarVistaRastreo(
-        idPedido,
-        estado,
-        transportadora,
-        guia,
-        cliente
-      );
-
-      setTimeout(() => {
-  const fill = document.querySelector(".progreso-fill");
-  if (fill) {
-    fill.style.width = calcularProgreso(estado) + "%";
-  }
-}, 300);
-
-    } catch (error) {
-      resultado.innerHTML = "<p>Error consultando el pedido.</p>";
+        document.getElementById('resultadoRastreo').classList.add('active');
     }
+};
 
-  });
-
-});
-
-/* ========================= */
-/* PROGRESO */
-/* ========================= */
-
-function calcularProgreso(estado) {
-  const total = 5;
-  const actual = parseInt(estado);
-  return ((actual - 1) / (total - 1)) * 100;
-}
-
-/* ========================= */
-/* VISTA RASTREO */
-/* ========================= */
-
-function generarVistaRastreo(id, estado, transportadora, guia, cliente) {
-
-  const pasos = [
-    { id: 1, nombre: "Agendado" },
-    { id: 2, nombre: "En fabricación" },
-    { id: 3, nombre: "Listo para envío" },
-    { id: 4, nombre: "En camino" },
-    { id: 5, nombre: "Entregado" }
-  ];
-
-  const actual = parseInt(estado);
-
-  const pasosHTML = pasos.map(p => {
-
-    const activo = actual >= p.id;
-
-    return `
-      <div class="paso ${activo ? "activo" : ""}">
-        <div class="circulo">${activo ? "✔" : ""}</div>
-        <span>${p.nombre}</span>
-      </div>
-    `;
-
-  }).join("");
-
-  return `
-    <div class="rastreo-card">
-
-      <div class="rastreo-id">
-        Pedido #${id}
-      </div>
-
-      <div class="linea-progreso">
-        <div class="progreso-fill" style="width:0%"></div>
-        ${pasosHTML}
-      </div>
-
-      <div class="datos-cliente">
-        ${cliente.nombre ? `<p><strong>Cliente:</strong> ${cliente.nombre}</p>` : ""}
-        ${cliente.contacto ? `<p><strong>Contacto:</strong> ${cliente.contacto}</p>` : ""}
-        ${cliente.direccion ? `<p><strong>Dirección:</strong> ${cliente.direccion}</p>` : ""}
-      </div>
-
-      ${transportadora ? `
-  <div class="datos-envio">
-    <p><strong>Transportadora:</strong> ${transportadora}</p>
-    ${guia ? `<p><strong>Guía:</strong> ${guia}</p>` : ""}
-
-    ${
-      guia && CONFIG.transportadoras[transportadora]
-        ? `<a class="btn-consultar-guia"
-             href="${CONFIG.transportadoras[transportadora]}${guia}"
-             target="_blank">
-             Consultar en ${transportadora}
-           </a>`
-        : ""
-    }
-
-  </div>
-` : ""}
-
-      <button class="btn-principal" onclick="window.open('https://wa.me/573147671380')">
-        ¿Algo está mal? Haz click aquí para corregir datos.
-      </button>
-
-    </div>
-  `;
-}
+document.addEventListener('DOMContentLoaded', Rastreo.init);
