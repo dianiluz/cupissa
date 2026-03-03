@@ -1,140 +1,134 @@
-document.addEventListener("DOMContentLoaded", () => {
+/* ===================================================== */
+/* CUPISSA — LÓGICA DE AUTENTICACIÓN */
+/* ===================================================== */
 
-  setTimeout(() => {
+const Auth = {
+    user: null,
 
-    const usuarioGuardado = localStorage.getItem("cupissa_user");
+    init: () => {
+        Auth.checkSession();
+        Auth.bindEvents();
+    },
 
-    if (usuarioGuardado) {
-      const userData = JSON.parse(usuarioGuardado);
-      renderUsuarioLogueado(userData);
+    checkSession: () => {
+        const localUser = localStorage.getItem('cupissa_user');
+        const sessionUser = sessionStorage.getItem('cupissa_user');
+        
+        if (localUser) {
+            Auth.user = JSON.parse(localUser);
+            Auth.switchView('viewDashboard');
+        } else if (sessionUser) {
+            Auth.user = JSON.parse(sessionUser);
+            Auth.switchView('viewDashboard');
+        } else {
+            Auth.switchView('viewLogin');
+        }
+    },
+
+    switchView: (viewId) => {
+        document.getElementById('viewLogin').classList.add('view-hidden');
+        document.getElementById('viewRegister').classList.add('view-hidden');
+        document.getElementById('viewDashboard').classList.add('view-hidden');
+        
+        document.getElementById(viewId).classList.remove('view-hidden');
+
+        if (viewId === 'viewDashboard' && Auth.user) {
+            if (typeof Panel !== 'undefined') Panel.init(Auth.user);
+        }
+    },
+
+    login: async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnLoginSubmit');
+        const errorDiv = document.getElementById('loginError');
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const remember = document.getElementById('loginRemember').checked;
+
+        btn.disabled = true;
+        btn.innerText = "Verificando...";
+        errorDiv.style.display = 'none';
+
+        try {
+            const fd = new FormData();
+            fd.append('action', 'login');
+            fd.append('email', email);
+            fd.append('password', password);
+
+            const res = await fetch(CONFIG.backendURL, { method: 'POST', body: fd });
+            const data = await res.json();
+
+            if (data.success) {
+                Auth.user = data;
+                const storage = remember ? localStorage : sessionStorage;
+                storage.setItem('cupissa_user', JSON.stringify(data));
+                Auth.switchView('viewDashboard');
+                window.location.reload(); // Refrescar header
+            } else {
+                errorDiv.innerText = "Credenciales incorrectas o usuario inactivo.";
+                errorDiv.style.display = 'block';
+            }
+        } catch (error) {
+            errorDiv.innerText = "Error de conexión. Intenta de nuevo.";
+            errorDiv.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Ingresar";
+        }
+    },
+
+    register: async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btnRegSubmit');
+        const errorDiv = document.getElementById('regError');
+        
+        btn.disabled = true;
+        btn.innerText = "Creando cuenta...";
+        errorDiv.style.display = 'none';
+
+        try {
+            const fd = new FormData();
+            fd.append('action', 'registrarUsuario');
+            fd.append('nombre', document.getElementById('regNombre').value);
+            fd.append('cc', document.getElementById('regCC').value);
+            fd.append('email', document.getElementById('regEmail').value);
+            fd.append('telefono', document.getElementById('regTelefono').value);
+            fd.append('password', document.getElementById('regPassword').value);
+
+            const res = await fetch(CONFIG.backendURL, { method: 'POST', body: fd });
+            const data = await res.json();
+
+            if (data.success) {
+                alert("Cuenta creada exitosamente. Por favor, inicia sesión.");
+                document.getElementById('formRegister').reset();
+                Auth.switchView('viewLogin');
+            } else {
+                errorDiv.innerText = data.error || "Error al crear la cuenta. El correo ya existe.";
+                errorDiv.style.display = 'block';
+            }
+        } catch (error) {
+            errorDiv.innerText = "Error de conexión. Intenta de nuevo.";
+            errorDiv.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Crear Cuenta";
+        }
+    },
+
+    logout: () => {
+        localStorage.removeItem('cupissa_user');
+        sessionStorage.removeItem('cupissa_user');
+        Auth.user = null;
+        window.location.reload();
+    },
+
+    bindEvents: () => {
+        const loginForm = document.getElementById('formLogin');
+        if (loginForm) loginForm.addEventListener('submit', Auth.login);
+
+        const regForm = document.getElementById('formRegister');
+        if (regForm) regForm.addEventListener('submit', Auth.register);
     }
+};
 
-  }, 150);
-
-  const userIcon = document.getElementById("userIcon");
-  const overlay = document.getElementById("authOverlay");
-  const cerrar = document.getElementById("cerrarAuth");
-  const btnLogin = document.getElementById("btnLogin");
-  const error = document.getElementById("authError");
-
-  if (!userIcon) return;
-
-  userIcon.addEventListener("click", () => {
-
-  const usuarioGuardado = localStorage.getItem("cupissa_user");
-
-  if (usuarioGuardado) {
-    window.location.href = "/panel/";
-  } else {
-    overlay.classList.add("active");
-  }
-
-});
-
-  cerrar.addEventListener("click", () => {
-    overlay.classList.remove("active");
-  });
-
-  btnLogin.addEventListener("click", async () => {
-
-    const email = document.getElementById("authEmail").value.trim();
-    const password = document.getElementById("authPassword").value.trim();
-    const rol = document.querySelector('input[name="rol"]:checked').value;
-
-    if (!email || !password) {
-      mostrarError("Completa todos los campos");
-      return;
-    }
-
-    try {
-
-      const response = await fetch(CONFIG.backendURL, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/x-www-form-urlencoded"
-  },
-  body: new URLSearchParams({
-    action: "login",
-    email: email,
-    password: password
-  })
-});
-
-      const data = await response.json();
-
-      if (!data.success) {
-        mostrarError("Credenciales incorrectas");
-        return;
-      }
-
-      if (data.tipo_usuario !== rol) {
-        mostrarError("Rol incorrecto");
-        return;
-      }
-
-      localStorage.setItem("cupissa_user", JSON.stringify({
-  tipo_usuario: data.tipo_usuario,
-  nombre: data.nombre,
-  email: data.email,
-  telefono: data.telefono || "",
-  direccion: data.direccion || "",
-  barrio: data.barrio || "",
-  ciudad: data.ciudad || "",
-  departamento: data.departamento || ""
-}));
-
-      overlay.classList.remove("active");
-      location.reload();
-
-    } catch (err) {
-      mostrarError("Error de conexión");
-    }
-
-  });
-
-  function mostrarError(msg) {
-    error.textContent = msg;
-    error.style.display = "block";
-  }
-
-});
-
-function renderUsuarioLogueado(user) {
-
-  const userIcon = document.getElementById("userIcon");
-  if (!userIcon) return;
-
-  userIcon.innerHTML = `
-    <div class="user-dropdown" id="userDropdown">
-      <span id="userName">${user.nombre} ▾</span>
-      <div class="user-menu" id="userMenu">
-        <div id="irPanel">Mi cuenta</div>
-        <div id="cerrarSesion">Cerrar sesión</div>
-      </div>
-    </div>
-  `;
-
-  const userName = document.getElementById("userName");
-  const userMenu = document.getElementById("userMenu");
-
-  // Toggle menú con click
-  userName.addEventListener("click", (e) => {
-    e.stopPropagation();
-    userMenu.classList.toggle("active");
-  });
-
-  // Cerrar si se hace click fuera
-  document.addEventListener("click", () => {
-    userMenu.classList.remove("active");
-  });
-
-  document.getElementById("irPanel").addEventListener("click", () => {
-    window.location.href = "/panel/";
-  });
-
-  document.getElementById("cerrarSesion").addEventListener("click", () => {
-    localStorage.removeItem("cupissa_user");
-    window.location.href = "/";
-  });
-
-}
+document.addEventListener('DOMContentLoaded', Auth.init);
