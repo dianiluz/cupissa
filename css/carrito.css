@@ -1,0 +1,207 @@
+/* ===================================================== */
+/* CUPISSA — CARRITO LATERAL (DRAWER) */
+/* ===================================================== */
+
+.cart-drawer {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 400px;
+    max-width: 100%;
+    height: 100vh;
+    background-color: var(--color-white);
+    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+    z-index: 2000;
+    transition: right var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+}
+
+.cart-drawer.open {
+    right: 0;
+}
+
+.cart-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--color-gray-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cart-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close-cart {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--color-black);
+}
+
+.cart-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.cart-item {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--color-gray-light);
+    padding-bottom: 15px;
+}
+
+.cart-item img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+}
+
+.cart-item-info {
+    flex: 1;
+}
+
+.cart-item-title {
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.cart-item-vars {
+    font-size: 0.8rem;
+    color: var(--color-gray-dark);
+    margin-bottom: 5px;
+}
+
+.cart-item-price {
+    color: var(--color-pink);
+    font-weight: bold;
+}
+
+.cart-item-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.qty-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--color-gray-light);
+    border-radius: var(--radius-sm);
+    padding: 2px 8px;
+}
+
+.qty-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.remove-item {
+    color: var(--color-danger);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-decoration: underline;
+}
+
+.cart-footer {
+    padding: 20px;
+    border-top: 1px solid var(--color-gray-light);
+    background-color: var(--color-white);
+}
+
+.cart-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--color-black);
+    margin-bottom: 5px;
+}
+
+.cart-anticipo {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-danger); /* Usa el rojo del sistema */
+    margin-bottom: 15px;
+}
+
+.cart-warning {
+    background-color: #fffde7;
+    border: 1px solid #ffecb3;
+    color: #f57f17;
+    padding: 15px;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.cart-footer-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.btn-clear-cart {
+    background: none;
+    border: none;
+    color: var(--color-gray-dark);
+    text-decoration: underline;
+    cursor: pointer;
+    text-align: left;
+    font-size: 0.9rem;
+    padding: 0;
+    font-family: inherit;
+}
+
+.btn-clear-cart:hover {
+    color: var(--color-danger);
+}
+
+.btn-checkout {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background-color: rgb(0, 0, 0);
+    color: var(--color-white);
+    padding: 15px;
+    border-radius: var(--radius-xl);
+    font-weight: bold;
+    font-size: 1.1rem;
+    transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-checkout:hover {
+    background-color: #b80e64;
+    transform: translateY(-2px);
+}
+
+.cart-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1999;
+    display: none;
+}
+
+.cart-overlay.active {
+    display: block;
+}
