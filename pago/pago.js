@@ -292,7 +292,7 @@ async function confirmarPedido() {
         params.append("direccion", checkoutData.direccion);
         params.append("barrio", checkoutData.barrio);
         params.append("ciudad", checkoutData.ciudad);
-        params.append("departamento", checkoutData.department);
+        params.append("departamento", checkoutData.departamento);
         params.append("cc", checkoutData.cc || "");
         params.append("metodo_pago", checkoutData.metodo_pago);
         params.append("total", checkoutData.total_final);
