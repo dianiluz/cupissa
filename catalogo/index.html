@@ -1,75 +1,53 @@
-<!DOCTYPE html> 
-<html lang="es"> 
-  <head> 
-    <meta charset="UTF-8"> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <title>Catálogo | CUPISSA</title> 
-    <link rel="icon" href="/assets/favicon.png"> 
-  
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - CUPISSA</title>
+    <link rel="icon" href="/assets/favicon.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <link rel="stylesheet" href="/css/variables.css">
-<link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/layout.css">
-<link rel="stylesheet" href="/css/components.css">
-<link rel="stylesheet" href="/css/animations.css"> 
-<link rel="stylesheet" href="/css/auth.css">
-  </head> 
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/catalogo.css">
+    <link rel="stylesheet" href="/css/modal.css">
+</head>
+<body>
+    <div id="header"></div>
 
-  <body>
+    <main class="catalogo-wrapper">
+        <aside class="catalogo-sidebar">
+            <h2 class="section-title" style="font-size: 1.5rem; text-align: left;">Filtros</h2>
+            <div id="filtrosContainer">
+                <p>Cargando filtros...</p>
+            </div>
+        </aside>
 
-<div id="header"></div>
-<div id="mundos"></div>
+        <section class="catalogo-main">
+            <div class="catalogo-header">
+                <h1 id="catalogoTitle">Todos los Productos</h1>
+                <span id="catalogoCount">0 resultados</span>
+            </div>
+            
+            <div class="catalogo-grid" id="catalogoGrid">
+                </div>
+        </section>
+    </main>
 
-<button id="abrirFiltrosMobile" class="btn-filtros-mobile">
-  FILTRAR
-</button>
+    <div id="modalContainer"></div>
 
-<main>
+    <div id="footer"></div>
 
-  <div class="catalogo-layout">
-
-    <aside class="filtros-lateral" id="filtrosContainer">
-
-      <div class="filtros-header-mobile">
-        <button id="cerrarFiltrosMobile" class="cerrar-filtros">
-          ✕
-        </button>
-      </div>
-
-      <div class="filtros-contenido-scroll">
-        <!-- Filtros dinámicos -->
-      </div>
-
-    </aside>
-
-    <div class="catalogo-contenido">
-
-      <div class="filtros-activos" id="filtrosActivos"></div>
-
-      <div class="productos-container" id="productosContainer"></div>
-
-    </div>
-
-  </div>
-
-</main>
-
-<div id="footer"></div>
-
-<!-- BOTÓN FLOTANTE WHATSAPP -->
-<a href="https://wa.me/573147671380" target="_blank" class="whatsapp-float">
-  <img src=\assets\whatsapp.png>
-</a>
-
-<script src="/js/config.js"></script>
-<script src="/js/utils.js"></script>
-<script src="/js/theme.js"></script>
-<script src="/js/header.js"></script>
-<script src="/js/carrito.js"></script>
-<script src="/js/sheet.js"></script>
-<script src="/js/modal.js"></script>
-<script src="/js/auth.js"></script>
-<script src="/js/footer.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/header.js"></script>
+    <script src="/js/carrito.js"></script>
+    <script src="/js/footer.js"></script>
+    <script src="/js/modal.js"></script>
+    <script src="/js/catalogo.js"></script>
 </body>
 </html>
