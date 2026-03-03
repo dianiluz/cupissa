@@ -1,81 +1,114 @@
-.auth-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 5000;
+/* ===================================================== */
+/* CUPISSA — AUTENTICACIÓN (LOGIN / REGISTRO) */
+/* ===================================================== */
+
+.auth-wrapper {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background-color: var(--color-gray-light);
 }
 
-.auth-overlay.active {
-  display: flex;
+.auth-card {
+    background: var(--color-white);
+    padding: 3rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 450px;
+    border-top: 5px solid var(--color-pink);
+    text-align: center;
 }
 
-.auth-modal {
-  background: var(--bg-card);
-  padding: 40px;
-  border-radius: var(--radius-large);
-  width: 90%;
-  max-width: 400px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  position: relative;
+.auth-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-black);
 }
 
-.auth-modal input {
-  padding: 10px;
-  border-radius: var(--radius-small);
-  border: 1px solid var(--border-color);
-  background: var(--bg-secondary);
-  color: var(--text-primary);
+.auth-subtitle {
+    color: var(--color-gray-dark);
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
 }
 
-.auth-roles {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 10px;
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: left;
 }
 
-.auth-close {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  cursor: pointer;
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
-.user-dropdown {
-  position: relative;
-  cursor: pointer;
-  font-size: 14px;
+.form-group label {
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
-.user-menu {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: 35px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-small);
-  padding: 10px;
-  min-width: 160px;
-  z-index: 6000;
-  box-shadow: var(--shadow-soft);
+.form-group input, .form-group select {
+    padding: 12px 15px;
+    border: 1px solid var(--color-gray-medium);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-primary);
+    outline: none;
+    transition: border-color var(--transition-fast);
 }
 
-.user-menu div {
-  padding: 10px;
-  cursor: pointer;
-  border-radius: 6px;
+.form-group input:focus, .form-group select:focus {
+    border-color: var(--color-pink);
 }
 
-.user-menu div:hover {
-  background: var(--color-pink);
-  color: #fff;
+.auth-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
 }
 
-.user-menu.active {
-  display: block;
+.auth-options label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.auth-link {
+    color: var(--color-pink);
+    font-weight: 600;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+}
+
+.btn-block {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.auth-error {
+    color: var(--color-danger);
+    font-size: 0.85rem;
+    margin-top: 1rem;
+    display: none;
+    background: #ffebee;
+    padding: 10px;
+    border-radius: var(--radius-sm);
+}
+
+/* Ocultar vistas dinámicamente */
+.view-hidden {
+    display: none !important;
 }
