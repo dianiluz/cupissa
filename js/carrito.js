@@ -35,6 +35,10 @@ function normalizarTexto(texto) {
     .trim();
 }
 
+function capitalizar(texto) {
+  return String(texto).charAt(0).toUpperCase() + String(texto).slice(1).toLowerCase();
+}
+
 /* ========================= */
 /* AGREGAR */
 /* ========================= */
@@ -102,7 +106,6 @@ function calcularIncremento(productoOriginal, variantesSeleccionadas) {
     const valorRaw = normalizarTexto(regla.valor || "");
     const incremento = Number(regla.incremento || 0);
 
-    // 1️⃣ Si la regla aplica por producto específico
     if (productoRegla) {
       if (productoRegla !== normalizarTexto(productoOriginal.ref)) {
         return;
@@ -125,14 +128,12 @@ function calcularIncremento(productoOriginal, variantesSeleccionadas) {
 
       let valorReal = null;
 
-      // 2️⃣ Primero busca en variantes seleccionadas
       Object.keys(variantesSeleccionadas).forEach(key => {
         if (normalizarTexto(key) === columna) {
           valorReal = normalizarTexto(variantesSeleccionadas[key]);
         }
       });
 
-      // 3️⃣ Si no está en variantes, busca en producto original
       if (!valorReal) {
         Object.keys(productoOriginal).forEach(key => {
           const keyNormal = normalizarTexto(key.replace("*",""));
@@ -329,15 +330,14 @@ function renderCarrito() {
 
     body.appendChild(div);
 
-    // Restaurar estado abierto
     if (detallesAbiertos[item.ref]) {
-  const el = document.getElementById(detalleId);
-  const flecha = document.getElementById(flechaId);
-  if (el) {
-    el.classList.add("abierto");
-    flecha.style.transform = "rotate(180deg)";
-  }
-}
+      const el = document.getElementById(detalleId);
+      const flecha = document.getElementById(flechaId);
+      if (el) {
+        el.classList.add("abierto");
+        flecha.style.transform = "rotate(180deg)";
+      }
+    }
   });
 
   /* ===== RESUMEN SIMPLE ===== */
@@ -345,40 +345,40 @@ function renderCarrito() {
   const anticipo = Math.round(totalGeneral * 0.20);
 
   const resumenDiv = document.createElement("div");
-resumenDiv.className = "carrito-resumen";
+  resumenDiv.className = "carrito-resumen";
 
-resumenDiv.innerHTML = `
-  <hr style="margin:16px 0;">
+  resumenDiv.innerHTML = `
+    <hr style="margin:16px 0;">
 
-  <div class="resumen-linea total">
-    <span>Total general</span>
-    <span>$ ${totalGeneral.toLocaleString()}</span>
-  </div>
+    <div class="resumen-linea total">
+      <span>Total general</span>
+      <span>$ ${totalGeneral.toLocaleString()}</span>
+    </div>
 
-  <div class="resumen-linea anticipo">
-    <span>Anticipo estimado (20%)</span>
-    <span>$ ${anticipo.toLocaleString()}</span>
-  </div>
+    <div class="resumen-linea anticipo">
+      <span>Anticipo estimado (20%)</span>
+      <span>$ ${anticipo.toLocaleString()}</span>
+    </div>
 
-  <div class="aviso-legal-pagos">
-    ⚠️ Algunos medios de pago como Addi o pagos procesados por Wompi
-    pueden generar un incremento en el valor total debido a costos
-    de transacción. El valor final se mostrará antes de confirmar el pago.
-  </div>
+    <div class="aviso-legal-pagos">
+      ⚠️ Algunos medios de pago como Addi o pagos procesados por Wompi
+      pueden generar un incremento en el valor total debido a costos
+      de transacción. El valor final se mostrará antes de confirmar el pago.
+    </div>
 
-  <div style="margin-top:10px;">
-    <span 
-      onclick="vaciarCarrito()" 
-      style="font-size:13px; text-decoration:underline; cursor:pointer; color:#aaa;"
-    >
-      Vaciar lista
-    </span>
-  </div>
+    <div style="margin-top:10px;">
+      <span 
+        onclick="vaciarCarrito()" 
+        style="font-size:13px; text-decoration:underline; cursor:pointer; color:#aaa;"
+      >
+        Vaciar lista
+      </span>
+    </div>
 
-  <button class="btn-primary" onclick="irAPago()">
-    Ver opciones de pago
-  </button>
-`;
+    <button class="btn-primary" onclick="irAPago()">
+      Ver opciones de pago
+    </button>
+  `;
 
   body.appendChild(resumenDiv);
 }
@@ -402,6 +402,7 @@ function toggleDetalle(id, flechaId, ref) {
     detallesAbiertos[ref] = true;
   }
 }
+
 function restarUnidad(itemIndex, comboIndex) {
 
   const combo = carrito[itemIndex]?.combinaciones?.[comboIndex];
@@ -489,13 +490,18 @@ function irACheckout() {
 
 function irAPago() {
 
-  const carrito = obtenerLocal("cupissa_carrito") || [];
+  const carritoActual = obtenerLocal("cupissa_carrito") || [];
 
-  if (!carrito.length) {
+  if (!carritoActual.length) {
     alert("Tu carrito está vacío.");
     return;
   }
 
   window.location.href = "/pago/";
-
 }
+
+window.irAPago = irAPago;
+window.toggleDetalle = toggleDetalle;
+window.restarUnidad = restarUnidad;
+window.eliminarCombinacion = eliminarCombinacion;
+window.vaciarCarrito = vaciarCarrito;
