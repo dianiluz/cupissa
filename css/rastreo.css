@@ -1,0 +1,215 @@
+/* ===================================================== */
+/* CUPISSA — RASTREO DE PEDIDOS */
+/* ===================================================== */
+
+.rastreo-wrapper {
+    max-width: 800px;
+    margin: 4rem auto;
+    padding: 0 20px;
+    min-height: calc(100vh - 400px);
+}
+
+.rastreo-card {
+    background: var(--color-white);
+    padding: 3rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+    border-top: 5px solid var(--color-pink);
+}
+
+.rastreo-title {
+    font-size: 2rem;
+    color: var(--color-black);
+    margin-bottom: 0.5rem;
+}
+
+.rastreo-subtitle {
+    color: var(--color-gray-dark);
+    margin-bottom: 2rem;
+}
+
+.rastreo-form {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    max-width: 500px;
+    margin: 0 auto 3rem auto;
+}
+
+.rastreo-input {
+    flex: 1;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    border: 2px solid var(--color-gray-medium);
+    border-radius: var(--radius-xl);
+    outline: none;
+    font-family: var(--font-primary);
+    text-transform: uppercase;
+    transition: border-color var(--transition-fast);
+}
+
+.rastreo-input:focus {
+    border-color: var(--color-black);
+}
+
+.btn-rastrear {
+    padding: 0 30px;
+    background-color: var(--color-black);
+    color: var(--color-white);
+    border: none;
+    border-radius: var(--radius-xl);
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.btn-rastrear:hover {
+    background-color: var(--color-pink);
+}
+
+/* Resultados del Rastreo */
+.rastreo-result {
+    display: none;
+    text-align: left;
+    animation: fadeInAnimation 0.5s ease;
+}
+
+.rastreo-result.active {
+    display: block;
+}
+
+.rastreo-header-info {
+    background: var(--color-gray-light);
+    padding: 20px;
+    border-radius: var(--radius-md);
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.info-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-label {
+    font-size: 0.85rem;
+    color: var(--color-gray-dark);
+    font-weight: 600;
+}
+
+.info-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--color-black);
+}
+
+/* Línea de tiempo (Timeline) */
+.timeline {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px;
+    height: 100%;
+    width: 4px;
+    background: var(--color-gray-medium);
+}
+
+.timeline-step {
+    position: relative;
+    padding-left: 60px;
+    margin-bottom: 30px;
+}
+
+.timeline-step:last-child {
+    margin-bottom: 0;
+}
+
+.step-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 44px;
+    height: 44px;
+    background: var(--color-gray-medium);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--color-white);
+    font-size: 1.2rem;
+    z-index: 2;
+    transition: all var(--transition-fast);
+}
+
+.timeline-step.completed .step-icon {
+    background: var(--color-black);
+}
+
+.timeline-step.active .step-icon {
+    background: var(--color-pink);
+    box-shadow: 0 0 0 5px rgba(219, 19, 122, 0.2);
+}
+
+.step-content-box {
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-light);
+    padding: 15px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.step-title {
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: var(--color-black);
+    margin-bottom: 5px;
+}
+
+.step-desc {
+    font-size: 0.9rem;
+    color: var(--color-gray-dark);
+}
+
+.transportadora-link {
+    display: inline-block;
+    margin-top: 10px;
+    background: var(--color-success);
+    color: var(--color-white);
+    padding: 8px 15px;
+    border-radius: var(--radius-sm);
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.transportadora-link:hover {
+    background: #007a33;
+}
+
+.error-msg {
+    color: var(--color-danger);
+    font-weight: bold;
+    margin-top: 10px;
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .rastreo-form {
+        flex-direction: column;
+    }
+    .btn-rastrear {
+        padding: 15px;
+    }
+}
