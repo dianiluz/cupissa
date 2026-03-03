@@ -278,37 +278,10 @@ function renderResumenFinal() {
 
 async function confirmarPedido() {
 
-   const payload = {
-    action: "registrarPedido",
-    tipo: checkoutData.tipo,
-    nombre_cliente: checkoutData.nombre_cliente,
-    usuario_email: checkoutData.usuario_email,
-    telefono: checkoutData.telefono,
-    direccion: checkoutData.direccion,
-    barrio: checkoutData.barrio,
-    ciudad: checkoutData.ciudad,
-    departamento: checkoutData.departamento,
-    cc: checkoutData.cc,
-    metodo_pago: checkoutData.metodo_pago,
-    total: checkoutData.total_final
-};
-
-const res = await fetch(CONFIG.backendURL, {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify(payload)
-});
-
-const result = await res.json();
-}
-
-async function inicializarWompiWidget() {
+    if (procesandoCompra) return;
+    procesandoCompra = true;
 
     try {
-
-        const carritoData = JSON.parse(localStorage.getItem("cupissa_carrito")) || [];
 
         const params = new URLSearchParams();
         params.append("action", "registrarPedido");
@@ -319,61 +292,48 @@ async function inicializarWompiWidget() {
         params.append("direccion", checkoutData.direccion);
         params.append("barrio", checkoutData.barrio);
         params.append("ciudad", checkoutData.ciudad);
-        params.append("departamento", checkoutData.departamento);
-        params.append("cc", checkoutData.cc);
-        params.append("transportadora", checkoutData.transportadora_id || "");
-        params.append("metodo_pago", "wompi");
+        params.append("departamento", checkoutData.department);
+        params.append("cc", checkoutData.cc || "");
+        params.append("metodo_pago", checkoutData.metodo_pago);
         params.append("total", checkoutData.total_final);
-        params.append("costo_envio", checkoutData.costo_envio);
-        params.append("productos", JSON.stringify(carritoData));
+        params.append("paga_total", checkoutData.paga_total);
 
-        const response = await fetch(CONFIG.backendURL + "?" + params.toString(), {
+        const url = CONFIG.backendURL + "?" + params.toString();
+
+        const res = await fetch(url, {
             method: "GET"
         });
 
-        if (!response.ok) {
-            throw new Error("No se pudo conectar con el backend");
-        }
-
-        const result = await response.json();
+        const result = await res.json();
 
         if (!result.success) {
-            throw new Error("Backend no creó el pedido");
+            throw new Error(result.error || "Error al crear pedido");
         }
 
         const idPedido = result.id_pedido;
 
-        if (typeof WidgetCheckout === "undefined") {
-            throw new Error("Widget Wompi no cargó");
+        // TRANSFERENCIA
+        if (checkoutData.metodo_pago === "transferencia") {
+            localStorage.removeItem("cupissa_carrito");
+            window.location.href = "/rastreo/?id=" + idPedido;
+            return;
         }
 
-        const container = document.getElementById("paso-4");
+        // WOMPI
+        if (checkoutData.metodo_pago === "wompi") {
+            const checkout = new WidgetCheckout({
+                currency: "COP",
+                amountInCents: result.anticipo * 100,
+                reference: idPedido,
+                publicKey: "pub_prod_q69BzlCLtdFiZQEmbQFTMX9uXwr6E4Xg",
+                redirectUrl: CONFIG.baseURL + "/rastreo/?id=" + idPedido
+            });
 
-        let wompiContainer = document.getElementById("wompi-widget-container");
-        if (!wompiContainer) {
-            wompiContainer = document.createElement("div");
-            wompiContainer.id = "wompi-widget-container";
-            wompiContainer.style.marginTop = "30px";
-            container.insertBefore(wompiContainer, document.getElementById("confirmarPedido"));
+            checkout.open();
+            return;
         }
-
-        wompiContainer.innerHTML = "";
-
-        const checkout = new WidgetCheckout({
-            currency: "COP",
-            amountInCents: checkoutData.pago_hoy * 100,
-            reference: idPedido,
-            publicKey: "pub_prod_q69BzlCLtdFiZQEmbQFTMX9uXwr6E4Xg",
-            redirectUrl: CONFIG.baseURL + "/rastreo/?id=" + idPedido
-        });
-
-        checkout.render(wompiContainer);
-
-        document.getElementById("confirmarPedido").style.display = "none";
 
     } catch (error) {
-
-        console.error(error);
         mostrarNotificacion("Error: " + error.message);
         procesandoCompra = false;
     }
