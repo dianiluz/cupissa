@@ -1,0 +1,362 @@
+/* ===================================================== */
+/* CUPISSA — ESTILOS CHECKOUT COMPLETO */
+/* ===================================================== */
+
+.checkout-container {
+    padding: 140px 5% 80px 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ===== BARRA DE PASOS ===== */
+.checkout-steps {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 50px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.step {
+    padding: 10px 25px;
+    border-radius: 30px;
+    background: var(--bg-card);
+    font-size: 14px;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    transition: var(--transition-medium);
+}
+
+.step.active {
+    background: var(--color-pink);
+    color: white;
+    border-color: var(--color-pink);
+    box-shadow: 0 4px 15px rgba(219, 19, 122, 0.3);
+}
+
+/* ===== LAYOUT ===== */
+.checkout-layout {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+.checkout-content {
+    flex: 2;
+}
+
+.checkout-resumen {
+    flex: 1;
+    position: sticky;
+    top: 120px;
+    background: var(--bg-secondary);
+    padding: 30px;
+    border-radius: var(--radius-large);
+    border: 1px solid var(--border-color);
+}
+
+/* ===== SECCIONES ===== */
+.checkout-section {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+.checkout-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.checkout-section h2 {
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    color: var(--text-primary);
+}
+
+/* ===== FORMULARIOS Y CAMPOS ===== */
+.form-grid {
+    display: grid;
+    gap: 20px;
+    padding: 30px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-large);
+    border: 1px solid var(--border-color);
+}
+
+.form-input, .form-grid input, .form-grid select {
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--radius-small);
+    border: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 15px;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--color-pink);
+}
+
+/* ===== COMPONENTES DE ENVÍO Y PAGO ===== */
+.opcion-envio-card, .opcion-pago-card {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: var(--radius-medium);
+    border: 1px solid var(--border-color);
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    position: relative;
+}
+
+.opcion-envio-card:hover, .opcion-pago-card:hover {
+    border-color: var(--color-pink);
+    background: rgba(219, 19, 122, 0.05);
+}
+
+.opcion-envio-card input, .opcion-pago-card input {
+    margin-right: 15px;
+    accent-color: var(--color-pink);
+}
+
+.nota-envio {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    display: block;
+}
+
+.check-aceptacion {
+    margin-top: 25px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+}
+
+/* ===== SELECTOR TOTAL/ANTICIPO ===== */
+.pago-modo-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    background: var(--bg-secondary);
+    padding: 8px;
+    border-radius: 50px;
+    width: fit-content;
+}
+
+.btn-toggle {
+    padding: 10px 20px;
+    border-radius: 40px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition-medium);
+}
+
+.btn-toggle.active {
+    background: var(--color-pink);
+    color: white;
+}
+
+/* ===== SUGERENCIAS DIRECCIÓN ===== */
+.direccion-wrapper { position: relative; }
+
+.direccion-sugerencias {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    border-radius: var(--radius-small);
+    box-shadow: var(--shadow-hover);
+}
+
+.direccion-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.direccion-item:hover {
+    background: var(--color-pink);
+    color: white;
+}
+
+/* ===== RESUMEN FINAL (PASO 4) ===== */
+.resumen-final-card {
+    background: var(--bg-secondary);
+    padding: 30px;
+    border-radius: var(--radius-large);
+    border: 2px solid var(--border-color);
+}
+
+.desglose-precios {
+    margin: 20px 0;
+}
+
+.desglose-precios p {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+}
+
+.total-final-texto {
+    color: var(--color-pink);
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.pago-destacado {
+    background: rgba(219, 19, 122, 0.1);
+    padding: 20px;
+    border-radius: var(--radius-medium);
+    margin-top: 20px;
+    text-align: center;
+}
+
+.pago-destacado strong {
+    font-size: 1.4rem;
+    color: var(--color-pink);
+}
+
+/* ===== NOTIFICACIONES ===== */
+.cupissa-notificacion {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    background: var(--color-pink);
+    color: white;
+    padding: 15px 30px;
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-hover);
+    z-index: 10000;
+    transform: translateX(120%);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cupissa-notificacion.visible {
+    transform: translateX(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1000px) {
+    .checkout-layout { flex-direction: column; }
+    .checkout-content, .checkout-resumen { width: 100%; }
+    .checkout-resumen { position: static; margin-top: 30px; }
+    .checkout-container { padding-top: 100px; }
+}
+
+/* ===== SEPARACIÓN BOTONES PASO 4 ===== */
+
+/* Contenedor de botones en cualquier sección */
+.checkout-section .btn-primary, 
+.checkout-section .btn-secondary {
+    margin-top: 40px; /* Aumentamos el espacio superior */
+}
+
+/* Específico para el Paso 4 para que no se pegue al resumen */
+#paso-4 .resumen-final-card {
+    margin-bottom: 40px; /* Crea espacio hacia los botones de abajo */
+}
+
+/* Alineación de botones de navegación en el pie de las secciones */
+.checkout-section .btn-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 40px;
+}
+
+/* Estilo adicional para que el botón Volver/Editar no se vea igual al de Confirmar */
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 12px 25px;
+    border-radius: var(--radius-small);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+.resumen-lista-productos {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.resumen-producto-fila {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.resumen-prod-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #1a1a1a;
+}
+
+.resumen-prod-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.resumen-prod-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.resumen-prod-nombre {
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 3px;
+}
+
+.resumen-item-variantes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.resumen-item-variantes span {
+    font-size: 10px;
+    background: #222;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #aaa;
+}
+
+.resumen-prod-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--color-pink);
+}

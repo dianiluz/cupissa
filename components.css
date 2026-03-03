@@ -1,0 +1,750 @@
+/* ===================================================== */
+/* CUPISSA — COMPONENTES */
+/* ===================================================== */
+
+/* ========================= */
+/* GRID PRODUCTOS */
+/* ========================= */
+
+.productos-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 30px;
+  padding: 40px;
+}
+
+/* ========================= */
+/* TARJETA PRODUCTO */
+/* ========================= */
+
+.producto-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-medium);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform var(--transition-medium),
+              box-shadow var(--transition-medium);
+}
+
+.producto-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Imagen cuadrada */
+
+.producto-img-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.producto-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Badge */
+
+.producto-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--color-pink);
+  color: #fff;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 50px;
+}
+
+/* Info */
+
+.producto-info {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.producto-nombre {
+  font-size: 15px;
+  font-weight: 500;
+  min-height: 40px;
+}
+
+.producto-precio {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-pink);
+}
+
+/* Botón agregar */
+
+.btn-agregar {
+  margin-top: auto;
+  padding: 10px;
+  border-radius: var(--radius-small);
+  background: var(--color-pink);
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* ========================= */
+/* FILTROS */
+/* ========================= */
+
+.filtro-grupo {
+  margin-bottom: 20px;
+}
+
+.filtro-titulo {
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.filtro-contenido {
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filtro-contenido.active {
+  display: flex;
+}
+
+.filtro-opcion {
+  padding: 6px 10px;
+  border-radius: var(--radius-small);
+  border: 1px solid var(--border-color);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+}
+
+.filtro-opcion.active {
+  background: var(--color-pink);
+  color: #fff;
+  border: none;
+}
+
+/* ========================= */
+/* MODAL */
+/* ========================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4000;
+}
+
+.modal {
+  background: var(--bg-card);
+  width: 90%;
+  max-width: 900px;
+  border-radius: var(--radius-medium);
+  display: flex;
+  overflow: hidden;
+}
+
+.modal-img {
+  flex: 1;
+}
+
+.modal-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-content {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  cursor: pointer;
+}
+
+.modal-select {
+  padding: 10px;
+  border-radius: var(--radius-small);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.modal-qty {
+  width: 80px;
+  padding: 8px;
+}
+
+/* ========================= */
+/* WHATSAPP FLOAT */
+/* ========================= */
+
+.whatsapp-float {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background-color: #25D366;
+  color: #fff;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: var(--shadow-soft);
+  z-index: 1200;
+}
+
+/* ========================= */
+/* HERO */
+/* ========================= */
+
+.hero {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-soft);
+  padding: 40px;
+}
+
+.hero-logo {
+  max-width: 500px;
+  width: 100%;
+}
+
+/* ========================= */
+/* RASTREO TRANSPORTADORA PREMIUM */
+/* ========================= */
+
+.rastreo-container {
+  padding: 120px 20px 80px 20px;
+  max-width: 900px;
+  margin: auto;
+  text-align: center;
+}
+
+.rastreo-card {
+  background: linear-gradient(145deg, #0f0f0f, #181818);
+  padding: 60px 40px;
+  border-radius: 25px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+
+.rastreo-id {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 60px;
+  color: var(--color-pink);
+}
+
+/* Línea base */
+.linea-progreso {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 60px;
+}
+
+.linea-progreso::before {
+  content: "";
+  position: absolute;
+  top: 28px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #2a2a2a;
+  z-index: 0;
+}
+
+/* Línea animada */
+.progreso-fill {
+  position: absolute;
+  top: 28px;
+  left: 0;
+  height: 4px;
+  background: var(--color-pink);
+  z-index: 1;
+  transition: width 1s ease;
+}
+
+/* Pasos */
+.paso {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  text-align: center;
+}
+
+.circulo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #1e1e1e;
+  margin: auto;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: white;
+  transition: all 0.4s ease;
+  border: 2px solid #2a2a2a;
+}
+
+.paso.activo .circulo {
+  background: var(--color-pink);
+  border: none;
+ box-shadow: 0 0 20px rgba(219,19,122,0.5);
+}
+
+.paso span {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.paso.activo span {
+  color: var(--text-primary);
+}
+
+/* Datos */
+.datos-cliente,
+.datos-envio {
+  margin-top: 30px;
+  font-size: 15px;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.datos-cliente strong,
+.datos-envio strong {
+  color: var(--color-pink);
+}
+
+.btn-principal {
+  margin-top: 30px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  background: var(--color-pink);
+  color: #fff;
+  font-weight: 500;
+  transition: transform var(--transition-fast);
+}
+
+.btn-principal:hover {
+  transform: scale(1.03);
+}
+
+/* ========================= */
+/* BUSCADOR RASTREO PREMIUM */
+/* ========================= */
+
+.rastreo-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin: 40px 0 60px 0;
+  flex-wrap: wrap;
+}
+
+/* ========================= */
+/* BUSCADOR RASTREO AJUSTE PERFECTO */
+/* ========================= */
+
+.rastreo-box {
+  display: flex;
+  justify-content: center;
+  align-items: stretch; /* clave */
+  gap: 15px;
+  margin: 40px 0 60px 0;
+}
+
+.rastreo-box input,
+.rastreo-box button {
+  height: 50px;
+  box-sizing: border-box;
+  font-size: 15px;
+}
+
+.rastreo-box input {
+  width: 320px;
+  padding: 0 18px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: #111;
+  color: var(--text-primary);
+  line-height: normal;
+}
+
+.rastreo-box input:focus {
+  outline: none;
+  border-color: var(--color-pink);
+  box-shadow: 0 0 15px rgba(219,19,122,0.3);
+}
+
+/* Eliminar cualquier margen heredado */
+.rastreo-box input,
+.rastreo-box button {
+  margin: 0;
+  vertical-align: middle;
+}
+
+.rastreo-box button {
+  padding: 0 24px;
+  border-radius: 12px;
+  background: var(--color-pink);
+  color: #fff;
+  font-weight: 500;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rastreo-box button:hover {
+  transform: scale(1.05);
+}
+
+.btn-consultar-guia {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  background: #222;
+  color: #fff;
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-fast);
+}
+
+.btn-consultar-guia:hover {
+  background: var(--color-pink);
+  border: none;
+}
+
+@media (max-width: 768px) {
+
+  .productos-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 15px;
+  }
+
+  .producto-card {
+    border-radius: 14px;
+  }
+
+  .producto-info {
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .producto-nombre {
+    font-size: 13px;
+    min-height: auto;
+  }
+
+  .modal-select,
+  .modal-qty {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .btn-agregar {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+}
+
+/* ========================= */
+/* BOTONES CUPISSA */
+/* ========================= */
+
+.btn-primary,
+.btn-secondary {
+  padding: 14px 28px;
+  border-radius: 40px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s ease;
+  display: inline-block;
+  letter-spacing: 0.5px;
+}
+
+.btn-primary {
+  background: var(--color-pink);
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(219,19,122,0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(219,19,122,0.5);
+}
+
+.btn-secondary {
+  border: 1px solid var(--color-pink);
+  color: var(--color-pink);
+  background: transparent;
+}
+
+.btn-secondary:hover {
+  background: var(--color-pink);
+  color: #000;
+  transform: translateY(-3px);
+}
+
+.carrito-resumen {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.resumen-linea {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.resumen-linea.total {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.resumen-linea.anticipo {
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+.resumen-linea.saldo {
+  color: #555;
+}
+
+#carritoPanel {
+  display: flex;
+  flex-direction: column;
+}
+
+#carritoBody {
+  flex: 1;
+  overflow-y: auto;
+}
+
+#carritoFooter {
+  padding: 15px;
+  border-top: 1px solid #eee;
+  background: #fff;
+}
+
+.carrito-acciones button {
+  padding: 8px 12px;
+  margin-right: 6px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #f5f5f5;
+}
+
+.btn-acelerado {
+  background: #f4699a;
+  color: white;
+}
+
+.detalle-variantes {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  margin-top: 6px;
+}
+
+.detalle-variantes.abierto {
+  max-height: 500px; /* suficiente para que nunca corte */
+}
+
+/* ========================= */
+/* AVISO LEGAL PAGOS */
+/* ========================= */
+
+.aviso-legal-pagos {
+  margin-top: 14px;
+  padding: 12px;
+  font-size: 12px;
+  line-height: 1.4;
+  border-radius: 8px;
+  background: rgba(255, 193, 7, 0.08);
+  border: 1px solid rgba(255, 193, 7, 0.25);
+  color: #ffb300;
+}
+
+/* ===================================================== */
+/* COMPONENTE: FOOTER DINÁMICO */
+/* ===================================================== */
+
+.main-footer {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    padding: 60px 20px 30px 20px;
+    margin-top: 80px;
+    border-top: 1px solid var(--border-color);
+    font-family: inherit;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 40px;
+}
+
+.footer-logo {
+    width: 160px;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.footer-title {
+    color: var(--color-pink);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.footer-block ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-block ul li {
+    margin-bottom: 12px;
+}
+
+.footer-block ul li a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: var(--transition-fast);
+}
+
+.footer-block ul li a:hover {
+    color: var(--color-pink);
+    padding-left: 5px;
+}
+
+.footer-contact {
+    margin-bottom: 20px !important;
+}
+
+.footer-contact li {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-socials {
+    display: flex;
+    gap: 15px;
+}
+
+.footer-socials a {
+    color: var(--text-primary);
+    font-size: 1.4rem;
+    transition: var(--transition-medium);
+}
+
+.footer-socials a:hover {
+    color: var(--color-pink);
+    transform: translateY(-3px);
+}
+
+/* ESTILOS PAGOS */
+.payment-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.payment-tag {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: var(--bg-card);
+    padding: 4px 8px;
+    border-radius: var(--radius-small);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.payment-detail {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 4px 0 0 5px;
+    line-height: 1.3;
+}
+
+.payment-disclaimer {
+    font-size: 0.7rem;
+    font-style: italic;
+    color: var(--color-pink);
+    margin-top: 10px;
+}
+
+.footer-bottom {
+    max-width: 1200px;
+    margin: 40px auto 0 auto;
+    padding-top: 25px;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.footer-bottom p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .footer-container {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .footer-title::after {
+        content: '';
+        display: block;
+        width: 40px;
+        height: 2px;
+        background: var(--color-pink);
+        margin: 8px auto;
+    }
+    .footer-contact li, .footer-socials {
+        justify-content: center;
+    }
+    .footer-block ul li a:hover {
+        padding-left: 0;
+    }
+}
