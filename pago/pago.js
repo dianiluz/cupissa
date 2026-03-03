@@ -1,8 +1,11 @@
+
 /* ===================================================== */
 /* CUPISSA — LÓGICA DE CHECKOUT COMPLETA */
 /* ===================================================== */
 
 let pasoActual = 1;
+let wompiWidget = null;
+let procesandoCompra = false;
 
 let checkoutData = {
     tipo: null, 
@@ -37,7 +40,7 @@ const CIUDADES_LOCALES = [
 
 const MUNICIPIOS = {
     "Amazonas": ["Leticia","Puerto Nariño","El Encanto","La Chorrera","La Pedrera","La Victoria","Mirití-Paraná","Puerto Alegría","Puerto Arica","Puerto Santander","Tarapacá"],
-    "Antioquia": ["Abejorral","Abriaquí","Alejandría","Amagá","Amalfi","Andes","Angelópolis","Angostura","Anorí","Anzá","Apartadó","Arboletes","Argelia","Armenia","Barbosa","Bello","Belmira","Betania","Betulia","Bolívar","Briceño","Buriticá","Cáceres","Caicedo","Caldas","Campamento","Cañasgordas","Caracolí","Caramanta","Carepa","Carolina del Príncipe","Caucasia","Chigorodó","Cisneros","Cocorná","Concepción","Concordia","Copacabana","Dabeiba","Don Matías","Ebéjico","El Bagre","Entrerríos","Envigado","Fredonia","Frontino","Giraldo","Girardota","Gómez Plata","Granada","Guadalupe","Guarne","Guatapé","Heliconia","Hispania","Itagüí","Ituango","Jardín","Jericó","La Ceja","La Estrella","La Pintada","La Unión","Liborina","Maceo","Marinilla","Medellín","Montebello","Murindó","Mutatá","Nariño","Nechí","Necoclí","Olaya","Peñol","Peque","Pueblorrico","Puerto Berrío","Puerto Nare","Puerto Triunfo","Remedios","Retiro","Rionegro","Sabanalarga","Sabaneta","Salgar","San Andrés","San Carlos","San Francisco","San Jerónimo","San José de la Montaña","San Juan de Urabá","San Luis","San Pedro","San Pedro de Urabá","San Rafael","San Roque","Santa Bárbara","Santa Fe de Antioquia","Santa Rosa de Osos","Santo Domingo","El Santuario","San Vicente","Segovia","Sonsón","Sopetrán","Támesis","Tarazá","Tarso","Titiribí","Toledo","Turbo","Uramita","Urrao","Valdivia","Valparaíso","Vegachí","Venecia","Vigía del Fuerte","Yalí","Yarumal","Yolombó","Yondó","Zaragoza"],
+    "Antioquia": ["Abejorral","Abriaquí","Alejandría","Amagá","Amalfi","Andes","Angelópolis","Angostura","Anorí","Anzá","Apartadó","Arboletes","Argelia","Armenia","Barbosa","Bello","Belmira","Betania","Betulia","Bolívar","Briceño","Buriticá","Cáceres","Caicedo","Caldas","Campamento","Cañasgordas","Caracolí","Caramanta","Carepa","Carolina del Príncipe","Caucasia","Chigorodó","Cisneros","Cocorná","Concepción","Concordia","Copacabana","Dabeiba","Don Matías","Ebéjico","El Bagre","Entrerríos","Envigado","Fredonia","Frontino","Giraldo","Girardota","Gómez Plata","Granada","Guadalupe","Guarne","Guatapé","Heliconia","Hispania","Itagüí","Ituango","Jardín","Jericó","La Ceja","La Estrella","La Pintada","La Unión","Liborina","Maceo","Marinilla","Medellín","Montebello","Murindó","Murinó","Mutatá","Nariño","Nechí","Necoclí","Olaya","Peñol","Peque","Pueblorrico","Puerto Berrío","Puerto Nare","Puerto Triunfo","Remedios","Retiro","Rionegro","Sabanalarga","Sabaneta","Salgar","San Andrés","San Carlos","San Francisco","San Jerónimo","San José de la Montaña","San Juan de Urabá","San Luis","San Pedro","San Pedro de Urabá","San Rafael","San Roque","Santa Bárbara","Santa Fe de Antioquia","Santa Rosa de Osos","Santo Domingo","El Santuario","San Vicente","Segovia","Sonsón","Sopetrán","Támesis","Tarazá","Tarso","Titiribí","Toledo","Turbo","Uramita","Urrao","Valdivia","Valparaíso","Vegachí","Venecia","Vigía del Fuerte","Yalí","Yarumal","Yolombó","Yondó","Zaragoza"],
     "Arauca": ["Arauca","Arauquita","Cravo Norte","Fortul","Puerto Rondón","Saravena","Tame"],
     "Atlántico": ["Baranoa","Barranquilla","Campo de la Cruz","Candelaria","Galapa","Juan de Acosta","Luruaco","Malambo","Manatí","Palmar de Varela","Piojó","Polonuevo","Ponedera","Puerto Colombia","Repelón","Sabanagrande","Sabanalarga","Santa Lucía","Santo Tomás","Soledad","Suan","Tubará","Usiacurí"],
     "Bogotá D.C.": ["Bogotá"],
@@ -77,6 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
     inicializarBarrio();
     prellenarUsuario();
     document.getElementById("ciudad").addEventListener("input", actualizarDocumento);
+    
+    // Listener para confirmar pedido
+    document.getElementById("confirmarPedido")?.addEventListener("click", confirmarPedido);
 });
 
 function val(id) { return document.getElementById(id)?.value.trim(); }
@@ -268,6 +274,148 @@ function renderResumenFinal() {
     `;
 }
 
+/* ================= CONFIRMAR PEDIDO Y PASARELA ================= */
+
+async function confirmarPedido() {
+    if (procesandoCompra) return;
+    procesandoCompra = true;
+
+    try {
+        // Si es transferencia directa o contraentrega, registrar sin pasar por pasarela
+        if (checkoutData.metodo_pago === "transferencia") {
+            await registrarPedidoDirecto();
+        } else if (checkoutData.metodo_pago === "wompi") {
+            // Para Wompi, inicializar widget
+            inicializarWompiWidget();
+        } else if (checkoutData.metodo_pago === "addi") {
+            mostrarNotificacion("Redirección a ADDI en desarrollo");
+            procesandoCompra = false;
+        }
+    } catch (error) {
+        mostrarNotificacion("Error al procesar: " + error.message);
+        procesandoCompra = false;
+    }
+}
+
+async function inicializarWompiWidget() {
+
+    // 1️⃣ Primero crear pedido en estado pendiente
+    const carritoData = JSON.parse(localStorage.getItem("cupissa_carrito")) || [];
+
+    const params = new URLSearchParams();
+    params.append("action", "registrarPedido");
+    params.append("tipo", checkoutData.tipo);
+    params.append("nombre_cliente", checkoutData.nombre_cliente);
+    params.append("usuario_email", checkoutData.usuario_email);
+    params.append("telefono", checkoutData.telefono);
+    params.append("direccion", checkoutData.direccion);
+    params.append("barrio", checkoutData.barrio);
+    params.append("ciudad", checkoutData.ciudad);
+    params.append("departamento", checkoutData.departamento);
+    params.append("cc", checkoutData.cc);
+    params.append("transportadora", checkoutData.transportadora_id || "");
+    params.append("metodo_pago", "wompi");
+    params.append("total", checkoutData.total_final);
+    params.append("costo_envio", checkoutData.costo_envio);
+    params.append("productos", JSON.stringify(carritoData));
+
+    const urlCompleta = CONFIG.backendURL + "?" + params.toString();
+
+    const response = await fetch(urlCompleta, { method: "GET" });
+    const result = await response.json();
+
+    if (!result.success) {
+        mostrarNotificacion("Error creando pedido");
+        procesandoCompra = false;
+        return;
+    }
+
+    const idPedido = result.id_pedido;
+
+    // 2️⃣ Ahora sí abrir Wompi con referencia real
+    const container = document.getElementById("paso-4");
+
+    let wompiContainer = document.getElementById("wompi-widget-container");
+    if (!wompiContainer) {
+        wompiContainer = document.createElement("div");
+        wompiContainer.id = "wompi-widget-container";
+        wompiContainer.style.marginTop = "30px";
+        container.insertBefore(wompiContainer, document.getElementById("confirmarPedido"));
+    }
+
+    wompiContainer.innerHTML = "";
+
+    if (typeof WidgetCheckout === 'undefined') {
+        mostrarNotificacion("Wompi no disponible");
+        procesandoCompra = false;
+        return;
+    }
+
+    const checkout = new WidgetCheckout({
+        currency: "COP",
+        amountInCents: checkoutData.pago_hoy * 100,
+        reference: idPedido, // 🔥 AHORA ES REAL
+        publicKey: "pub_prod_q69BzlCLtdFiZQEmbQFTMX9uXwr6E4Xg",
+        redirectUrl: CONFIG.baseURL + "/rastreo/?id=" + idPedido
+    });
+
+    checkout.render(wompiContainer);
+
+    document.getElementById("confirmarPedido").style.display = "none";
+}
+
+async function registrarPedidoDirecto() {
+    const carritoData = JSON.parse(localStorage.getItem("cupissa_carrito")) || [];
+    
+    // Construir URL con parámetros GET para evitar CORS
+    const params = new URLSearchParams();
+    params.append("action", "registrarPedido");
+    params.append("tipo", checkoutData.tipo);
+    params.append("nombre_cliente", checkoutData.nombre_cliente);
+    params.append("usuario_email", checkoutData.usuario_email);
+    params.append("telefono", checkoutData.telefono);
+    params.append("direccion", checkoutData.direccion);
+    params.append("barrio", checkoutData.barrio);
+    params.append("ciudad", checkoutData.ciudad);
+    params.append("departamento", checkoutData.departamento);
+    params.append("cc", checkoutData.cc);
+    params.append("transportadora", checkoutData.transportadora_id || "");
+    params.append("metodo_pago", checkoutData.metodo_pago);
+    params.append("total", checkoutData.total_final);
+    params.append("costo_envio", checkoutData.costo_envio);
+    params.append("productos", JSON.stringify(carritoData));
+
+    const urlCompleta = CONFIG.backendURL + "?" + params.toString();
+
+    try {
+        const response = await fetch(urlCompleta, {
+            method: "GET",
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Limpiar carrito
+            localStorage.removeItem("cupissa_carrito");
+            
+            // Mostrar confirmación y redirigir
+            mostrarNotificacion("¡Pedido confirmado! ID: " + result.id_pedido);
+            
+            setTimeout(() => {
+                window.location.href = "/rastreo/?id=" + result.id_pedido;
+            }, 2000);
+        } else {
+            throw new Error(result.error || "Error al registrar");
+        }
+    } catch (error) {
+        mostrarNotificacion("Error: " + error.message);
+        procesandoCompra = false;
+    }
+}
+
 /* ================= NAVEGACIÓN GENERAL ================= */
 
 function manejarNavegacion() {
@@ -347,11 +495,9 @@ function renderResumenCarrito() {
     let totalCalculado = 0;
 
     carritoData.forEach((item) => {
-        // Obtenemos el subtotal que ya calculó carrito.js para este grupo
         const subtotalGrupo = Number(item.subtotal) || 0;
         totalCalculado += subtotalGrupo;
 
-        // Iniciamos la fila del producto (Imagen + Nombre)
         html += `
             <div class="resumen-item-agrupado" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
                 <div style="display:flex; gap:12px; align-items:flex-start;">
@@ -360,10 +506,8 @@ function renderResumenCarrito() {
                         <div style="font-size:13px; font-weight:700; color:#fff; margin-bottom:8px; text-transform:uppercase;">${item.nombre}</div>
                         <div class="variantes-contenedor" style="display:flex; flex-direction:column; gap:5px;">`;
 
-        // Listamos las combinaciones (Tallas/Variantes) de forma compacta
         if (item.combinaciones && Array.isArray(item.combinaciones)) {
             item.combinaciones.forEach((combo) => {
-                // Texto de variantes (Talla: M | Color: Rojo)
                 const textoVars = Object.entries(combo.variantes || {})
                     .map(([k, v]) => `${k}: ${v}`)
                     .join(" | ");
@@ -384,7 +528,6 @@ function renderResumenCarrito() {
 
     html += `</div>`;
     
-    // Pie del resumen con el total
     html += `
         <div style="margin-top:20px; padding-top:15px; border-top:2px solid var(--color-pink);">
             <div style="display:flex; justify-content:space-between; font-weight:700; font-size:16px; color:#fff;">
@@ -396,10 +539,10 @@ function renderResumenCarrito() {
 
     if(cont) cont.innerHTML = html;
 
-    // IMPORTANTE: Sincronizar con checkoutData para no romper pasos 2 y 3
     checkoutData.total_productos = totalCalculado;
     checkoutData.productos = carritoData;
 }
+
 /* ================= DIRECCIÓN AUXILIAR ================= */
 
 function inicializarDepartamento() {
@@ -455,4 +598,16 @@ function prellenarUsuario() {
         if (input && u[id]) input.value = u[id];
     });
     actualizarDocumento();
+}
+
+function mostrarNotificacion(msg) {
+    const div = document.createElement("div");
+    div.className = "cupissa-notificacion";
+    div.textContent = msg;
+    document.body.appendChild(div);
+    setTimeout(() => div.classList.add("visible"), 10);
+    setTimeout(() => {
+        div.classList.remove("visible");
+        setTimeout(() => div.remove(), 400);
+    }, 3000);
 }
