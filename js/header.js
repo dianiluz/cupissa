@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* CUPISSA — HEADER DINÁMICO */
+/* CUPISSA — HEADER DINÁMICO — CORREGIDO */
 /* ===================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,10 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!headerContainer) return;
 
     const user = Utils.getUserSession();
-    const userLink = user ? '/panel/' : '/panel/index.html'; // Ajustar según estructura de login
+    
+    // CAMBIO AQUÍ: Ruta limpia según si existe usuario o no
+    const userLink = user ? '/panel/' : '/auth/'; 
     const userText = user ? 'Mi Cuenta' : 'Ingresar';
 
-    // Insertar FontAwesome si no existe
+    // ... (Mantén el resto del código de FontAwesome y CSS igual)
     if (!document.querySelector('link[href*="font-awesome"]')) {
         const fa = document.createElement('link');
         fa.rel = 'stylesheet';
@@ -18,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.head.appendChild(fa);
     }
 
-    // Insertar CSS del Header
     const headerCSS = document.createElement('link');
     headerCSS.rel = 'stylesheet';
     headerCSS.href = '/css/header.css';
