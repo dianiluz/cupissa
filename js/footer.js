@@ -35,10 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="footer-block">
                 <h3 class="footer-title">LEGALES</h3>
                 <ul>
-                    <li><a href="/legales/terminos">Términos y Condiciones</a></li>
-                    <li><a href="/legales/privacidad">Políticas de Privacidad</a></li>
-                    <li><a href="/legales/envios">Domicilios y Envíos</a></li>
-                    <li><a href="/legales/marketing">Marketing y Puntos</a></li>
+                    <li><a href="/legales/terminos.html">Términos y Condiciones</a></li>
+                    <li><a href="/legales/privacidad.html">Políticas de Privacidad</a></li>
+                    <li><a href="/legales/envios.html">Domicilios y Envíos</a></li>
+                    <li><a href="/legales/marketing.html">Marketing y Puntos</a></li>
                 </ul>
             </div>
 
