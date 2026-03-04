@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingresar - CUPISSA</title>
+    <link rel="icon" href="/assets/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body style="background-color: var(--color-gray-light);">
+    <div id="header"></div>
+
+    <main style="max-width: 450px; margin: 5rem auto; padding: 2.5rem; background: var(--color-white); border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
+        
+        <div style="display: flex; margin-bottom: 2rem; border-bottom: 2px solid #eee;">
+            <button id="tabLogin" style="flex: 1; padding: 10px; border: none; background: none; font-size: 1.2rem; font-weight: bold; cursor: pointer; color: var(--color-pink); border-bottom: 3px solid var(--color-pink);">Ingresar</button>
+            <button id="tabRegister" style="flex: 1; padding: 10px; border: none; background: none; font-size: 1.2rem; font-weight: bold; cursor: pointer; color: var(--color-gray-dark);">Registro</button>
+        </div>
+
+        <form id="formLogin" class="fade-in" style="display: block;">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;">Correo Electrónico</label>
+                <input type="email" id="loginEmail" required style="width: 100%; padding: 12px; border: 1px solid var(--color-gray-medium); border-radius: var(--radius-sm); outline: none; font-family: inherit;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;">Contraseña</label>
+                <input type="password" id="loginPassword" required style="width: 100%; padding: 12px; border: 1px solid var(--color-gray-medium); border-radius: var(--radius-sm); outline: none; font-family: inherit;">
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; cursor: pointer;">
+                    <input type="checkbox" id="loginRemember"> Recordarme
+                </label>
+                <a href="#" id="linkRecuperar" style="font-size: 0.85rem; color: var(--color-pink); text-decoration: none;">¿Olvidaste tu clave?</a>
+            </div>
+            <div id="loginError" style="color: red; font-size: 0.85rem; display: none; margin-bottom: 10px;"></div>
+            <button type="submit" id="btnLoginSubmit" style="width: 100%; padding: 12px; background: var(--color-black); color: white; border: none; border-radius: var(--radius-xl); font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px;">Iniciar Sesión</button>
+        </form>
+
+        <form id="formRecover" class="fade-in" style="display: none;">
+            <p style="font-size: 0.9rem; margin-bottom: 15px; color: var(--color-gray-dark);">Ingresa tu correo para recibir una clave temporal.</p>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;">Correo Electrónico</label>
+                <input type="email" id="recoverEmail" required style="width: 100%; padding: 12px; border: 1px solid var(--color-gray-medium); border-radius: var(--radius-sm); outline: none; font-family: inherit;">
+            </div>
+            <div id="recoverMsg" style="font-size: 0.85rem; display: none; margin-bottom: 10px;"></div>
+            <button type="submit" id="btnRecoverSubmit" style="width: 100%; padding: 12px; background: var(--color-pink); color: white; border: none; border-radius: var(--radius-xl); font-weight: bold; font-size: 1.1rem; cursor: pointer;">Enviar Clave</button>
+            <button type="button" id="btnVolverLogin" style="width: 100%; padding: 12px; background: transparent; color: var(--color-black); border: none; font-weight: bold; font-size: 0.9rem; cursor: pointer; margin-top: 10px; text-decoration: underline;">Volver a Iniciar Sesión</button>
+        </form>
+
+        <form id="formRegister" class="fade-in" style="display: none;">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;">Nombre Completo</label>
+                <input type="text" id="regNombre" required style="width: 100%; padding: 12px; border: 1px solid var(--color-gray-medium); border-radius: var(--radius-sm); outline: none; font-family: inherit;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;">Teléfono / WhatsApp</label>
+                <input type="tel" id="regTelefono" required style="width: 100%; padding: 12px; border: 1px solid var(--color-gray-medium); border-radius: var(--radius-sm); outline: none; font-family: inherit;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;">Correo Electrónico</label>
+                <input type="email" id="regEmail" required style="width: 100%; padding: 12px; border: 1px solid var(--color-gray-medium); border-radius: var(--radius-sm); outline: none; font-family: inherit;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;">Cédula (Opcional)</label>
+                <input type="text" id="regCC" style="width: 100%; padding: 12px; border: 1px solid var(--color-gray-medium); border-radius: var(--radius-sm); outline: none; font-family: inherit;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem;">Crear Contraseña</label>
+                <input type="password" id="regPassword" required style="width: 100%; padding: 12px; border: 1px solid var(--color-gray-medium); border-radius: var(--radius-sm); outline: none; font-family: inherit;">
+            </div>
+            <div id="regError" style="color: red; font-size: 0.85rem; display: none; margin-bottom: 10px;"></div>
+            <button type="submit" id="btnRegSubmit" style="width: 100%; padding: 12px; background: var(--color-pink); color: white; border: none; border-radius: var(--radius-xl); font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px;">Crear Cuenta</button>
+        </form>
+
+    </main>
+
+    <div id="footer"></div>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/header.js"></script>
+    <script src="/js/carrito.js"></script>
+    <script src="/js/footer.js"></script>
+    <script src="/js/auth.js"></script>
+    
+    <script>
+        document.getElementById('tabLogin').addEventListener('click', () => {
+            document.getElementById('tabLogin').style.color = 'var(--color-pink)';
+            document.getElementById('tabLogin').style.borderBottom = '3px solid var(--color-pink)';
+            document.getElementById('tabRegister').style.color = 'var(--color-gray-dark)';
+            document.getElementById('tabRegister').style.borderBottom = 'none';
+            document.getElementById('formLogin').style.display = 'block';
+            document.getElementById('formRegister').style.display = 'none';
+            document.getElementById('formRecover').style.display = 'none';
+        });
+        
+        document.getElementById('tabRegister').addEventListener('click', () => {
+            document.getElementById('tabRegister').style.color = 'var(--color-pink)';
+            document.getElementById('tabRegister').style.borderBottom = '3px solid var(--color-pink)';
+            document.getElementById('tabLogin').style.color = 'var(--color-gray-dark)';
+            document.getElementById('tabLogin').style.borderBottom = 'none';
+            document.getElementById('formRegister').style.display = 'block';
+            document.getElementById('formLogin').style.display = 'none';
+            document.getElementById('formRecover').style.display = 'none';
+        });
+
+        document.getElementById('linkRecuperar').addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('formLogin').style.display = 'none';
+            document.getElementById('formRecover').style.display = 'block';
+        });
+
+        document.getElementById('btnVolverLogin').addEventListener('click', () => {
+            document.getElementById('formRecover').style.display = 'none';
+            document.getElementById('formLogin').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
