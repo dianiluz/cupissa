@@ -58,7 +58,11 @@
     height: 400px;
     position: relative;
     transform-style: preserve-3d;
-    animation: rotateMockup 15s infinite linear;
+    transition: transform 1s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.mockup-rotator.flipped {
+    transform: rotateY(180deg);
 }
 
 .mockup-face {
