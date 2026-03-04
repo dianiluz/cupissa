@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesando Pago - CUPISSA</title>
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+</head>
+<body>
+    <div id="header"></div>
+    <main style="max-width: 600px; margin: 5rem auto; text-align: center; padding: 2rem; background: white; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        <h1 id="resTitulo" style="color: var(--color-black);">Verificando tu pago...</h1>
+        <p id="resMensaje" style="color: gray; margin-bottom: 2rem;">Por favor no cierres esta ventana, estamos confirmando la transacción con el banco.</p>
+        
+        <div id="loadingSpinner" style="width: 50px; height: 50px; border: 5px solid var(--color-gray-light); border-top: 5px solid var(--color-pink); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+        
+        <button id="btnVolver" class="btn-primary" style="display:none; margin: 2rem auto 0 auto;" onclick="window.location.href='/'">Volver al Inicio</button>
+    </main>
+    <div id="footer"></div>
+
+    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+    <script src="/js/config.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/header.js"></script>
+    <script src="/js/footer.js"></script>
+    <script src="/js/respuesta.js"></script>
+</body>
+</html>
