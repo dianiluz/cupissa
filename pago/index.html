@@ -15,11 +15,6 @@
     <link rel="stylesheet" href="/css/components.css">
     <link rel="stylesheet" href="/css/animations.css">
     <link rel="stylesheet" href="/css/pago.css">
-    <style>
-        .suggestions { position: absolute; width: 100%; background: white; border: 1px solid #ddd; max-height: 200px; overflow-y: auto; z-index: 100; display: none; border-radius: 0 0 10px 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .sug-item { padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #eee; text-align: left; font-size: 14px; }
-        .sug-item:hover { background: #fff0f7; color: var(--color-pink); }
-    </style>
 </head>
 <body>
     <div id="header"></div>
@@ -89,12 +84,24 @@
                 <h2 class="step-title">Método de Envío</h2>
                 <div id="opcionesEnvio"></div>
 
+                <div id="opcionesPagoDomicilio" style="display: none; margin-top: 15px; background: #f9f9f9; padding: 15px; border-radius: var(--radius-sm); border-left: 3px solid var(--color-black);">
+                    <label style="font-weight: bold; display: block; margin-bottom: 10px;">¿Cuándo deseas pagar el domicilio?</label>
+                    <label style="display: flex; gap: 10px; margin-bottom: 5px; cursor: pointer;">
+                        <input type="radio" name="momentoPagoDomicilio" value="ahora" checked onchange="Checkout.calculateTotals()">
+                        <span>Sumarlo al total y pagarlo ahora</span>
+                    </label>
+                    <label style="display: flex; gap: 10px; cursor: pointer;">
+                        <input type="radio" name="momentoPagoDomicilio" value="despues" onchange="Checkout.calculateTotals()">
+                        <span>Dejarlo como saldo pendiente</span>
+                    </label>
+                </div>
+
                 <h2 class="step-title" style="margin-top: 2rem;">Tiempo de Producción</h2>
                 <label class="radio-card selected" onclick="Checkout.selectProduccion('normal')">
                     <input type="radio" name="tipoProduccion" value="normal" checked>
                     <div class="radio-content">
                         <span class="radio-title">Normal (5 a 8 días hábiles)</span>
-                        <span class="radio-desc">Hasta 15 días si supera los $999.999. Gratis.</span>
+                        <span class="radio-desc">Gratis.</span>
                     </div>
                 </label>
                 <div id="opcionesExpress"></div>
@@ -161,7 +168,6 @@
             <div class="step-content" id="step-4">
                 <h2 class="step-title">Confirmar Pedido</h2>
                 <div id="resumenDatosFinales" style="background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 20px; line-height: 1.8;"></div>
-                <div id="errorCheckout" style="color: red; margin-bottom: 15px; display: none;"></div>
                 <div class="step-actions">
                     <button class="btn-secondary" onclick="Checkout.prevStep(3)">Volver</button>
                     <button class="btn-primary" id="btnConfirmarPedido" onclick="Checkout.submitPedido()" style="background-color: var(--color-success);">Confirmar y Generar Pedido</button>
