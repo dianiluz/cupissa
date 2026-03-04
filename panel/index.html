@@ -3,109 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CUPISSA - Mi Panel</title>
+    <title>Mi Panel - CUPISSA</title>
     <link rel="icon" href="/assets/favicon.png">
-    
     <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <link rel="stylesheet" href="/css/variables.css">
     <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
     <link rel="stylesheet" href="/css/components.css">
-    <link rel="stylesheet" href="/css/auth.css">
-    <link rel="stylesheet" href="/css/panel.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/css/panel.css"> </head>
+<body style="background-color: var(--color-gray-light);">
     <div id="header"></div>
 
-    <main>
-        <section id="viewLogin" class="auth-wrapper view-hidden">
-            <div class="auth-card fade-in">
-                <h1 class="auth-title">Bienvenido</h1>
-                <p class="auth-subtitle">Inicia sesión en tu cuenta Cupissa</p>
-                <form id="formLogin" class="auth-form">
-                    <div class="form-group">
-                        <label>Correo Electrónico</label>
-                        <input type="email" id="loginEmail" required placeholder="tu@correo.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Contraseña</label>
-                        <input type="password" id="loginPassword" required placeholder="••••••••">
-                    </div>
-                    <div class="auth-options">
-                        <label><input type="checkbox" id="loginRemember"> Recuérdame</label>
-                        <a href="#" class="auth-link">¿Olvidaste tu contraseña?</a>
-                    </div>
-                    <div id="loginError" class="auth-error"></div>
-                    <button type="submit" class="btn-primary btn-block" id="btnLoginSubmit">Ingresar</button>
-                    <p style="text-align: center; margin-top: 10px; font-size: 0.9rem;">
-                        ¿No tienes cuenta? <button type="button" class="auth-link" onclick="Auth.switchView('viewRegister')">Regístrate aquí</button>
-                    </p>
-                </form>
-            </div>
-        </section>
+    <div style="max-width: 1400px; margin: 2rem auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center;">
+        <h1 style="margin: 0; font-family: var(--font-secondary);">Hola, <span id="panelUserName" style="color: var(--color-pink); text-transform: uppercase;"></span></h1>
+        <button onclick="Panel.logout()" class="btn-primary" style="background: var(--color-black);"><i class="fas fa-sign-out-alt"></i> Salir</button>
+    </div>
 
-        <section id="viewRegister" class="auth-wrapper view-hidden">
-            <div class="auth-card fade-in" style="max-width: 600px;">
-                <h1 class="auth-title">Crear Cuenta</h1>
-                <p class="auth-subtitle">Únete a la familia Cupissa</p>
-                <form id="formRegister" class="auth-form">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div class="form-group">
-                            <label>Nombre Completo</label>
-                            <input type="text" id="regNombre" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Cédula (CC) <span style="font-size:0.8rem; color:gray;">(Opcional)</span></label>
-                         <input type="text" id="regCC">
-                        </div>
-                        <div class="form-group">
-                            <label>Correo Electrónico</label>
-                            <input type="email" id="regEmail" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Teléfono (WhatsApp)</label>
-                            <input type="tel" id="regTelefono" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Contraseña</label>
-                        <input type="password" id="regPassword" required>
-                    </div>
-                    <div id="regError" class="auth-error"></div>
-                    <button type="submit" class="btn-primary btn-block" id="btnRegSubmit">Crear Cuenta</button>
-                    <p style="text-align: center; margin-top: 10px; font-size: 0.9rem;">
-                        ¿Ya tienes cuenta? <button type="button" class="auth-link" onclick="Auth.switchView('viewLogin')">Inicia sesión</button>
-                    </p>
-                </form>
-            </div>
-        </section>
+    <div class="panel-layout">
+        <aside class="panel-sidebar">
+            <ul class="panel-sidebar-menu" id="menuTabs"></ul>
+        </aside>
 
-        <section id="viewDashboard" class="panel-wrapper view-hidden">
-            <aside class="panel-sidebar">
-                <div class="user-info-card">
-                    <div class="user-avatar" id="panelAvatar">U</div>
-                    <div class="user-name" id="panelUserName">Cargando...</div>
-                    <div class="user-role" id="panelUserRole">...</div>
+        <section class="panel-content-area">
+            
+            <div id="tab-resumen" class="tab-pane active">
+                <h2 style="margin-top:0; border-bottom:2px solid #eee; padding-bottom:10px;">Resumen de Cuenta</h2>
+                <div class="kpi-grid">
+                    <div class="kpi-card"><h3 id="kpiPuntos">0</h3><p>⭐ Puntos Acumulados</p></div>
+                    <div class="kpi-card"><h3 id="kpiEntregados">0</h3><p>Pedidos Entregados</p></div>
+                    <div class="kpi-card"><h3 id="kpiProceso">0</h3><p>En Proceso</p></div>
                 </div>
-                <nav class="panel-nav" id="panelNav">
-                    </nav>
-                <button class="panel-nav-btn btn-logout" onclick="Auth.logout()">
-                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                </button>
-            </aside>
-            <main class="panel-main" id="panelContentArea">
-                </main>
+            </div>
+
+            <div id="tab-perfil" class="tab-pane">
+                <h2 style="margin-top:0; border-bottom:2px solid #eee; padding-bottom:10px;">Mi Perfil y Seguridad</h2>
+                <form id="formEditarPerfil" style="max-width: 600px;">
+                    <input type="text" id="perfilNombre" placeholder="Nombre Completo" required style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    <input type="tel" id="perfilTelefono" placeholder="Teléfono" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    <input type="text" id="perfilDireccion" placeholder="Dirección Completa" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    <input type="text" id="perfilCiudad" placeholder="Ciudad" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    <input type="text" id="perfilCC" placeholder="Cédula" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    
+                    <h4 style="margin-top: 15px;">Contacto de Confianza (Autorizado para recibir)</h4>
+                    <input type="text" id="perfilConfianza" placeholder="Nombre del contacto de confianza" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    <input type="text" id="perfilConfianzaDir" placeholder="¿Misma dirección u otra? Especificar" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                    
+                    <h4 style="margin-top: 15px;">Seguridad</h4>
+                    <input type="password" id="perfilPassword" placeholder="Nueva Contraseña (Dejar en blanco si no cambia)" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px;">
+                    
+                    <button type="submit" id="btnActualizarPerfil" class="btn-primary" style="width: 100%;">Guardar Cambios</button>
+                </form>
+            </div>
+
+            <div id="tab-pedidos" class="tab-pane">
+                <h2 style="margin-top:0; border-bottom:2px solid #eee; padding-bottom:10px;">Mis Pedidos</h2>
+                <div id="historialPedidosLista">Cargando...</div>
+            </div>
+
+            <div id="tab-promos" class="tab-pane">
+                <h2 style="margin-top:0; border-bottom:2px solid #eee; padding-bottom:10px;">Promociones Exclusivas</h2>
+                <div id="promocionesLista" style="display: flex; gap: 15px; flex-wrap: wrap;">Cargando...</div>
+            </div>
+
+            <div id="tab-gestion" class="tab-pane">
+                <h2 style="margin-top:0; border-bottom:2px solid #eee; padding-bottom:10px;">Gestión de Pedidos Totales</h2>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; min-width: 900px; font-size: 0.9rem;">
+                        <thead>
+                            <tr style="background: var(--color-black); color: white; text-align: left;">
+                                <th style="padding: 12px;">ID / Productos</th><th style="padding: 12px;">Cliente</th>
+                                <th style="padding: 12px;">Totales</th><th style="padding: 12px;">Estado</th>
+                                <th style="padding: 12px; text-align: center;">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaAdminPedidos"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tab-clientes" class="tab-pane">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eee; padding-bottom:10px; margin-bottom:15px;">
+                    <h2 style="margin:0;">Base de Clientes y Equipo</h2>
+                    <button class="btn-primary" onclick="document.getElementById('formNuevoCliente').style.display='block'">+ Registrar Usuario</button>
+                </div>
+                
+                <form id="formNuevoCliente" style="display:none; background:#f9f9f9; padding:20px; border-radius:10px; margin-bottom:20px; border:1px solid #ddd;">
+                    <h3 style="margin-top:0;">Registrar Nuevo Usuario</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <input type="text" id="nCliNombre" placeholder="Nombre Completo" required style="padding:10px; border:1px solid #ccc; border-radius:5px;">
+                        <input type="email" id="nCliEmail" placeholder="Correo Electrónico" required style="padding:10px; border:1px solid #ccc; border-radius:5px;">
+                        <input type="tel" id="nCliTel" placeholder="WhatsApp" required style="padding:10px; border:1px solid #ccc; border-radius:5px;">
+                        <button type="submit" id="btnCrearCli" class="btn-primary" style="grid-column:1/-1; background:var(--color-success); border:none;">Guardar y Enviar Clave Temporal</button>
+                    </div>
+                </form>
+
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead><tr style="background: #eee; text-align: left;"><th style="padding: 12px;">Nombre</th><th style="padding: 12px;">Contacto</th><th style="padding: 12px;">Rol / Registro</th></tr></thead>
+                    <tbody id="tablaListaClientes"></tbody>
+                </table>
+            </div>
+
+            <div id="tab-productos" class="tab-pane">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #eee; padding-bottom:10px; margin-bottom:15px;">
+                    <h2 style="margin:0;">Catálogo de Productos</h2>
+                    <button class="btn-primary" onclick="document.getElementById('formNuevoProd').style.display='block'">+ Crear Producto</button>
+                </div>
+
+                <form id="formNuevoProd" style="display:none; background:#f9f9f9; padding:20px; border-radius:10px; margin-bottom:20px; border:1px solid #ddd;">
+                    <h3 style="margin-top:0;">Agregar Producto Completo</h3>
+                    <p style="font-size:0.8rem; color:red;">* Campos Obligatorios. La imagen será /assets/productos/TU_REFERENCIA.png</p>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+                        <input type="text" id="pRef" placeholder="* Referencia (Ej. C-01)" required style="padding:8px; border:1px solid #ccc; border-radius:5px;">
+                        <input type="text" id="pNombre" placeholder="* Nombre del Producto" required style="padding:8px; border:1px solid #ccc; border-radius:5px;">
+                        <input type="number" id="pPrecio" placeholder="* Precio Base" required style="padding:8px; border:1px solid #ccc; border-radius:5px;">
+                        
+                        <input type="text" id="pMundo" placeholder="* Mundo" required style="padding:8px; border:1px solid #ccc; border-radius:5px;">
+                        <input type="text" id="pCat" placeholder="* Categoría" required style="padding:8px; border:1px solid #ccc; border-radius:5px;">
+                        <input type="text" id="pSubCat" placeholder="Subcategoría (Opcional)" style="padding:8px; border:1px solid #ccc; border-radius:5px;">
+                        
+                        <input type="text" id="pGrupo" placeholder="Grupo" style="padding:8px; border:1px solid #ccc; border-radius:5px;">
+                        <input type="text" id="pTipo" placeholder="Tipo" style="padding:8px; border:1px solid #ccc; border-radius:5px;">
+                        <input type="text" id="pTallas" placeholder="Tallas (Ej. S,M,L)" style="padding:8px; border:1px solid #ccc; border-radius:5px;">
+                        
+                        <input type="text" id="pTematica" placeholder="Temática" style="padding:8px; border:1px solid #ccc; border-radius:5px;">
+                        <select id="pPersonal" style="padding:8px; border:1px solid #ccc; border-radius:5px;">
+                            <option value="NO">¿Personalizable? NO</option><option value="SI">¿Personalizable? SI</option>
+                        </select>
+                        <select id="pActivo" style="padding:8px; border:1px solid #ccc; border-radius:5px;">
+                            <option value="SI">Activo (Visible)</option><option value="NO">Inactivo</option>
+                        </select>
+
+                        <input type="text" id="pParaQuien" placeholder="¿Para quien?" style="padding:8px; border:1px solid #ccc; border-radius:5px;">
+                        <input type="text" id="pModalidad" placeholder="Modalidad (Venta/Renta)" style="padding:8px; border:1px solid #ccc; border-radius:5px;">
+                        
+                        <div style="grid-column: 1 / -1; margin-top:10px;">
+                            <div style="display:flex; gap:10px;">
+                                <input type="text" id="pXTemp" placeholder="Pon una X para destacar" style="width:150px; padding:8px; border:1px solid #ccc; border-radius:5px;">
+                                <input type="text" id="pTemporada" placeholder="Nombre de la Temporada (Ej: Día de Madres)" style="flex:1; padding:8px; border:1px solid #ccc; border-radius:5px;">
+                            </div>
+                        </div>
+
+                        <div style="grid-column: 1 / -1; margin-top:10px;">
+                            <h4 style="margin-bottom:5px;">Variaciones (Tallas, Colores, Opciones)</h4>
+                            <textarea id="pVariaciones" rows="3" placeholder="Talla | M | 0&#10;Color | Rojo | 2000" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:5px; font-family:monospace;"></textarea>
+                        </div>
+
+                        <button type="submit" id="btnCrearProd" class="btn-primary" style="grid-column:1/-1; background:var(--color-success); border:none; margin-top:10px;">Guardar Producto Definitivo</button>
+                    </div>
+                </form>
+
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead><tr style="background: #eee; text-align: left;"><th style="padding: 12px;">Ref / Img</th><th style="padding: 12px;">Producto</th><th style="padding: 12px;">Precio Base</th></tr></thead>
+                    <tbody id="tablaListaProductos"></tbody>
+                </table>
+            </div>
+
+            <div id="tab-marketing" class="tab-pane">
+                <h2 style="margin-top:0; border-bottom:2px solid #eee; padding-bottom:10px;">Gestión de Marketing (Promos)</h2>
+                <form id="formNuevaPromo" style="background:#f9f9f9; padding:20px; border-radius:10px; margin-bottom:20px; border:1px solid #ddd;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <input type="text" id="nProTipo" placeholder="Tipo (CUPÓN / DESCUENTO)" required style="padding:10px; border:1px solid #ccc; border-radius:5px;">
+                        <input type="text" id="nProTitulo" placeholder="Título Comercial" required style="padding:10px; border:1px solid #ccc; border-radius:5px;">
+                        <input type="text" id="nProCodigo" placeholder="Código (Opcional)" style="padding:10px; border:1px solid #ccc; border-radius:5px;">
+                        <input type="text" id="nProValor" placeholder="Valor (Ej: 10% o 5000)" style="padding:10px; border:1px solid #ccc; border-radius:5px;">
+                        <input type="text" id="nProDesc" placeholder="Descripción corta" style="grid-column:1/-1; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                        <button type="submit" class="btn-primary" style="grid-column:1/-1; background:var(--color-black);">Lanzar Promoción</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="tab-correos" class="tab-pane">
+                <h2 style="margin-top:0; border-bottom:2px solid #eee; padding-bottom:10px;"><i class="fas fa-envelope"></i> Buzón Oficial CUPISSA</h2>
+                <form id="formBuzonEnvio" style="display:flex; flex-direction:column; gap:15px; max-width:600px;">
+                    <label style="font-weight:bold; margin-bottom:-10px;">Destinatario:</label>
+                    <input list="listaDestinosBuzon" id="buzonDestinoInput" required placeholder="Escribe para buscar cliente o escribe TODOS..." style="padding:12px; border:1px solid #ccc; border-radius:5px;">
+                    <datalist id="listaDestinosBuzon"></datalist>
+
+                    <label style="font-weight:bold; margin-bottom:-10px;">Asunto:</label>
+                    <input type="text" id="buzonAsunto" placeholder="Ej: ¡Llegó la nueva colección!" required style="padding:12px; border:1px solid #ccc; border-radius:5px;">
+                    
+                    <label style="font-weight:bold; margin-bottom:-10px;">Mensaje:</label>
+                    <textarea id="buzonCuerpo" rows="6" placeholder="Escribe tu mensaje aquí..." required style="padding:12px; border:1px solid #ccc; border-radius:5px; font-family:inherit;"></textarea>
+                    
+                    <button type="submit" id="btnEnviarBuzon" class="btn-primary" style="background:var(--color-pink);"><i class="fas fa-paper-plane"></i> Enviar Mensaje</button>
+                </form>
+            </div>
+
+            <div id="tab-comisiones" class="tab-pane">
+                <h2 style="margin-top:0; border-bottom:2px solid #eee; padding-bottom:10px;">Comisiones Generadas</h2>
+                <div class="kpi-grid">
+                    <div class="kpi-card"><h3 id="kpiComisionTotal" style="color:var(--color-success);">$0</h3><p>Total Generado (10%)</p></div>
+                </div>
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-top:20px;">
+                    <thead><tr style="background: #eee; text-align: left;"><th style="padding: 12px;">Vendedor</th><th style="padding: 12px;">Ventas Totales</th><th style="padding: 12px; color:var(--color-success);">Comisión a Pagar</th></tr></thead>
+                    <tbody id="tablaListaComisiones"></tbody>
+                </table>
+            </div>
+
         </section>
-    </main>
+    </div>
+
+    <div id="modalDetallePedido" class="modal-overlay" style="display: none; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000;">
+        <div style="background: white; padding: 2rem; border-radius: var(--radius-lg); width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative;">
+            <button onclick="document.getElementById('modalDetallePedido').style.display='none'" style="position: absolute; top: 15px; right: 20px; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            <h2 id="modId" style="color: var(--color-pink); margin-top: 0;">Pedido ---</h2>
+            <div id="modInfo"></div>
+            <div id="modProductos" style="margin-top: 15px;"></div>
+            <div id="modAccionesAdmin" style="display:none; margin-top:15px; padding-top:15px; border-top:1px solid #ccc;"></div>
+        </div>
+    </div>
 
     <div id="footer"></div>
 
     <script src="/js/config.js"></script>
     <script src="/js/utils.js"></script>
     <script src="/js/header.js"></script>
-    <script src="/js/carrito.js"></script>
-    <script src="/js/auth.js"></script>
+    <script src="/js/footer.js"></script>
     <script src="/js/panel.js"></script>
 </body>
 </html>
