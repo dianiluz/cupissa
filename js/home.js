@@ -12,7 +12,7 @@ const Home = {
             Home.renderCategorias(productosActivos);
             Home.renderTemporada(productosActivos);
         } catch (error) {
-            console.error("Error cargando inicio");
+            console.error("Error cargando inicio", error);
         }
     },
 
@@ -22,8 +22,8 @@ const Home = {
         
         const mundos = [...new Set(productos.map(p => p.mundo).filter(m => m && m.trim() !== ''))];
         container.innerHTML = mundos.map(mundo => `
-            <div class="product-card fade-in" style="padding: 2rem; text-align: center; cursor: pointer;" onclick="window.location.href='/catalogo/'">
-                <h3 style="color: var(--color-pink); text-transform: uppercase;">${mundo}</h3>
+            <div class="product-card fade-in" style="padding: 2rem; text-align: center; cursor: pointer; display: flex; flex-direction: column; justify-content: center;" onclick="window.location.href='/catalogo/'">
+                <h3 style="color: var(--color-pink); text-transform: uppercase; font-size: 1.5rem; margin-bottom: 5px;">${mundo}</h3>
                 <p style="font-size: 0.9rem; color: var(--color-gray-dark);">Ver colección</p>
             </div>
         `).join('');
@@ -33,10 +33,10 @@ const Home = {
         const container = document.getElementById('homeCategorias');
         if(!container) return;
 
-        const categorias = [...new Set(productos.map(p => p.categoría).filter(c => c && c.trim() !== ''))];
+        const categorias = [...new Set(productos.map(p => p.categoría || p.categoria).filter(c => c && c.trim() !== ''))];
         container.innerHTML = categorias.map(cat => `
             <div class="product-card fade-in" style="min-width: 200px; padding: 1.5rem; text-align: center; cursor: pointer; flex-shrink: 0;" onclick="window.location.href='/catalogo/'">
-                <h3 style="font-size: 1.1rem; color: var(--color-black);">${cat}</h3>
+                <h3 style="font-size: 1.1rem; color: var(--color-black); margin: 0;">${cat}</h3>
             </div>
         `).join('');
     },
@@ -49,7 +49,7 @@ const Home = {
         const destacados = productos.filter(p => p['*x_temp'] && p['*x_temp'].toUpperCase().trim() === 'X');
         
         if (destacados.length > 0) {
-            titulo.innerText = destacados[0]['*temporada'] || "Destacados";
+            titulo.innerText = destacados[0]['*temporada'] || "Destacados de Temporada";
             
             container.innerHTML = destacados.map(p => {
                 const precioBaseFmt = Utils.formatCurrency(p['*precio_base']);
@@ -59,7 +59,7 @@ const Home = {
                         <div class="product-info">
                             <div class="product-title">${p.nombre}</div>
                             <div class="product-price">${precioBaseFmt}</div>
-                            <button class="btn-add-modal" style="margin-top:10px;">Comprar</button>
+                            <button class="btn-add-modal" style="margin-top:auto; width: 100%;">Ver Opciones</button>
                         </div>
                     </div>
                 `;
