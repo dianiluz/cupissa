@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* CUPISSA — HEADER DINÁMICO — CORREGIDO */
+/* CUPISSA — HEADER DINÁMICO CON MODO OSCURO */
 /* ===================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,11 +8,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const user = Utils.getUserSession();
     
-    // CAMBIO AQUÍ: Ruta limpia según si existe usuario o no
-    const userLink = user ? '/panel/' : '/auth/'; 
-    const userText = user ? 'Mi Cuenta' : 'Ingresar';
+    // --- LÓGICA DE REDIRECCIÓN DINÁMICA SEGÚN DOCUMENTO ---
+    let userLink = '/auth/'; 
+    if (user && user.tipo_usuario) {
+        const rutas = {
+            'ADMIN': '/admin/',
+            'CLIENTE': '/cliente/',
+            'ASESOR': '/asesor/',
+            'FINANZAS': '/finanzas/',
+            'PRODUCCION': '/equipo/' // Según arquitectura sugerida [cite: 148]
+        };
+        userLink = rutas[user.tipo_usuario.toUpperCase()] || '/cliente/';
+    }
+    // ------------------------------------------------------
 
-    // ... (Mantén el resto del código de FontAwesome y CSS igual)
+    const userText = user ? 'Mi Cuenta' : 'Ingresar';
+    const isDark = document.body.classList.contains('dark-mode');
+
     if (!document.querySelector('link[href*="font-awesome"]')) {
         const fa = document.createElement('link');
         fa.rel = 'stylesheet';
@@ -39,8 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 </nav>
 
                 <div class="header-icons">
-                    <a href="${userLink}" title="${userText}"><i class="fas fa-user"></i></a>
-                    <div class="cart-icon-wrapper" id="openCartBtn">
+                    <button onclick="Utils.toggleDarkMode(); location.reload();" title="Cambiar Tema" style="background:none; border:none; cursor:pointer; font-size:1.2rem; color:var(--color-black);">
+                        <i class="fas ${isDark ? 'fa-sun' : 'fa-moon'}"></i>
+                    </button>
+                    <a href="/wishlist/" title="Mis Favoritos" style="color:var(--color-black);"><i class="fas fa-heart"></i></a>
+                    <a href="${userLink}" title="${userText}" style="color:var(--color-black);"><i class="fas fa-user"></i></a>
+                    <div class="cart-icon-wrapper" id="openCartBtn" style="color:var(--color-black);">
                         <i class="fas fa-shopping-bag"></i>
                         <span class="cart-badge" id="cartBadge">0</span>
                     </div>
