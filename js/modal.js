@@ -3,17 +3,10 @@
 /* ===================================================== */
 
 const ModalProducto = {
-    variacionesDB: [],
     productoActual: null,
     cantidadActual: 1,
 
-    init: async () => {
-        try {
-            ModalProducto.variacionesDB = await Utils.fetchSheetData(CONFIG.gids.VARIACIONES);
-        } catch (error) {
-            console.error("Error cargando variaciones", error);
-        }
-
+    init: () => {
         const container = document.getElementById('modalContainer');
         if (container) {
             container.innerHTML = `
@@ -30,13 +23,16 @@ const ModalProducto = {
                                 <span class="modal-price" id="modalPrice"></span>
                             </div>
                             <div class="modal-variations" id="modalVariationsArea"></div>
+                            
                             <div class="modal-actions">
                                 <div class="modal-qty">
-                                    <button onclick="ModalProducto.changeQty(-1)">-</button>
-                                    <input type="text" id="modalQtyInput" value="1" readonly>
-                                    <button onclick="ModalProducto.changeQty(1)">+</button>
+                                    <button onclick="ModalProducto.updateQty(-1)">-</button>
+                                    <input type="number" id="modalQty" value="1" readonly>
+                                    <button onclick="ModalProducto.updateQty(1)">+</button>
                                 </div>
-                                <button class="btn-add-cart" onclick="ModalProducto.addToCart()">Agregar al Carrito</button>
+                                <button class="btn-add-cart" onclick="ModalProducto.addToCart()">
+                                    <i class="fas fa-shopping-bag"></i> Agregar al Carrito
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -54,95 +50,97 @@ const ModalProducto = {
 
         document.getElementById('modalImg').src = producto.imagenurl;
         document.getElementById('modalTitle').innerText = producto.nombre;
-        document.getElementById('modalRef').innerText = `REF: ${producto.ref}`;
-        document.getElementById('modalQtyInput').value = 1;
+        document.getElementById('modalRef').innerText = `Ref: ${producto.ref}`;
+        document.getElementById('modalQty').value = 1;
 
-        ModalProducto.renderSelects();
-        ModalProducto.calculatePrice();
-
-        document.getElementById('productModal').classList.add('active');
-    },
-
-    close: () => {
-        document.getElementById('productModal').classList.remove('active');
-        ModalProducto.productoActual = null;
-    },
-
-    changeQty: (change) => {
-        let newQty = ModalProducto.cantidadActual + change;
-        if (newQty < 1) newQty = 1;
-        ModalProducto.cantidadActual = newQty;
-        document.getElementById('modalQtyInput').value = ModalProducto.cantidadActual;
-    },
-
-    renderSelects: () => {
-        const area = document.getElementById('modalVariationsArea');
-        area.innerHTML = '';
-        const producto = ModalProducto.productoActual;
+        const areaVar = document.getElementById('modalVariationsArea');
+        areaVar.innerHTML = '';
+        
+        let hasVariations = false;
 
         Object.keys(producto).forEach(key => {
-            const val = producto[key];
-            
-            // Usamos la MISMA regla infalible que en catalogo.js: 
-            // Si el valor tiene '#', o tiene '|', o la columna es de tallas.
-            if (typeof val === 'string' && (val.includes('#') || val.includes('|') || key.toLowerCase().includes('tallas'))) {
+            let val = String(producto[key]);
+            if (val.includes('#') || val.includes('|') || key.toLowerCase() === '*tallas') {
                 const cleanVal = val.replace('#', '');
                 if(!cleanVal) return;
                 
                 const opciones = cleanVal.split('|').map(o => o.trim());
                 const nombreLimpio = key.replace('*', '').replace('#', '');
+                hasVariations = true;
                 
-                // Ignoramos el campo 'personalizable'
-                if (nombreLimpio.toLowerCase() !== 'personalizable') {
-                    const group = document.createElement('div');
-                    group.className = 'variation-group';
-                    group.innerHTML = `
-                        <label>${nombreLimpio.toUpperCase()}</label>
-                        <select class="var-select" data-columna="${key}" onchange="ModalProducto.calculatePrice()">
-                            ${opciones.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
-                        </select>
+                if (nombreLimpio.toLowerCase() === 'personalizable') {
+                    areaVar.innerHTML += `
+                        <div class="variation-group">
+                            <label>${nombreLimpio}</label>
+                            <input type="text" class="var-select" data-columna="${nombreLimpio}" placeholder="Escribe el nombre o texto...">
+                        </div>
                     `;
-                    area.appendChild(group);
+                } else {
+                    areaVar.innerHTML += `
+                        <div class="variation-group">
+                            <label>${nombreLimpio}</label>
+                            <select class="var-select" data-columna="${nombreLimpio}" onchange="ModalProducto.calculatePrice()">
+                                ${opciones.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                            </select>
+                        </div>
+                    `;
                 }
             }
         });
+
+        if (!hasVariations) {
+            areaVar.innerHTML = '<p style="color:var(--color-gray-dark); font-size:0.9rem;">Este producto no requiere configuración adicional.</p>';
+        }
+
+        ModalProducto.calculatePrice();
+
+        document.getElementById('productModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    },
+
+    close: () => {
+        document.getElementById('productModal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+    },
+
+    updateQty: (change) => {
+        let current = parseInt(document.getElementById('modalQty').value);
+        let newQty = current + change;
+        if (newQty < 1) newQty = 1;
+        document.getElementById('modalQty').value = newQty;
+        ModalProducto.cantidadActual = newQty;
     },
 
     calculatePrice: () => {
         if (!ModalProducto.productoActual) return;
-        
+
         let precioBase = Utils.safeNumber(ModalProducto.productoActual['*precio_base']);
         let incrementoTotal = 0;
 
         const seleccionActual = {};
-        
-        // 1. CARGAR ATRIBUTOS FIJOS DEL PRODUCTO
         Object.keys(ModalProducto.productoActual).forEach(key => {
             const claveLimpia = key.replace('*','').replace('#','');
             seleccionActual[Utils.normalizeStr(claveLimpia)] = Utils.normalizeStr(ModalProducto.productoActual[key]);
         });
 
-        // 2. SOBREESCRIBIR CON LOS SELECTS DEL MODAL
         const selects = document.querySelectorAll('.var-select');
         selects.forEach(sel => {
             const claveLimpia = sel.getAttribute('data-columna');
-            seleccionActual[Utils.normalizeStr(claveLimpia)] = Utils.normalizeStr(sel.value);
+            if (sel.tagName.toLowerCase() === 'select') {
+                seleccionActual[Utils.normalizeStr(claveLimpia)] = Utils.normalizeStr(sel.value);
+            }
         });
 
-        // 3. BUSCAR Y APLICAR REGLAS
-        let reglasEspecificas = ModalProducto.variacionesDB.filter(v => {
+        let reglasEspecificas = Catalogo.variacionesDB.filter(v => {
             if (!v.producto) return false;
-            const refs = v.producto.split('|').map(r => Utils.normalizeStr(r));
-            return refs.includes(Utils.normalizeStr(ModalProducto.productoActual.ref));
+            return v.producto.split('|').map(r => Utils.normalizeStr(r)).includes(Utils.normalizeStr(ModalProducto.productoActual.ref));
         });
 
-        let reglasAUsar = reglasEspecificas.length > 0 
-            ? reglasEspecificas 
-            : ModalProducto.variacionesDB.filter(v => !v.producto || v.producto.trim() === "");
+        let reglasAUsar = reglasEspecificas.length > 0 ? reglasEspecificas : Catalogo.variacionesDB.filter(v => !v.producto || v.producto.trim() === "");
 
         reglasAUsar.forEach(regla => {
             if (!regla.columna || !regla.valor) return;
-
+            
             const columnasRegla = regla.columna.split('|');
             const valoresRegla = regla.valor.split('|');
 
