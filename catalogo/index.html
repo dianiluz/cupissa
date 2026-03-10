@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - CUPISSA</title>
+    <link rel="icon" href="/assets/favicon.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/catalogo.css">
+    <link rel="stylesheet" href="/css/modal.css">
+</head>
+<body>
+    <div id="header"></div>
+
+    <main class="catalogo-wrapper">
+        <aside class="catalogo-sidebar">
+            <h2 class="section-title" style="font-size: 1.5rem; text-align: left;">Filtros</h2>
+            <div id="filtrosContainer">
+                <p>Cargando filtros...</p>
+            </div>
+        </aside>
+
+        <section class="catalogo-main">
+            <div class="catalogo-header">
+                <h1 id="catalogoTitle">Todos los Productos</h1>
+                <span id="catalogoCount">0 resultados</span>
+            </div>
+            
+            <div class="catalogo-grid" id="catalogoGrid">
+                </div>
+        </section>
+    </main>
+
+    <div id="modalContainer"></div>
+
+    <div id="footer"></div>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/header.js"></script>
+    <script src="/js/carrito.js"></script>
+    <script src="/js/footer.js"></script>
+    <script src="/js/modal.js"></script>
+    <script src="/js/catalogo.js"></script>
+</body>
+</html>
