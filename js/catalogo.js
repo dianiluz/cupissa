@@ -187,17 +187,34 @@ const Catalogo = {
             const vendidos = Math.floor(Math.random() * 20) + 5;
             const viendo = Math.floor(Math.random() * 15) + 3;
             
+            // --- NUEVA LÓGICA DE IMAGEN ---
+            let imgUrlFinal = '/assets/logo.png';
+            if (p.imagenurl && String(p.imagenurl).trim() !== '') {
+                // 1. Extraer solo la primera imagen separando por |
+                imgUrlFinal = String(p.imagenurl).split('|')[0].trim();
+                
+                // 2. Si es de Drive, transformarla a un formato seguro para <img>
+                if (imgUrlFinal.includes('drive.google.com')) {
+                    const match = imgUrlFinal.match(/id=([a-zA-Z0-9_-]+)/);
+                    if (match && match[1]) {
+                        // sz=w800 define el ancho a 800px para no cargar la original súper pesada
+                        imgUrlFinal = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800`;
+                    }
+                }
+            }
+            // ------------------------------
+            
             const card = document.createElement('div');
             card.className = 'product-card fade-in';
             card.id = `card-${p.ref}`;
             card.innerHTML = `
                 <div style="position:relative;">
-                    <img src="${p.imagenurl}" alt="${p.nombre}" class="product-image" onerror="this.src='/assets/logo.png'" onclick="ModalProducto.open('${p.ref}')" loading="lazy">
+                    <img src="${imgUrlFinal}" alt="${p.nombre}" class="product-image" onerror="this.src='/assets/logo.png'" onclick="ModalProducto.open('${p.ref}')" loading="lazy">
                     <button style="position:absolute; top:10px; right:10px; background:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; color:var(--color-gray-dark); box-shadow:var(--shadow-sm);" title="Agregar a favoritos">
                         <i class="fas fa-heart"></i>
                     </button>
                     <div style="position:absolute; bottom:10px; left:0; width:100%; text-align:center;">
-                        <span style="background:var(--color-pink); color:white; font-size:0.75rem; padding:3px 10px; border-radius:15px; font-weight:bold;">Otórga ${cupiCoins} CupiCoins</span>
+                        <span style="background:var(--color-pink); color:white; font-size:0.75rem; padding:3px 10px; border-radius:15px; font-weight:bold;">Otorga ${cupiCoins} CupiCoins</span>
                     </div>
                 </div>
                 <div class="product-info">
