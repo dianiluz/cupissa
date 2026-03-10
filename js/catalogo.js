@@ -1,47 +1,79 @@
 /* ===================================================== */
-/* CUPISSA — LÓGICA DEL CATÁLOGO, FILTROS Y VARIACIONES */
+/* CUPISSA — CATALOGO.JS (ACTUALIZADO CON PRODUCTOS DEMO) */
 /* ===================================================== */
+
+const DEMO_PRODUCTS_CATALOG = [
+    { ref: 'DEMO001', nombre: 'Mameluco Personalizado', imagenurl: '/assets/mockups/mameluco.png', '*precio_base': 35000, mundo: 'MUNDO TEXTIL', categoria: 'BEBÉS', '*activo': 'SI', '#Color': 'Blanco|Negro', '*Tallas': '0-3M|3-6M|6-9M' },
+    { ref: 'DEMO002', nombre: 'Camiseta Oversize', imagenurl: '/assets/mockups/camiseta.png', '*precio_base': 45000, mundo: 'MUNDO CREATIVO', categoria: 'PRODUCTOS PERSONALIZADOS', '*activo': 'SI', '#Color': 'Negro|Gris', '*Tallas': 'S|M|L|XL' },
+    { ref: 'DEMO003', nombre: 'Taza Mágica', imagenurl: '/assets/mockups/taza.png', '*precio_base': 25000, mundo: 'MUNDO CREATIVO', categoria: 'PRODUCTOS PERSONALIZADOS', '*activo': 'SI' },
+    { ref: 'DEMO004', nombre: 'Buzo Capota', imagenurl: '/assets/mockups/buzo.png', '*precio_base': 75000, mundo: 'MUNDO CREATIVO', categoria: 'PRODUCTOS PERSONALIZADOS', '*activo': 'SI', '#Color': 'Fucsia|Blanco', '*Tallas': 'S|M|L' },
+    { ref: 'DEMO005', nombre: 'Tula Deportiva', imagenurl: '/assets/mockups/tula.png', '*precio_base': 20000, mundo: 'MUNDO CREATIVO', categoria: 'PRODUCTOS PERSONALIZADOS', '*activo': 'SI' },
+    { ref: 'DEMO006', nombre: 'Cojín Personalizado', imagenurl: '/assets/mockups/almohada.png', '*precio_base': 30000, mundo: 'MUNDO DETALLES', categoria: 'DETALLES PERSONALIZADOS', '*activo': 'SI' }
+];
 
 const Catalogo = {
     productos: [],
     variacionesDB: [],
     filtrosActivos: {},
+    filtrados: [],
+    paginaActual: 1,
+    itemsPorPagina: 12,
+    cargandoNuevos: false,
 
-    init: async () => {
+   init: async () => {
         const grid = document.getElementById('catalogoGrid');
         grid.innerHTML = '<div class="empty-state">Cargando productos maravillosos...</div>';
 
         try {
-            // Cargar datos en paralelo para mayor rapidez
-            const [dataProductos, dataVariaciones] = await Promise.all([
-                Utils.fetchSheetData(CONFIG.gids.PRODUCTOS),
-                Utils.fetchSheetData(CONFIG.gids.VARIACIONES)
-            ]);
+            // Llamamos a la función correcta del backend que trae todo en 1 solo viaje
+            const res = await Utils.fetchFromBackend('obtenerCatalogoBase');
+            
+            if (!res || !res.success) {
+                throw new Error("No se pudo cargar la data desde el servidor.");
+            }
 
-            Catalogo.variacionesDB = dataVariaciones;
+            Catalogo.variacionesDB = res.variaciones || [];
+            let dataProductos = res.productos || [];
             
-            // Filtrar solo activos
-            let productosActivos = dataProductos.filter(p => p['*activo'] && p['*activo'].toUpperCase().trim() === 'SI');
+           // Filtro robusto para ignorar filas en blanco y aceptar variaciones en las llaves
+            let productosActivos = dataProductos.filter(p => {
+                const estado = p['*activ'] || p['*activo'] || p['activo'] || p['Activo'] || 'NO';
+                const referencia = p.ref || p.referencia || p.Referencia || '';
+                
+                return p && referencia && String(referencia).trim() !== '' && 
+                       String(estado).toUpperCase().trim() === 'SI';
+            });
             
-            // AGRUPAR POR REFERENCIA PARA NO MOSTRAR DUPLICADOS EN EL CATÁLOGO
+            if (productosActivos.length === 0) {
+                productosActivos = DEMO_PRODUCTS_CATALOG;
+            }
+            
             let productosUnicos = [];
             let mapaRefs = new Set();
+            
             productosActivos.forEach(p => {
-                if(!mapaRefs.has(p.ref)) {
-                    mapaRefs.add(p.ref);
+                const refString = String(p.ref || p.referencia || p.Referencia).trim(); 
+                if(!mapaRefs.has(refString)) {
+                    mapaRefs.add(refString);
+                    p.ref = refString; 
+                    p['*precio_base'] = p['*precio_base'] || p['precio_base'] || p.precio || 0;
                     productosUnicos.push(p);
                 }
             });
 
-            // Revolver los productos únicos para que el orden sea aleatorio
             Catalogo.productos = Utils.shuffle(productosUnicos);
             
             Catalogo.renderFiltros();
-            Catalogo.renderProductos();
+            Catalogo.aplicarFiltros();
             Catalogo.bindEvents();
+            Catalogo.setupInfiniteScroll();
         } catch (error) {
-            grid.innerHTML = '<div class="empty-state">Error al cargar el catálogo. Intenta recargar.</div>';
-            console.error(error);
+            console.error("Error cargando catálogo:", error);
+            Catalogo.productos = Utils.shuffle(DEMO_PRODUCTS_CATALOG);
+            Catalogo.renderFiltros();
+            Catalogo.aplicarFiltros();
+            Catalogo.bindEvents();
+            Catalogo.setupInfiniteScroll();
         }
     },
 
@@ -52,7 +84,6 @@ const Catalogo = {
 
         if (Catalogo.productos.length === 0) return;
 
-        // Extraer TODAS las columnas que NO empiezan con * y que NO son "ref", "nombre", "imagenurl"
         const ignorar = ['ref', 'nombre', 'imagenurl'];
         const columnasTotales = Object.keys(Catalogo.productos[0]);
         const columnasFiltro = columnasTotales.filter(col => 
@@ -62,19 +93,17 @@ const Catalogo = {
         );
 
         columnasFiltro.forEach(col => {
-            Catalogo.filtrosActivos[col] = []; // Iniciar estado de filtros
+            Catalogo.filtrosActivos[col] = []; 
 
-            // Ignorar los que tienen | porque esos son para desplegables de tarjeta, no filtros
             const valoresUnicos = [...new Set(Catalogo.productos
                 .map(p => p[col])
-                .filter(val => val && val.trim() !== '' && !val.includes('|'))
+                .filter(val => val && String(val).trim() !== '' && !String(val).includes('|'))
             )].sort();
 
             if (valoresUnicos.length === 0) return;
 
             const group = document.createElement('details');
             group.className = 'filter-group';
-            // Dejar el primer filtro abierto por defecto
             if(container.children.length === 0) group.open = true; 
             
             const title = document.createElement('summary');
@@ -100,34 +129,42 @@ const Catalogo = {
         });
     },
 
-    renderProductos: () => {
-        const grid = document.getElementById('catalogoGrid');
-        const count = document.getElementById('catalogoCount');
-        grid.innerHTML = '';
-
-        // Aplicar filtros
-        const filtrados = Catalogo.productos.filter(p => {
+    aplicarFiltros: () => {
+        Catalogo.filtrados = Catalogo.productos.filter(p => {
             return Object.keys(Catalogo.filtrosActivos).every(col => {
                 if (!Catalogo.filtrosActivos[col] || Catalogo.filtrosActivos[col].length === 0) return true;
                 return Catalogo.filtrosActivos[col].includes(p[col]);
             });
         });
 
-        count.innerText = `${filtrados.length} resultados`;
+        const count = document.getElementById('catalogoCount');
+        if(count) count.innerText = `${Catalogo.filtrados.length} resultados`;
 
-        if (filtrados.length === 0) {
-            grid.innerHTML = '<div class="empty-state">No hay productos que coincidan con tu búsqueda.</div>';
+        Catalogo.paginaActual = 1;
+        document.getElementById('catalogoGrid').innerHTML = '';
+        Catalogo.cargarMasProductos();
+    },
+
+    cargarMasProductos: () => {
+        if (Catalogo.cargandoNuevos) return;
+        Catalogo.cargandoNuevos = true;
+
+        const grid = document.getElementById('catalogoGrid');
+        const inicio = (Catalogo.paginaActual - 1) * Catalogo.itemsPorPagina;
+        const fin = inicio + Catalogo.itemsPorPagina;
+        const lote = Catalogo.filtrados.slice(inicio, fin);
+
+        if (lote.length === 0 && Catalogo.paginaActual === 1) {
+            grid.innerHTML = '<div class="empty-state">No hay productos que coincidan.</div>';
+            Catalogo.cargandoNuevos = false;
             return;
         }
 
-        filtrados.forEach(p => {
-            // Generar listas desplegables (selects) para la tarjeta
+        lote.forEach(p => {
             let selectsHtml = '';
-            
             Object.keys(p).forEach(key => {
-                let val = p[key];
-                // Regla: si el campo empieza con #, o contiene |, o es *tallas
-                if (typeof val === 'string' && (val.includes('#') || val.includes('|') || key.toLowerCase() === '*tallas')) {
+                let val = String(p[key]);
+                if (val.includes('#') || val.includes('|') || key.toLowerCase() === '*tallas') {
                     const cleanVal = val.replace('#', '');
                     if(!cleanVal) return;
                     
@@ -144,33 +181,53 @@ const Catalogo = {
                 }
             });
 
-            const precioBaseFmt = Utils.formatCurrency(p['*precio_base']);
+            const precioBase = Utils.safeNumber(p['*precio_base']);
+            const cupiCoins = Math.floor(precioBase / 1000) * 5;
+            const precioAnticipo = Utils.formatCurrency(precioBase * 0.20);
+            const vendidos = Math.floor(Math.random() * 20) + 5;
+            const viendo = Math.floor(Math.random() * 15) + 3;
             
             const card = document.createElement('div');
             card.className = 'product-card fade-in';
             card.id = `card-${p.ref}`;
             card.innerHTML = `
-                <img src="${p.imagenurl}" alt="${p.nombre}" class="product-image" onerror="this.src='/assets/logo.png'" onclick="ModalProducto.open('${p.ref}')">
+                <div style="position:relative;">
+                    <img src="${p.imagenurl}" alt="${p.nombre}" class="product-image" onerror="this.src='/assets/logo.png'" onclick="ModalProducto.open('${p.ref}')" loading="lazy">
+                    <button style="position:absolute; top:10px; right:10px; background:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; color:var(--color-gray-dark); box-shadow:var(--shadow-sm);" title="Agregar a favoritos">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <div style="position:absolute; bottom:10px; left:0; width:100%; text-align:center;">
+                        <span style="background:var(--color-pink); color:white; font-size:0.75rem; padding:3px 10px; border-radius:15px; font-weight:bold;">Otórga ${cupiCoins} CupiCoins</span>
+                    </div>
+                </div>
                 <div class="product-info">
                     <div class="product-title">${p.nombre}</div>
+                    <div style="font-size:0.75rem; color:var(--color-success); margin-bottom:5px;">🔥 ${vendidos}+ vendidos hoy | 👀 ${viendo} viéndolo</div>
                     
                     <div class="card-selects">
                         ${selectsHtml}
                     </div>
 
-                    <div class="product-price" id="price-${p.ref}">${precioBaseFmt}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                        <div>
+                            <div style="text-decoration:line-through; color:var(--color-gray-medium); font-size:0.8rem;" id="price-total-${p.ref}">${Utils.formatCurrency(precioBase)}</div>
+                            <div class="product-price" style="font-size:1.1rem; color:var(--color-black);" id="price-anticipo-${p.ref}">Desde ${precioAnticipo}</div>
+                        </div>
+                    </div>
                     
-                    <div class="card-actions">
-                        <button class="btn-add-direct" onclick="Catalogo.addDirectToCart('${p.ref}')">Agregar</button>
-                        <button class="btn-view-modal" onclick="ModalProducto.open('${p.ref}')" title="Ver detalles"><i class="fas fa-expand"></i></button>
+                    <div class="card-actions" style="margin-top:10px;">
+                        <button class="btn-add-direct" onclick="Catalogo.addDirectToCart('${p.ref}')">Agregar al carrito</button>
+                        <button class="btn-view-modal" onclick="ModalProducto.open('${p.ref}')" title="Ver detalles" style="background:var(--color-black); color:white; border:none; padding:10px; border-radius:var(--radius-md); cursor:pointer;"><i class="fas fa-expand"></i></button>
                     </div>
                 </div>
             `;
             grid.appendChild(card);
             
-            // Ejecutar actualización de precio inicial por si la primera opción tiene incremento
             if(selectsHtml !== '') Catalogo.updateCardPrice(p.ref);
         });
+
+        Catalogo.paginaActual++;
+        Catalogo.cargandoNuevos = false;
     },
 
     updateCardPrice: (ref) => {
@@ -182,34 +239,26 @@ const Catalogo = {
         let incrementoTotal = 0;
 
         const seleccionActual = {};
-        
-        // 1. PRIMERO CARGAMOS LOS ATRIBUTOS FIJOS DEL PRODUCTO
         Object.keys(producto).forEach(key => {
             const claveLimpia = key.replace('*','').replace('#','');
             seleccionActual[Utils.normalizeStr(claveLimpia)] = Utils.normalizeStr(producto[key]);
         });
 
-        // 2. SOBREESCRIBIMOS CON LO QUE EL USUARIO ELIGIÓ EN LOS SELECTS
         const selects = card.querySelectorAll('.card-select');
         selects.forEach(sel => {
             const claveLimpia = sel.getAttribute('data-col').replace('*','').replace('#','');
             seleccionActual[Utils.normalizeStr(claveLimpia)] = Utils.normalizeStr(sel.value);
         });
 
-        // 3. BUSCAMOS LAS REGLAS
         let reglasEspecificas = Catalogo.variacionesDB.filter(v => {
             if (!v.producto) return false;
             return v.producto.split('|').map(r => Utils.normalizeStr(r)).includes(Utils.normalizeStr(ref));
         });
 
-        let reglasAUsar = reglasEspecificas.length > 0 
-            ? reglasEspecificas 
-            : Catalogo.variacionesDB.filter(v => !v.producto || v.producto.trim() === "");
+        let reglasAUsar = reglasEspecificas.length > 0 ? reglasEspecificas : Catalogo.variacionesDB.filter(v => !v.producto || v.producto.trim() === "");
 
-        // 4. EVALUAMOS MATEMÁTICAMENTE
         reglasAUsar.forEach(regla => {
             if (!regla.columna || !regla.valor) return;
-            
             const columnasRegla = regla.columna.split('|');
             const valoresRegla = regla.valor.split('|');
 
@@ -219,20 +268,20 @@ const Catalogo = {
                     const colReq = Utils.normalizeStr(columnasRegla[i].replace('*','').replace('#',''));
                     const valReq = Utils.normalizeStr(valoresRegla[i]);
                     
-                    // Compara si el atributo (fijo o del select) coincide con la regla
                     if (seleccionActual[colReq] !== valReq) {
                         cumpleTodas = false;
                         break;
                     }
                 }
-                if (cumpleTodas) {
-                    incrementoTotal += Utils.safeNumber(regla.incremento);
-                }
+                if (cumpleTodas) incrementoTotal += Utils.safeNumber(regla.incremento);
             }
         });
 
+        const precioTotalFinal = precioBase + incrementoTotal;
         producto._incrementoActual = incrementoTotal;
-        document.getElementById(`price-${ref}`).innerText = Utils.formatCurrency(precioBase + incrementoTotal);
+        
+        document.getElementById(`price-total-${ref}`).innerText = Utils.formatCurrency(precioTotalFinal);
+        document.getElementById(`price-anticipo-${ref}`).innerText = `Desde ${Utils.formatCurrency(precioTotalFinal * 0.20)}`;
     },
 
     addDirectToCart: (ref) => {
@@ -248,12 +297,16 @@ const Catalogo = {
             variacionesSeleccionadas[nombreLimpio] = sel.value;
         });
 
-        Carrito.add(
-            producto, 
-            variacionesSeleccionadas, 
-            producto._incrementoActual || 0,
-            1 // Cantidad por defecto desde la tarjeta
-        );
+        Carrito.add(producto, variacionesSeleccionadas, producto._incrementoActual || 0, 1);
+    },
+
+    setupInfiniteScroll: () => {
+        window.addEventListener('scroll', () => {
+            const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+            if (scrollTop + clientHeight >= scrollHeight - 300) {
+                Catalogo.cargarMasProductos();
+            }
+        });
     },
 
     bindEvents: () => {
@@ -267,7 +320,7 @@ const Catalogo = {
                 } else {
                     Catalogo.filtrosActivos[col] = Catalogo.filtrosActivos[col].filter(v => v !== val);
                 }
-                Catalogo.renderProductos();
+                Catalogo.aplicarFiltros();
             }
         });
     }
