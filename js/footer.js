@@ -11,13 +11,14 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="footer-block">
                 <img src="/assets/logo.png" alt="Cupissa Logo" class="footer-logo">
                 <ul class="footer-contact">
-                    <li><i class="fas fa-envelope"></i> ${CONFIG.contactEmail}</li>
-                    <li><i class="fab fa-whatsapp"></i> +${CONFIG.whatsappNumber}</li>
+                    <li><i class="fas fa-envelope"></i>contacto@cupissa.com</li>
+                    <li><i class="fab fa-whatsapp"></i> +57 314 767 1380</li>
                     <li><i class="fas fa-map-marker-alt"></i> Barranquilla, Colombia</li>
                 </ul>
                 <div class="footer-socials">
                     <a href="https://instagram.com/cupissa.co" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="https://wa.me/${CONFIG.whatsappNumber}" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="https://tiktok.com/@cupissa.co" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://wa.me/+573147671380" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
 
@@ -27,17 +28,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     <li><a href="/">Inicio</a></li>
                     <li><a href="/catalogo/">Catálogo</a></li>
                     <li><a href="/rastreo/">Rastrear Pedido</a></li>
-                    <li><a href="/panel/">Iniciar Sesión</a></li>
-                    <li><a href="/panel/">Registrarse</a></li>
+                    <li><a href="/auth/">Iniciar Sesión</a></li>
+                    <li><a href="/trabaja-con-nosotros/">Trabaja con Nosotros</a></li>
                 </ul>
             </div>
 
             <div class="footer-block">
                 <h3 class="footer-title">LEGALES</h3>
                 <ul>
-                    <li><a href="/legales/terminos.html">Términos y Condiciones</a></li>
-                    <li><a href="/legales/privacidad.html">Políticas de Privacidad</a></li>
+                    <li><a href="/legales/terminos.html">Términos y condiciones</a></li>
+                    <li><a href="/legales/privacidad.html">Políticas de privacidad</a></li>
                     <li><a href="/legales/envios.html">Domicilios y Envíos</a></li>
+                    <li><a href="/legales/club.html">Club Cupissa</a></li>
                     <li><a href="/legales/marketing.html">Marketing y Puntos</a></li>
                 </ul>
             </div>
@@ -65,9 +67,15 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 ${CONFIG.brandName}: Todos los derechos reservados — Desarrollado por Diani Gonzalez.</p>
+            <p>&copy; 2026 CUPISSA: Todos los derechos reservados — Desarrollado por Diani Gonzalez.</p>
         </div>
     `;
 
-    document.body.appendChild(footer);
+    // Inyectar dentro del div #footer si existe, sino al final del body
+    const footerContainer = document.getElementById('footer');
+    if (footerContainer) {
+        footerContainer.appendChild(footer);
+    } else {
+        document.body.appendChild(footer);
+    }
 });
