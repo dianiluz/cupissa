@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* CUPISSA — CARRITO GLOBAL */
+/* CUPISSA — CARRITO GLOBAL Y RECOMPENSAS */
 /* ===================================================== */
 
 const Carrito = {
@@ -28,7 +28,6 @@ const Carrito = {
     add: (producto, variacionesSeleccionadas, incrementoTotal, cantidad = 1) => {
         const precioFinal = Utils.safeNumber(producto['*precio_base']) + Utils.safeNumber(incrementoTotal);
         
-        // ORDENAR LAS VARIABLES PARA QUE SIEMPRE SE AGRUPEN IGUAL EN EL CARRITO
         const sortedVars = {};
         Object.keys(variacionesSeleccionadas).sort().forEach(k => {
             sortedVars[k] = variacionesSeleccionadas[k];
@@ -48,7 +47,7 @@ const Carrito = {
                 nombre: producto.nombre,
                 imagenurl: producto.imagenurl,
                 precio_unitario: precioFinal,
-                variaciones: sortedVars, // Guardamos las variables ordenadas
+                variaciones: sortedVars,
                 cantidad: Number(cantidad)
             });
         }
@@ -114,9 +113,11 @@ const Carrito = {
                 <h2>Tu Carrito</h2>
                 <button class="close-cart" id="closeCartBtn">&times;</button>
             </div>
-            <div class="cart-body" id="cartItemsContainer">
-                </div>
+            <div class="cart-body" id="cartItemsContainer"></div>
             <div class="cart-footer">
+                <div class="cart-cupicoins" style="background:#fff0f6; color:var(--color-pink); padding:10px; border-radius:5px; margin-bottom:15px; text-align:center; font-weight:bold; font-size:0.9rem;">
+                    🪙 Con esta compra ganarás: <span id="cartCupiCoinsUI">0</span> CupiCoins
+                </div>
                 <div class="cart-total">
                     <span>Subtotal general</span>
                     <span id="cartTotalUI">$0</span>
@@ -126,7 +127,7 @@ const Carrito = {
                     <span id="cartAnticipoUI">$0</span>
                 </div>
                 <div class="cart-warning">
-                    ⚠️ Algunos medios de pago como Addi o pagos procesados por Wompi pueden generar un incremento en el valor total debido a costos de transacción. El valor final se mostrará antes de confirmar el pago.
+                    ⚠️ Algunos medios de pago pueden generar un incremento en el valor total debido a costos de transacción. El valor final se mostrará antes de confirmar el pago.
                 </div>
                 <div class="cart-footer-actions">
                     <button class="btn-clear-cart" onclick="Carrito.clear()">Vaciar lista</button>
@@ -144,8 +145,9 @@ const Carrito = {
         const container = document.getElementById('cartItemsContainer');
         const totalUI = document.getElementById('cartTotalUI');
         const anticipoUI = document.getElementById('cartAnticipoUI');
+        const cupiCoinsUI = document.getElementById('cartCupiCoinsUI');
         
-        if (!container || !totalUI || !anticipoUI) return;
+        if (!container || !totalUI || !anticipoUI || !cupiCoinsUI) return;
 
         container.innerHTML = '';
 
@@ -153,6 +155,7 @@ const Carrito = {
             container.innerHTML = '<p style="text-align:center; color:gray; margin-top:20px;">Tu carrito está vacío.</p>';
             totalUI.innerText = '$0';
             anticipoUI.innerText = '$0';
+            cupiCoinsUI.innerText = '0';
             return;
         }
 
@@ -186,9 +189,11 @@ const Carrito = {
 
         const totalGeneral = Carrito.getTotal();
         const anticipo = totalGeneral * 0.20;
+        const cupiCoinsEarned = Math.floor(totalGeneral / 1000) * 5;
 
         totalUI.innerText = Utils.formatCurrency(totalGeneral);
         anticipoUI.innerText = Utils.formatCurrency(anticipo);
+        cupiCoinsUI.innerText = cupiCoinsEarned;
     },
 
     openDrawer: () => {
