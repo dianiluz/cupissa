@@ -25,174 +25,110 @@
                 <div class="step-indicator active" id="ind-1">1</div>
                 <div class="step-indicator" id="ind-2">2</div>
                 <div class="step-indicator" id="ind-3">3</div>
-                <div class="step-indicator" id="ind-4">4</div>
             </div>
+            
+            <form id="formCheckout">
+                <div class="checkout-step active" id="step-1">
+                    <h2 style="font-size: 1.3rem; margin-bottom: 20px;">Datos de Contacto</h2>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">Nombre Completo</label>
+                            <input type="text" id="chkNombre" required style="width: 100%; padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 5px;">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div>
+                                <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">Teléfono / WhatsApp</label>
+                                <input type="tel" id="chkTelefono" required style="width: 100%; padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 5px;">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">Correo Electrónico</label>
+                                <input type="email" id="chkCorreo" required style="width: 100%; padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 5px;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-actions">
+                        <div></div>
+                        <button type="button" class="btn-primary" onclick="Checkout.nextStep(2)">Siguiente <i class="fas fa-arrow-right" style="margin-left: 5px;"></i></button>
+                    </div>
+                </div>
 
-            <div class="step-content active" id="step-1">
-                <h2 class="step-title">Información y Dirección</h2>
-                <div class="form-grid">
-                    <div class="form-group full-width">
-                        <label>Correo Electrónico</label>
-                        <input type="email" id="chkEmail" required>
+                <div class="checkout-step" id="step-2" style="display: none;">
+                    <h2 style="font-size: 1.3rem; margin-bottom: 20px;">Datos de Envío</h2>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 10px;">
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">Ciudad</label>
+                            <input type="text" id="chkCiudad" required placeholder="Ej. Barranquilla" style="width: 100%; padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 5px; text-transform: uppercase;">
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">Departamento</label>
+                            <input type="text" id="chkDepartamento" required readonly style="width: 100%; padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 5px; background: #f9f9f9; color: var(--color-gray-dark);">
+                        </div>
+                        <div style="position: relative;">
+                            <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">Barrio</label>
+                            <input type="text" id="chkBarrioBuscador" autocomplete="off" placeholder="Escribe para buscar (Baq/Sol)" style="width: 100%; padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 5px;">
+                            <div id="suggestions" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; max-height: 150px; overflow-y: auto; z-index: 100; border-radius: 0 0 5px 5px; box-shadow: var(--shadow-sm);"></div>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">Dirección Exacta</label>
+                            <input type="text" id="chkDireccion" required style="width: 100%; padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 5px;">
+                        </div>
+                        <div id="grupoCedulaNacional" style="display: none; grid-column: span 2;">
+                            <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">Cédula de Ciudadanía (Requisito Transportadora)</label>
+                            <input type="text" id="chkCedula" placeholder="Número de documento" style="width: 100%; padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 5px;">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Nombre Completo</label>
-                        <input type="text" id="chkNombre" required>
+                    <div id="msjEnvioNacional" style="display: none; background: #fffde7; color: #f57f17; padding: 15px; border-radius: 5px; border: 1px solid #ffecb3; font-size: 0.85rem; margin-bottom: 20px;"></div>
+
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" onclick="Checkout.prevStep(1)"><i class="fas fa-arrow-left" style="margin-right: 5px;"></i> Atrás</button>
+                        <button type="button" class="btn-primary" onclick="Checkout.nextStep(3)">Siguiente <i class="fas fa-arrow-right" style="margin-left: 5px;"></i></button>
                     </div>
-                    <div class="form-group">
-                        <label>Teléfono / WhatsApp</label>
-                        <input type="tel" id="chkTelefono" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Departamento</label>
-                        <select id="chkDepartamento" required onchange="Checkout.loadCities()"></select>
-                    </div>
-                    <div class="form-group">
-                        <label>Municipio / Ciudad</label>
-                        <select id="chkCiudad" required onchange="Checkout.handleMunicipioChange()"></select>
+                </div>
+
+                <div class="checkout-step" id="step-3" style="display: none;">
+                    <h2 style="font-size: 1.3rem; margin-bottom: 20px;">Opciones de Pago</h2>
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">Tipo de Pago</label>
+                            <select id="chkAbono" style="width: 100%; padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 5px;">
+                                <option value="0.20">Anticipo del 20% (Saldo Contraentrega)</option>
+                                <option value="0.50">Abono del 50% (Saldo Contraentrega)</option>
+                                <option value="1.00">Pagar el 100% ahora</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">Método de Pago</label>
+                            <select id="chkMetodoPago" required style="width: 100%; padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 5px;">
+                                <option value="" disabled selected>Selecciona una opción</option>
+                                <option value="TRANSFERENCIA">Transferencia Bancaria Directa</option>
+                                <option value="WOMPI">Wompi (Tarjetas, Nequi, PSE)</option>
+                                <option value="ADDI">Crédito ADDI (Pago a cuotas)</option>
+                            </select>
+                        </div>
                     </div>
                     
-                    <div class="form-group full-width" id="barrio-container" style="display:none; position:relative;">
-                        <label>Escribe tu Barrio (Para calcular domicilio)</label>
-                        <input type="text" id="chkBarrioBuscador" placeholder="Escriba para buscar barrio..." autocomplete="off">
-                        <div id="suggestions" class="suggestions"></div>
-                        <input type="hidden" id="chkBarrio" required>
-                        <div id="aviso-barrio" style="font-size: 0.85rem; color: var(--color-pink); margin-top: 5px;"></div>
-                    </div>
-                    
-                    <div class="form-group full-width" id="barrio-manual" style="display:block;">
-                        <label>Barrio</label>
-                        <input type="text" id="chkBarrioManual">
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label>Dirección Completa</label>
-                        <input type="text" id="chkDireccion" placeholder="Ej: Calle 123 # 45-67 Apto 801" required>
-                    </div>
-                    
-                    <div class="form-group" id="containerCC">
-                        <label>Cédula de Ciudadanía (CC) <span id="lblCCOpcional" style="font-size:0.8rem; color:gray;"></span></label>
-                        <input type="text" id="chkCC">
+                    <div class="step-actions">
+                        <button type="button" class="btn-secondary" onclick="Checkout.prevStep(2)"><i class="fas fa-arrow-left" style="margin-right: 5px;"></i> Atrás</button>
+                        <button type="submit" class="btn-primary" id="btnConfirmarPedido" style="font-size: 1.1rem; padding: 12px 24px;">Confirmar Pedido <i class="fas fa-check" style="margin-left: 5px;"></i></button>
                     </div>
                 </div>
-                <div class="step-actions" style="justify-content: flex-end;">
-                    <button class="btn-primary" onclick="Checkout.nextStep(2)">Continuar al Envío</button>
-                </div>
-            </div>
-
-            <div class="step-content" id="step-2">
-                <h2 class="step-title">Método de Envío</h2>
-                <div id="opcionesEnvio"></div>
-
-                <div id="opcionesPagoDomicilio" style="display: none; margin-top: 15px; background: #f9f9f9; padding: 15px; border-radius: var(--radius-sm); border-left: 3px solid var(--color-black);">
-                    <label style="font-weight: bold; display: block; margin-bottom: 10px;">¿Cuándo deseas pagar el domicilio?</label>
-                    <label style="display: flex; gap: 10px; margin-bottom: 5px; cursor: pointer;">
-                        <input type="radio" name="momentoPagoDomicilio" value="ahora" checked onchange="Checkout.calculateTotals()">
-                        <span>Sumarlo al total y pagarlo ahora</span>
-                    </label>
-                    <label style="display: flex; gap: 10px; cursor: pointer;">
-                        <input type="radio" name="momentoPagoDomicilio" value="despues" onchange="Checkout.calculateTotals()">
-                        <span>Dejarlo como saldo pendiente</span>
-                    </label>
-                </div>
-
-                <h2 class="step-title" style="margin-top: 2rem;">Tiempo de Producción</h2>
-                <label class="radio-card selected" onclick="Checkout.selectProduccion('normal')">
-                    <input type="radio" name="tipoProduccion" value="normal" checked>
-                    <div class="radio-content">
-                        <span class="radio-title">Normal (5 a 8 días hábiles)</span>
-                        <span class="radio-desc">Gratis.</span>
-                    </div>
-                </label>
-                <div id="opcionesExpress"></div>
-                
-                <div class="step-actions">
-                    <button class="btn-secondary" onclick="Checkout.prevStep(1)">Volver</button>
-                    <button class="btn-primary" onclick="Checkout.nextStep(3)">Continuar al Pago</button>
-                </div>
-            </div>
-
-            <div class="step-content" id="step-3">
-                <h2 class="step-title">¿Cuánto deseas pagar hoy?</h2>
-                <label class="radio-card selected" onclick="Checkout.selectTipoPago('anticipo')">
-                    <input type="radio" name="tipoMonto" value="anticipo" checked>
-                    <div class="radio-content">
-                        <span class="radio-title">Solo Anticipo (20%)</span>
-                        <span class="radio-desc">Paga el saldo restante al finalizar producción o contraentrega.</span>
-                    </div>
-                </label>
-                <label class="radio-card" onclick="Checkout.selectTipoPago('total')">
-                    <input type="radio" name="tipoMonto" value="total">
-                    <div class="radio-content">
-                        <span class="radio-title">Pago Total (100%)</span>
-                        <span class="radio-desc">Paga todo tu pedido ahora.</span>
-                    </div>
-                </label>
-
-                <h2 class="step-title" style="margin-top: 2rem;">Método de Pago</h2>
-                <label class="radio-card" onclick="Checkout.selectPago('transferencia')">
-                    <input type="radio" name="metodoPago" value="transferencia" checked>
-                    <div class="radio-content">
-                        <span class="radio-title">Transferencia Directa (Bancolombia / Nequi)</span>
-                        <span class="radio-desc">Sin comisiones.</span>
-                    </div>
-                </label>
-                <label class="radio-card" onclick="Checkout.selectPago('wompi')">
-                    <input type="radio" name="metodoPago" value="wompi">
-                    <div class="radio-content">
-                        <span class="radio-title">Wompi (Tarjetas, PSE, Nequi)</span>
-                        <span class="radio-desc">Comisión: 2.65% + $700 + IVA sobre el valor a pagar.</span>
-                    </div>
-                </label>
-                <label class="radio-card" onclick="Checkout.selectPago('addi')">
-                    <input type="radio" name="metodoPago" value="addi">
-                    <div class="radio-content">
-                        <span class="radio-title">Addi (Compra a cuotas)</span>
-                        <span class="radio-desc">Comisión: 9% + IVA sobre el valor a pagar.</span>
-                    </div>
-                </label>
-                <label class="radio-card" id="optContraentrega" onclick="Checkout.selectPago('contraentrega')" style="display: none;">
-                    <input type="radio" name="metodoPago" value="contraentrega">
-                    <div class="radio-content">
-                        <span class="radio-title">Contraentrega</span>
-                        <span class="radio-desc" id="descContraentrega"></span>
-                    </div>
-                </label>
-
-                <div class="step-actions">
-                    <button class="btn-secondary" onclick="Checkout.prevStep(2)">Volver</button>
-                    <button class="btn-primary" onclick="Checkout.nextStep(4)">Ver Resumen Final</button>
-                </div>
-            </div>
-
-            <div class="step-content" id="step-4">
-                <h2 class="step-title">Confirmar Pedido</h2>
-                <div id="resumenDatosFinales" style="background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 20px; line-height: 1.8;"></div>
-                <div class="step-actions">
-                    <button class="btn-secondary" onclick="Checkout.prevStep(3)">Volver</button>
-                    <button class="btn-primary" id="btnConfirmarPedido" onclick="Checkout.submitPedido()" style="background-color: var(--color-success);">Confirmar y Generar Pedido</button>
-                </div>
-            </div>
+            </form>
         </div>
 
         <aside class="checkout-sidebar">
-            <h3 class="summary-title">Resumen del Pedido</h3>
-            <div class="summary-items" id="chkSummaryItems"></div>
+            <h2 class="summary-title">Resumen de tu Pedido</h2>
+            <div class="summary-items" id="chkItemsContainer"></div>
             
             <div class="summary-totals">
                 <div class="summary-row">
                     <span>Subtotal Productos:</span>
                     <span id="chkSubtotal"></span>
                 </div>
-                <div class="summary-row" id="rowProduccion" style="display:none;">
-                    <span>Producción Express:</span>
-                    <span id="chkProduccionValor"></span>
+                <div class="summary-row">
+                    <span>Envío:</span>
+                    <span id="chkCostoEnvioUI" style="color: var(--color-success); font-weight: bold;">$0</span>
                 </div>
-                <div class="summary-row" id="rowEnvio">
-                    <span>Envío/Domicilio:</span>
-                    <span id="chkEnvioValor">Por calcular</span>
-                </div>
-                <div class="summary-row" style="font-weight:bold; border-top: 1px solid #ddd; padding-top:10px; margin-top:10px;">
+                <div class="summary-row" style="font-weight: bold; border-top: 1px solid #ddd; padding-top:10px; margin-top:10px;">
                     <span>Total Pedido:</span>
                     <span id="chkTotalPedido"></span>
                 </div>
@@ -206,7 +142,7 @@
                         <span>Comisión Pasarela:</span>
                         <span id="chkComisionValor"></span>
                     </div>
-                    <div class="summary-row total" style="color: var(--color-pink);">
+                    <div class="summary-row total" style="color: var(--color-pink); font-size: 1.1rem; font-weight: bold; margin-top: 10px;">
                         <span>TOTAL A PAGAR:</span>
                         <span id="chkTotalGeneral"></span>
                     </div>
