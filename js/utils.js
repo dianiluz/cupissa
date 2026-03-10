@@ -1,8 +1,9 @@
 /* ===================================================== */
-/* CUPISSA — UTILIDADES GLOBALES Y NOTIFICACIONES */
+/* CUPISSA — UTILIDADES GLOBALES Y NOTIFICACIONES        */
 /* ===================================================== */
 
 const Utils = {
+    // --- MANEJO DE NÚMEROS Y MONEDA ---
     safeNumber: (val) => {
         if (!val) return 0;
         const clean = String(val).replace(/[^0-9]/g, '');
@@ -19,11 +20,13 @@ const Utils = {
         }).format(num);
     },
 
+    // --- MANEJO DE TEXTO ---
     normalizeStr: (str) => {
         if (!str) return "";
         return String(str).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
     },
 
+    // Para carga aleatoria de productos 
     shuffle: (array) => {
         let currentIndex = array.length, randomIndex;
         while (currentIndex !== 0) {
@@ -34,44 +37,56 @@ const Utils = {
         return array;
     },
 
-    fetchSheetData: async (gid) => {
+    // --- COMUNICACIÓN CON BACKEND ---
+    fetchFromBackend: async (action, extraData = {}) => {
         try {
-            const response = await fetch(getSheetURL(gid));
-            const text = await response.text();
-            return Utils.tsvToJSON(text);
-        } catch (error) {
-            console.error("Error fetching TSV");
-            return [];
-        }
-    },
-
-    tsvToJSON: (tsv) => {
-        const lines = tsv.split('\n');
-        const headers = lines[0].split('\t').map(h => h.trim());
-        const result = [];
-
-        for (let i = 1; i < lines.length; i++) {
-            if (!lines[i].trim()) continue;
-            const obj = {};
-            const currentLine = lines[i].split('\t');
-            headers.forEach((header, j) => {
-                obj[header] = currentLine[j] ? currentLine[j].trim() : "";
+            // Usamos URLSearchParams para asegurar compatibilidad con e.parameter de GAS
+            const params = new URLSearchParams();
+            params.append('action', action);
+            Object.keys(extraData).forEach(key => params.append(key, extraData[key]));
+            
+            const response = await fetch(CONFIG.backendURL, { 
+                method: 'POST', 
+                body: params,
+                mode: 'cors' 
             });
-            result.push(obj);
+            
+            if (!response.ok) throw new Error("Error en la respuesta del servidor");
+            return await response.json();
+        } catch (error) {
+            console.error(`Error en action ${action}:`, error);
+            Utils.toast("Error de conexión con el servidor", "error");
+            return { success: false, error: error.message };
         }
-        return result;
     },
 
-    // AQUI ESTÁ LA SOLUCIÓN DEL LOOP
+    // --- GESTIÓN DE SESIÓN  ---
+    setUserSession: (userData) => {
+        const data = {
+            nombre: userData.nombre,
+            email: userData.email,
+            tipo_usuario: userData.tipo_usuario.toUpperCase(),
+            loginTime: new Date().getTime()
+        };
+        localStorage.setItem('cupissa_user', JSON.stringify(data));
+        sessionStorage.setItem('cupissa_user', JSON.stringify(data));
+    },
+
     getUserSession: () => {
         const local = localStorage.getItem('cupissa_user');
         const session = sessionStorage.getItem('cupissa_user');
         
-        if (local) return JSON.parse(local);
-        if (session) return JSON.parse(session);
-        return null;
+        const data = local ? JSON.parse(local) : (session ? JSON.parse(session) : null);
+        return data;
     },
 
+    logout: () => {
+        localStorage.removeItem('cupissa_user');
+        sessionStorage.removeItem('cupissa_user');
+        window.location.href = '/login/';
+    },
+
+    // --- UI Y UX ---
     toast: (msg, type = 'info') => {
         let toastBox = document.getElementById('cupissa-toast-box');
         if (!toastBox) {
@@ -82,9 +97,10 @@ const Utils = {
         }
         
         const toast = document.createElement('div');
-        const bgColor = type === 'error' ? 'var(--color-danger, #dc3545)' : (type === 'success' ? 'var(--color-success, #28a745)' : 'var(--color-black, #000)');
+        // Usando los colores oficiales de la marca 
+        const bgColor = type === 'error' ? '#ff4d4d' : (type === 'success' ? '#28a745' : '#db137a');
         
-        toast.style.cssText = `background-color: ${bgColor}; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-family: var(--font-primary); font-size: 0.95rem; opacity: 0; transform: translateY(20px); transition: all 0.3s ease;`;
+        toast.style.cssText = `background-color: ${bgColor}; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-family: 'Poppins', sans-serif; font-size: 0.95rem; opacity: 0; transform: translateY(20px); transition: all 0.3s ease;`;
         toast.innerText = msg;
         
         toastBox.appendChild(toast);
@@ -99,5 +115,20 @@ const Utils = {
             toast.style.transform = 'translateY(20px)';
             setTimeout(() => toast.remove(), 300);
         }, 4000);
+    },
+
+    // --- TEMAS (MODO CLARO/OSCURO) [cite: 27] ---
+    toggleDarkMode: () => {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('cupissa_theme', isDark ? 'dark' : 'light');
+    },
+
+    applyTheme: () => {
+        const theme = localStorage.getItem('cupissa_theme');
+        if (theme === 'dark') document.body.classList.add('dark-mode');
     }
 };
+
+// Inicialización automática
+document.addEventListener('DOMContentLoaded', Utils.applyTheme);
