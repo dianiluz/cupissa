@@ -1,22 +1,20 @@
 /* ===================================================== */
-/* CUPISSA — VARIABLES GLOBALES */
+/* CUPISSA — VARIABLES GLOBALES Y MODO OSCURO */
 /* ===================================================== */
 
 :root {
-    /* Colores Principales */
-    --color-black: #000000;
-    --color-white: #ffffff;
+    /* Colores Principales Fijos */
     --color-pink: #db137a;
-
-    /* Escalas Neutras */
-    --color-gray-light: #f5f5f5;
-    --color-gray-medium: #cccccc;
-    --color-gray-dark: #333333;
-
-    /* Colores Sistema / UI */
     --color-success: #009640; 
     --color-warning: #ffed00; 
     --color-danger: #e30613; 
+
+    /* Variables de Tema Claro (Por Defecto) */
+    --color-black: #000000;
+    --color-white: #ffffff;
+    --color-gray-light: #f5f5f5;
+    --color-gray-medium: #cccccc;
+    --color-gray-dark: #333333;
 
     /* Fuentes */
     --font-primary: 'Poppins', sans-serif;
@@ -35,4 +33,16 @@
     /* Transiciones */
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
+}
+
+/* Variables de Tema Oscuro */
+body.dark-mode {
+    --color-black: #ffffff;
+    --color-white: #121212;
+    --color-gray-light: #1e1e1e;
+    --color-gray-medium: #333333;
+    --color-gray-dark: #b3b3b3;
+    --shadow-sm: 0 2px 5px rgba(255,255,255,0.05);
+    --shadow-md: 0 5px 15px rgba(255,255,255,0.05);
+    --shadow-lg: 0 10px 25px rgba(255,255,255,0.1);
 }
