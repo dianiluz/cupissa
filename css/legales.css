@@ -1,0 +1,145 @@
+/* css/legales.css */
+/* ===================================================== */
+/* CUPISSA — ESTILOS DEL CENTRO LEGAL */
+/* ===================================================== */
+
+.legales-wrapper {
+    max-width: 1200px;
+    margin: 4rem auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 3rem;
+    align-items: start;
+    min-height: calc(100vh - 400px);
+}
+
+/* Sidebar de Navegación */
+.legales-sidebar {
+    background: var(--color-white);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 100px;
+    border-top: 4px solid var(--color-pink);
+}
+
+.sidebar-title {
+    font-size: 1.5rem;
+    color: var(--color-black);
+    margin-bottom: 1.5rem;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--color-gray-light);
+}
+
+.legales-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.legales-nav li {
+    padding: 12px 15px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--color-gray-dark);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.legales-nav li i {
+    width: 20px;
+    text-align: center;
+    color: var(--color-gray-medium);
+    transition: color 0.2s ease;
+}
+
+.legales-nav li:hover {
+    background: var(--color-gray-light);
+    color: var(--color-black);
+}
+
+.legales-nav li.active {
+    background: var(--color-pink);
+    color: var(--color-white);
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(219, 19, 122, 0.2);
+}
+
+.legales-nav li.active i {
+    color: var(--color-white);
+}
+
+/* Contenido Legal */
+.legales-content {
+    background: var(--color-white);
+    padding: 3rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.legal-section {
+    display: none;
+    animation: fadeIn 0.4s ease forwards;
+}
+
+.legal-section.active {
+    display: block;
+}
+
+.legal-section h2 {
+    font-size: 2rem;
+    color: var(--color-pink);
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid var(--color-gray-light);
+    padding-bottom: 10px;
+}
+
+.legal-section h3 {
+    font-size: 1.2rem;
+    color: var(--color-black);
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.legal-section p {
+    color: var(--color-gray-dark);
+    margin-bottom: 1rem;
+    line-height: 1.7;
+    font-size: 1rem;
+}
+
+.legal-section ul {
+    list-style: disc;
+    padding-left: 20px;
+    color: var(--color-gray-dark);
+    margin-bottom: 1rem;
+}
+
+.legal-section ul li {
+    margin-bottom: 8px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .legales-wrapper {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    .legales-sidebar {
+        position: relative;
+        top: 0;
+    }
+    .legales-content {
+        padding: 2rem;
+    }
+}
