@@ -1,10 +1,11 @@
 /* js/buscador.js */
 /* ===================================================== */
-/* CUPISSA — BUSCADOR INTELIGENTE (VOZ, FUZZY, HISTORIAL)*/
+/* CUPISSA — BUSCADOR INTELIGENTE (PRODUCTOS Y FILTROS)  */
 /* ===================================================== */
 
 const Buscador = {
     productosBD: [],
+    filtrosUnicos: [],
     historial: [],
     inicializado: false,
 
@@ -19,7 +20,6 @@ const Buscador = {
         Buscador.crearInterfaz(nav);
         
         try {
-            // Se usa el mismo endpoint robusto del catálogo
             const resProd = await (typeof Utils !== 'undefined' ? Utils.fetchFromBackend('obtenerCatalogoBase') : Promise.reject('No Utils'));
             if (resProd && resProd.success && resProd.productos) {
                 Buscador.productosBD = resProd.productos.filter(p => {
@@ -31,15 +31,26 @@ const Buscador = {
             console.error("Buscador usando productos en caché/demo.");
         }
 
-        // Carga de seguridad para evitar que el buscador quede inoperativo
         if (!Buscador.productosBD || Buscador.productosBD.length === 0) {
-            Buscador.productosBD = typeof DEMO_PRODUCTS_CATALOG !== 'undefined' ? DEMO_PRODUCTS_CATALOG : [
-                { ref: 'DEMO001', nombre: 'Mameluco Personalizado', imagenurl: '/assets/mockups/mameluco.png', '*precio_base': 35000, mundo: 'MUNDO TEXTIL', categoria: 'BEBÉS' },
-                { ref: 'DEMO002', nombre: 'Camiseta Oversize', imagenurl: '/assets/mockups/camiseta.png', '*precio_base': 45000, mundo: 'MUNDO CREATIVO', categoria: 'PRODUCTOS PERSONALIZADOS' },
-                { ref: 'DEMO003', nombre: 'Taza Mágica', imagenurl: '/assets/mockups/taza.png', '*precio_base': 25000, mundo: 'MUNDO CREATIVO', categoria: 'PRODUCTOS PERSONALIZADOS' },
-                { ref: 'DEMO004', nombre: 'Buzo Capota', imagenurl: '/assets/mockups/buzo.png', '*precio_base': 75000, mundo: 'MUNDO CREATIVO', categoria: 'PRODUCTOS PERSONALIZADOS' }
-            ];
+            Buscador.productosBD = typeof DEMO_PRODUCTS_CATALOG !== 'undefined' ? DEMO_PRODUCTS_CATALOG : [];
         }
+
+        // EXTRAER FILTROS ÚNICOS (Categorías, Mundos, Subcategorías, Temáticas, Modalidad)
+        const mapFiltros = new Map();
+        const camposFiltro = ['mundo', 'categoria', 'subcategoria', 'tematica', 'modalidad'];
+        
+        Buscador.productosBD.forEach(p => {
+            camposFiltro.forEach(campo => {
+                if (p[campo] && String(p[campo]).trim() !== '') {
+                    const val = String(p[campo]).trim();
+                    const nVal = typeof Utils !== 'undefined' && Utils.normalizeStr ? Utils.normalizeStr(val) : val.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                    if (!mapFiltros.has(nVal)) {
+                        mapFiltros.set(nVal, { tipo: campo.charAt(0).toUpperCase() + campo.slice(1), valor: val });
+                    }
+                }
+            });
+        });
+        Buscador.filtrosUnicos = Array.from(mapFiltros.values());
         
         Buscador.bindEvents();
     },
@@ -56,7 +67,7 @@ const Buscador = {
             <input type="text" id="searchInput" placeholder="Buscar productos, referencias, categorías..." style="border: none; background: transparent; padding: 8px 10px; width: 100%; outline: none; font-family: var(--font-primary);">
             <button id="btnVoz" title="Búsqueda por voz" style="background: none; border: none; cursor: pointer; color: var(--color-pink); font-size: 1.1rem;"><i class="fas fa-microphone"></i></button>
             
-            <div id="searchSuggestions" style="display: none; position: absolute; top: 110%; left: 0; width: 100%; background: var(--color-white); box-shadow: var(--shadow-md); border-radius: var(--radius-md); max-height: 400px; overflow-y: auto; z-index: 2000; flex-direction: column;">
+            <div id="searchSuggestions" style="display: none; position: absolute; top: 110%; left: 0; width: 100%; background: var(--color-white); box-shadow: var(--shadow-md); border-radius: var(--radius-md); max-height: 450px; overflow-y: auto; z-index: 2000; flex-direction: column;">
             </div>
         `;
 
@@ -98,13 +109,14 @@ const Buscador = {
         const getNorm = (val) => typeof Utils !== 'undefined' && Utils.normalizeStr ? Utils.normalizeStr(val || '') : String(val || '').toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         
         const valLimpio = getNorm(termino).trim();
-        if (valLimpio.length < 2) return [];
+        if (valLimpio.length < 2) return { productos: [], filtros: [] };
 
         const stopWords = ['de', 'la', 'el', 'las', 'los', 'en', 'para', 'con', 'y', 'un', 'una', 'unos', 'unas'];
         const tokens = valLimpio.split(/\s+/).filter(t => t.length > 1 && !stopWords.includes(t));
         if (tokens.length === 0) tokens.push(valLimpio);
 
-        let resultados = [];
+        // 1. BUSCAR EN PRODUCTOS
+        let resultadosProd = [];
         let mapaRefs = new Set();
 
         Buscador.productosBD.forEach(p => {
@@ -119,16 +131,11 @@ const Buscador = {
 
             let score = 0;
 
-            // Prioridad 1: Coincidencias exactas
             if (nRef === valLimpio) score += 100;
             if (nNombre === valLimpio) score += 90;
             if (nNombre.includes(valLimpio)) score += 70;
-            
-            // Prioridad 2: Coincidencias completas de Categorías o Mundos
-            if (nCat === valLimpio || nSub === valLimpio || nTem === valLimpio || nMundo === valLimpio) score += 80;
-            if (nCat.includes(valLimpio) || nSub.includes(valLimpio) || nTem.includes(valLimpio) || nMundo.includes(valLimpio)) score += 50;
+            if (nCat === valLimpio || nMundo === valLimpio) score += 50;
 
-            // Prioridad 3: Análisis de tokens por separaciones y errores ortográficos
             tokens.forEach(token => {
                 if (nRef.includes(token)) score += 30;
                 if (nNombre.includes(token)) score += 20;
@@ -137,35 +144,61 @@ const Buscador = {
                 if (token.length > 3) {
                     const allWords = `${nNombre} ${nCat} ${nSub} ${nTem} ${nMundo}`.split(/\s+/);
                     for (let word of allWords) {
-                        if (word.length > 3) {
-                            const dist = Buscador.distanciaLevenshtein(token, word);
-                            if (dist === 1) {
-                                score += 10;
-                                break;
-                            } else if (dist === 2 && token.length > 5) {
-                                score += 5;
-                                break;
-                            }
+                        if (word.length > 3 && Buscador.distanciaLevenshtein(token, word) <= 1) {
+                            score += 10;
+                            break;
                         }
                     }
                 }
             });
 
             if (score > 0) {
-                resultados.push({ ...p, score: score });
+                resultadosProd.push({ ...p, score: score });
                 mapaRefs.add(p.ref);
             }
         });
 
-        return resultados.sort((a, b) => b.score - a.score).slice(0, 8);
+        // 2. BUSCAR EN FILTROS/CATEGORÍAS
+        let resultadosFiltros = [];
+        Buscador.filtrosUnicos.forEach(f => {
+            const nVal = getNorm(f.valor);
+            let score = 0;
+            
+            if (nVal === valLimpio) score += 100;
+            else if (nVal.includes(valLimpio)) score += 60;
+
+            tokens.forEach(token => {
+                if (nVal.includes(token)) score += 30;
+                if (token.length > 3) {
+                    const words = nVal.split(/\s+/);
+                    for (let w of words) {
+                        if (w.length > 3 && Buscador.distanciaLevenshtein(token, w) <= 1) {
+                            score += 15;
+                            break;
+                        }
+                    }
+                }
+            });
+
+            if (score > 0) {
+                resultadosFiltros.push({ ...f, score: score });
+            }
+        });
+
+        return {
+            productos: resultadosProd.sort((a, b) => b.score - a.score).slice(0, 5),
+            filtros: resultadosFiltros.sort((a, b) => b.score - a.score).slice(0, 3)
+        };
     },
 
-    renderSugerencias: (resultados, termino) => {
+    renderSugerencias: (resultadosObj, termino) => {
         const container = document.getElementById('searchSuggestions');
         if (!container) return;
         
         container.innerHTML = '';
         
+        const { productos, filtros } = resultadosObj;
+
         if (termino.length < 2 && Buscador.historial.length > 0) {
             container.innerHTML = `<div style="padding: 10px 15px; font-size: 0.8rem; color: var(--color-gray-dark); background: #f9f9f9; border-bottom: 1px solid #eee;">Búsquedas recientes</div>`;
             Buscador.historial.forEach(h => {
@@ -175,15 +208,34 @@ const Buscador = {
             return;
         }
 
-        let listaMostrar = resultados;
+        let listaProd = productos || [];
 
-        // Fallback robusto visual para cuando realmente no hay ningún match ortográfico o numérico
-        if (resultados.length === 0 && termino.length >= 2) {
-            container.innerHTML = `<div style="padding: 15px; text-align: center; color: var(--color-gray-dark); font-size: 0.85rem;">No encontramos coincidencias exactas para "${termino}". ¿Quizás te interese esto?</div>`;
-            listaMostrar = [...Buscador.productosBD].sort(() => 0.5 - Math.random()).slice(0, 4);
+        // Fallback visual
+        if ((!productos || productos.length === 0) && (!filtros || filtros.length === 0) && termino.length >= 2) {
+            container.innerHTML = `<div style="padding: 15px; text-align: center; color: var(--color-gray-dark); font-size: 0.85rem;">No encontramos coincidencias para "${termino}". ¿Quizás te interese esto?</div>`;
+            listaProd = [...Buscador.productosBD].sort(() => 0.5 - Math.random()).slice(0, 4);
         }
 
-        listaMostrar.forEach(r => {
+        // RENDERIZAR SUGERENCIAS DE FILTROS PRIMERO
+        if (filtros && filtros.length > 0) {
+            filtros.forEach(f => {
+                container.innerHTML += `
+                    <div style="display: flex; align-items: center; gap: 15px; padding: 10px 15px; border-bottom: 1px solid var(--color-gray-light); cursor: pointer; transition: background 0.2s; background: #fafafa;" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='#fafafa'" onclick="Buscador.guardarHistorial('${f.valor}'); window.location.href='/catalogo/?q=${encodeURIComponent(f.valor)}'">
+                        <div style="width: 40px; height: 40px; border-radius: 5px; background: var(--color-pink); display: flex; align-items: center; justify-content: center; color: white;">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 0.95rem; color: var(--color-black);">Explorar ${f.valor}</div>
+                            <div style="font-size: 0.75rem; color: var(--color-gray-dark);">Filtro: ${f.tipo}</div>
+                        </div>
+                        <i class="fas fa-arrow-right" style="color: var(--color-gray-medium); font-size: 0.8rem;"></i>
+                    </div>
+                `;
+            });
+        }
+
+        // RENDERIZAR PRODUCTOS
+        listaProd.forEach(r => {
             const precioBase = r['*precio_base'] || r.precio_base || r.precio || 0;
             const precio = typeof Utils !== 'undefined' ? Utils.formatCurrency(precioBase) : '$' + precioBase;
             
@@ -208,7 +260,7 @@ const Buscador = {
             `;
         });
         
-        if(resultados.length > 0) {
+        if(listaProd.length > 0 || (filtros && filtros.length > 0)) {
             container.innerHTML += `<div style="padding: 10px; text-align: center; background: var(--color-gray-light); cursor: pointer; font-size: 0.85rem; font-weight: bold;" onclick="Buscador.guardarHistorial('${termino}'); window.location.href='/catalogo/?q=${encodeURIComponent(termino)}'">Ver todos los resultados para "${termino}"</div>`;
         }
         
@@ -225,7 +277,7 @@ const Buscador = {
         input.addEventListener('input', (e) => {
             const termino = e.target.value.trim();
             if (termino.length === 0) {
-                Buscador.renderSugerencias([], '');
+                Buscador.renderSugerencias({ productos: [], filtros: [] }, '');
             } else {
                 const resultados = Buscador.buscar(termino);
                 Buscador.renderSugerencias(resultados, termino);
@@ -234,7 +286,7 @@ const Buscador = {
 
         input.addEventListener('focus', () => {
             if (input.value.trim().length === 0 && Buscador.historial.length > 0) {
-                Buscador.renderSugerencias([], '');
+                Buscador.renderSugerencias({ productos: [], filtros: [] }, '');
             } else if (input.value.trim().length >= 2) {
                 container.style.display = 'flex';
             }
