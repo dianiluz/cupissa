@@ -1,6 +1,6 @@
 /* js/pago.js */
 /* ===================================================== */
-/* CUPISSA — LÓGICA DE CHECKOUT Y PASARELAS */
+/* CUPISSA — LÓGICA DE CHECKOUT Y PASARELAS COMPLETADA */
 /* ===================================================== */
 
 const MUNICIPIOS = {
@@ -57,8 +57,19 @@ const Checkout = {
     init: () => {
         Checkout.loadCart();
         Checkout.bindEvents();
+        Checkout.restoreCheckoutData();
         Checkout.renderResumen();
         Checkout.updateStepper();
+    },
+
+    restoreCheckoutData: () => {
+        const data = JSON.parse(localStorage.getItem("cupissa_checkout_data") || "{}");
+        Object.keys(data).forEach(id=>{
+            const el = document.getElementById(id);
+            if(el){
+                el.value = data[id];
+            }
+        });
     },
 
     loadCart: () => {
@@ -97,7 +108,17 @@ const Checkout = {
             const tel = document.getElementById('chkTelefono').value.trim();
             const cor = document.getElementById('chkCorreo').value.trim();
             if (!nom || !tel || !cor) {
-                if(typeof Utils !== 'undefined' && Utils.toast) Utils.toast("Completa todos los datos de contacto", "error");
+                Utils.toast("Completa todos los datos de contacto", "error");
+                return false;
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if(!emailRegex.test(cor)){
+                Utils.toast("Correo electrónico inválido", "error");
+                return false;
+            }
+            const telRegex = /^[3][0-9]{9}$/;
+            if(!telRegex.test(tel)){
+                Utils.toast("Número de celular inválido", "error");
                 return false;
             }
             return true;
@@ -117,6 +138,7 @@ const Checkout = {
     renderResumen: () => {
         const container = document.getElementById('chkItemsContainer');
         const subtUI = document.getElementById('chkSubtotal');
+        const envioUI = document.getElementById('chkCostoEnvioUI');
         const totalUI = document.getElementById('chkTotalPedido');
         
         if (!container) return;
@@ -137,39 +159,58 @@ const Checkout = {
         });
 
         if(subtUI) subtUI.innerText = Utils.formatCurrency(subtotal);
+        
+        // Actualizamos visualmente el campo Envío en el resumen
+        if(envioUI) {
+            if (isNaN(Checkout.costoEnvioActual) || Checkout.costoEnvioActual === 0) {
+                const ciudadInput = document.getElementById('chkCiudad');
+                const ciudad = ciudadInput ? Utils.normalizeStr(ciudadInput.value).toUpperCase() : '';
+                envioUI.innerText = (ciudad !== '' && !CIUDADES_LOCALES.includes(ciudad)) ? "Por Cotizar" : "$0";
+                envioUI.style.color = "var(--color-success)";
+            } else {
+                envioUI.innerText = Utils.formatCurrency(Checkout.costoEnvioActual);
+                envioUI.style.color = "var(--color-success)";
+            }
+        }
+
         if(totalUI) totalUI.innerText = Utils.formatCurrency(subtotal + Checkout.costoEnvioActual);
         
         Checkout.calcularTotalFinal();
     },
 
     autocompletarDepartamento: () => {
-        const ciudadInput = document.getElementById('chkCiudad');
-        const deptoInput = document.getElementById('chkDepartamento');
-        if (!ciudadInput || !deptoInput) return;
+    const ciudadInput = document.getElementById('chkCiudad');
+    const deptoInput = document.getElementById('chkDepartamento');
+    if (!ciudadInput || !deptoInput) return;
 
-        const ciudadM = Utils.normalizeStr(ciudadInput.value);
-        let encontrado = false;
+    const ciudadM = Utils.normalizeStr(ciudadInput.value);
+    let encontrado = false;
 
-        for (const [depto, ciudades] of Object.entries(MUNICIPIOS)) {
-            const match = ciudades.find(c => Utils.normalizeStr(c) === ciudadM);
-            if (match) {
-                deptoInput.value = depto;
-                encontrado = true;
-                break;
-            }
+    // CORRECCIÓN: Cambiado MUNICIPIES por MUNICIPIOS
+    for (const [depto, ciudades] of Object.entries(MUNICIPIOS)) {
+        const match = ciudades.find(c => Utils.normalizeStr(c) === ciudadM);
+        if (match) {
+            deptoInput.value = depto;
+            encontrado = true;
+            
+            // Guardar el departamento automáticamente en el localStorage
+            const data = JSON.parse(localStorage.getItem("cupissa_checkout_data") || "{}");
+            data['chkDepartamento'] = depto;
+            localStorage.setItem("cupissa_checkout_data", JSON.stringify(data));
+            break;
         }
-        
-        if (!encontrado) deptoInput.value = "";
-    },
+    }
+    
+    if (!encontrado) deptoInput.value = "";
+},
 
     calcularEnvio: () => {
         const ciudadInput = document.getElementById('chkCiudad');
         const barrioInput = document.getElementById('chkBarrioBuscador');
         const msjNacional = document.getElementById('msjEnvioNacional');
         const inputCC = document.getElementById('grupoCedulaNacional');
-        const lblEnvioUI = document.getElementById('chkCostoEnvioUI');
         
-        if (!ciudadInput || !msjNacional) return;
+        if (!ciudadInput) return;
 
         const ciudad = Utils.normalizeStr(ciudadInput.value).toUpperCase();
         const esLocal = CIUDADES_LOCALES.includes(ciudad);
@@ -177,12 +218,13 @@ const Checkout = {
         Checkout.costoEnvioActual = 0;
 
         if (ciudad.length > 2 && !esLocal) {
-            msjNacional.style.display = 'block';
-            msjNacional.innerText = "Valor del envío varía por medidas y peso. Un asesor te enviará la cotización. Debe cancelarse antes de producción.";
+            if(msjNacional) {
+                msjNacional.style.display = 'block';
+                msjNacional.innerText = "Valor del envío varía por medidas y peso. Un asesor te enviará la cotización. Debe cancelarse antes de producción.";
+            }
             if(inputCC) inputCC.style.display = 'block';
-            if(lblEnvioUI) lblEnvioUI.innerText = "Por Cotizar";
         } else if (esLocal) {
-            msjNacional.style.display = 'none';
+            if(msjNacional) msjNacional.style.display = 'none';
             if(inputCC) inputCC.style.display = 'none';
 
             if (municipiosFijos[ciudad]) {
@@ -192,7 +234,6 @@ const Checkout = {
                 const matchBarrio = barriosBD.find(b => b.m === ciudad && Utils.normalizeStr(b.n) === barrioNorm);
                 if (matchBarrio) Checkout.costoEnvioActual = matchBarrio.p;
             }
-            if(lblEnvioUI) lblEnvioUI.innerText = Utils.formatCurrency(Checkout.costoEnvioActual);
         }
 
         Checkout.renderResumen();
@@ -202,25 +243,29 @@ const Checkout = {
         const input = document.getElementById('chkBarrioBuscador');
         const sugg = document.getElementById('suggestions');
         
-        input.value = nombre;
+        if(input) input.value = nombre;
         Checkout.costoEnvioActual = precio;
-        sugg.style.display = 'none';
+        if(sugg) sugg.style.display = 'none';
         
+        const data = JSON.parse(localStorage.getItem("cupissa_checkout_data") || "{}");
+        data['chkBarrioBuscador'] = nombre;
+        localStorage.setItem("cupissa_checkout_data", JSON.stringify(data));
+
         Checkout.renderResumen();
     },
 
     calcularTotalFinal: () => {
-        let totalBase = Checkout.items.reduce((sum, item) => sum + (item.precio_unitario * item.cantidad), 0);
-        totalBase += Checkout.costoEnvioActual; 
+        let subtotalProds = Checkout.items.reduce((sum, item) => sum + (item.precio_unitario * item.cantidad), 0);
+        let totalConEnvio = subtotalProds + Checkout.costoEnvioActual; 
         
         const abonoSelect = document.getElementById('chkAbono');
         const metodoSelect = document.getElementById('chkMetodoPago');
         
         const porcentajeAbono = abonoSelect ? Number(abonoSelect.value) : 0.20;
-        let montoAPagar = totalBase * porcentajeAbono;
+        let montoAPagarBase = totalConEnvio * porcentajeAbono;
         
         const montoBaseUI = document.getElementById('chkMontoBaseValor');
-        if(montoBaseUI) montoBaseUI.innerText = Utils.formatCurrency(montoAPagar);
+        if(montoBaseUI) montoBaseUI.innerText = Utils.formatCurrency(montoAPagarBase);
 
         const metodo = metodoSelect ? metodoSelect.value : '';
         let comision = 0;
@@ -229,10 +274,9 @@ const Checkout = {
         const chkComisionValor = document.getElementById('chkComisionValor');
         const totalGeneralUI = document.getElementById('chkTotalGeneral');
 
-        // Cálculo inverso (Grossing Up) para Wompi
         if (metodo === 'WOMPI') {
-            const montoConComision = (montoAPagar + 833) / 0.968465;
-            comision = Math.ceil(montoConComision - montoAPagar);
+            const montoConComision = (montoAPagarBase + 833) / 0.968465;
+            comision = Math.ceil(montoConComision - montoAPagarBase);
         }
 
         if (comision > 0 && rowComision) {
@@ -242,8 +286,8 @@ const Checkout = {
             rowComision.style.display = 'none';
         }
 
-        const totalConComision = montoAPagar + comision;
-        if(totalGeneralUI) totalGeneralUI.innerText = Utils.formatCurrency(totalConComision);
+        const totalFinalHoy = montoAPagarBase + comision;
+        if(totalGeneralUI) totalGeneralUI.innerText = Utils.formatCurrency(totalFinalHoy);
 
         const transInfo = document.getElementById('transferenciaInfo');
         const btn = document.getElementById('btnConfirmarPedido');
@@ -252,7 +296,7 @@ const Checkout = {
         if (metodo === 'TRANSFERENCIA') {
             if (transInfo) transInfo.style.display = 'block';
             if (btn) btn.innerHTML = 'Enviar pago a verificación <i class="fas fa-file-invoice-dollar" style="margin-left: 5px;"></i>';
-            if (txtMonto) txtMonto.innerText = Utils.formatCurrency(totalConComision);
+            if (txtMonto) txtMonto.innerText = Utils.formatCurrency(totalFinalHoy);
         } else {
             if (transInfo) transInfo.style.display = 'none';
             if (btn) btn.innerHTML = 'Confirmar Pedido <i class="fas fa-check" style="margin-left: 5px;"></i>';
@@ -261,8 +305,23 @@ const Checkout = {
 
     procesarPago: async (e) => {
         e.preventDefault();
+        const lastOrderTime = localStorage.getItem("cupissa_last_order");
+        if(lastOrderTime){
+            if(Date.now() - Number(lastOrderTime) < 30000){
+                Utils.toast("Espera unos segundos antes de intentar otro pedido", "error");
+                return;
+            }
+        }
         
         if (!Checkout.validateStep(1) || !Checkout.validateStep(2)) return;
+        if(!document.getElementById('chkAceptaTerminos')?.checked){
+            Utils.toast("Debes aceptar los Términos y Condiciones", "error");
+            return;
+        }
+        if(!document.getElementById('chkAceptaPrivacidad')?.checked){
+            Utils.toast("Debes aceptar la Política de Privacidad", "error");
+            return;
+        }
         
         if (Checkout.isSubmitting) return; 
         Checkout.isSubmitting = true;
@@ -288,7 +347,8 @@ const Checkout = {
             total: totalPedidoBase,
             monto_pagado_hoy: anticipoHoy,
             metodo_pago: metodoPagoSelec,
-            productos: JSON.stringify(Checkout.items)
+            productos: JSON.stringify(Checkout.items),
+            fecha_consentimiento: new Date().toISOString()
         };
 
         if (metodoPagoSelec === 'TRANSFERENCIA') {
@@ -306,22 +366,21 @@ const Checkout = {
                     dataPedido.comprobante_name = file.name;
                     dataPedido.comprobante_mime = file.type;
                 } catch (err) {
-                    console.error("Error leyendo comprobante:", err);
-                    if(typeof Utils !== 'undefined' && Utils.toast) Utils.toast("Error con el comprobante, el pedido se enviará sin él.", "warning");
+                    if(typeof Utils !== 'undefined' && Utils.toast) Utils.toast("Error con el comprobante", "warning");
                 }
             }
         }
 
         try {
             const res = await Utils.fetchFromBackend('registrarPedido', dataPedido);
-            
             if (res.success) {
+                localStorage.removeItem("cupissa_checkout_data");
+                localStorage.setItem("cupissa_last_order", Date.now());
                 localStorage.removeItem('cupissa_cart');
                 
                 if (metodoPagoSelec === 'WOMPI' && res.wompi_signature) {
                     const redirectUrl = "https://cupissa.com/rastreo/?id=" + res.id_pedido;
-                    const wompiLink = `https://checkout.wompi.co/p/?public-key=${res.wompi_pub}&currency=COP&amount-in-cents=${res.wompi_amount}&reference=${res.id_pedido}&signature:integrity=${res.wompi_signature}&redirect-url=${encodeURIComponent(redirectUrl)}`;
-                    window.location.href = wompiLink;
+                    window.location.href = `https://checkout.wompi.co/p/?public-key=${res.wompi_pub}&currency=COP&amount-in-cents=${res.wompi_amount}&reference=${res.id_pedido}&signature:integrity=${res.wompi_signature}&redirect-url=${encodeURIComponent(redirectUrl)}`;
                 } else {
                     if(typeof Utils !== 'undefined' && Utils.toast) Utils.toast("Pedido creado con éxito", "success");
                     setTimeout(() => window.location.href = `/rastreo/?id=${res.id_pedido}`, 2000);
@@ -336,7 +395,6 @@ const Checkout = {
             if(typeof Utils !== 'undefined' && Utils.toast) Utils.toast("Error de conexión.", "error");
             Checkout.isSubmitting = false;
             btn.disabled = false;
-            Checkout.calcularTotalFinal();
         }
     },
 
@@ -347,6 +405,16 @@ const Checkout = {
                 Checkout.autocompletarDepartamento();
                 Checkout.calcularEnvio();
             });
+            const campos = ['chkNombre','chkTelefono','chkCorreo','chkDireccion','chkCiudad','chkDepartamento','chkBarrioBuscador'];
+            campos.forEach(id=>{
+                const el = document.getElementById(id);
+                if(!el) return;
+                el.addEventListener("input",()=>{
+                    const data = JSON.parse(localStorage.getItem("cupissa_checkout_data") || "{}");
+                    data[id] = el.value;
+                    localStorage.setItem("cupissa_checkout_data", JSON.stringify(data));
+                });
+            });
         }
 
         const barrioInput = document.getElementById('chkBarrioBuscador');
@@ -356,13 +424,11 @@ const Checkout = {
                 const ciudadSel = document.getElementById('chkCiudad') ? Utils.normalizeStr(document.getElementById('chkCiudad').value).toUpperCase() : '';
                 const sugg = document.getElementById('suggestions');
                 if (!sugg) return;
-                
                 sugg.innerHTML = '';
                 if (val.length < 1 || !["BARRANQUILLA", "SOLEDAD"].includes(ciudadSel)) { 
                     sugg.style.display = 'none'; 
                     return; 
                 }
-                
                 const filtered = barriosBD.filter(b => b.m === ciudadSel && Utils.normalizeStr(b.n).includes(val));
                 if (filtered.length > 0) {
                     filtered.forEach(b => {
@@ -372,15 +438,12 @@ const Checkout = {
                         d.style.padding = "10px";
                         d.style.cursor = "pointer";
                         d.style.borderBottom = "1px solid #eee";
-                        d.onmouseover = () => d.style.background = "#f9f9f9";
-                        d.onmouseout = () => d.style.background = "white";
                         d.onclick = () => Checkout.selectBarrioDinamico(b.n, b.p);
                         sugg.appendChild(d);
                     });
                     sugg.style.display = 'block';
                 }
             });
-            
             barrioInput.addEventListener('change', Checkout.calcularEnvio);
         }
 
