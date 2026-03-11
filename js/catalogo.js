@@ -1,6 +1,6 @@
 /* js/catalogo.js */
 /* ===================================================== */
-/* CUPISSA — CATALOGO.JS (ACTUALIZADO CON PRODUCTOS DEMO) */
+/* CUPISSA — CATALOGO.JS (ACTUALIZADO) */
 /* ===================================================== */
 
 const DEMO_PRODUCTS_CATALOG = [
@@ -28,7 +28,9 @@ const Catalogo = {
         try {
             const res = await Utils.fetchFromBackend('obtenerCatalogoBase');
             
-            if (!res || !res.success) throw new Error("No se pudo cargar la data desde el servidor.");
+            if (!res || !res.success) {
+                throw new Error("No se pudo cargar la data desde el servidor.");
+            }
 
             Catalogo.variacionesDB = res.variaciones || [];
             let dataProductos = res.productos || [];
@@ -36,10 +38,14 @@ const Catalogo = {
             let productosActivos = dataProductos.filter(p => {
                 const estado = p['*activ'] || p['*activo'] || p['activo'] || p['Activo'] || 'NO';
                 const referencia = p.ref || p.referencia || p.Referencia || '';
-                return p && referencia && String(referencia).trim() !== '' && String(estado).toUpperCase().trim() === 'SI';
+                
+                return p && referencia && String(referencia).trim() !== '' && 
+                       String(estado).toUpperCase().trim() === 'SI';
             });
             
-            if (productosActivos.length === 0) productosActivos = DEMO_PRODUCTS_CATALOG;
+            if (productosActivos.length === 0) {
+                productosActivos = DEMO_PRODUCTS_CATALOG;
+            }
             
             let productosUnicos = [];
             let mapaRefs = new Set();
@@ -56,7 +62,7 @@ const Catalogo = {
 
             Catalogo.productos = Utils.shuffle(productosUnicos);
             
-            // Lógica para capturar parámetros de búsqueda en la URL
+            // Logica para aplicar parametros de busqueda si existen en la URL
             const urlParams = new URLSearchParams(window.location.search);
             const query = urlParams.get('q');
             const refParam = urlParams.get('ref');
@@ -64,16 +70,13 @@ const Catalogo = {
             if (query) {
                 const qLower = Utils.normalizeStr(query);
                 Catalogo.productos = Catalogo.productos.filter(p => 
-                    Utils.normalizeStr(p.nombre || '').includes(qLower) || 
-                    Utils.normalizeStr(p.categoria || '').includes(qLower) ||
-                    Utils.normalizeStr(p.subcategoria || '').includes(qLower) ||
-                    Utils.normalizeStr(p.tematica || '').includes(qLower)
+                    Object.values(p).some(val => Utils.normalizeStr(String(val)).includes(qLower))
                 );
                 document.getElementById('catalogoTitle').innerText = `Resultados para "${query}"`;
             } else if (refParam) {
                 Catalogo.productos = Catalogo.productos.filter(p => p.ref === refParam);
             }
-
+            
             Catalogo.renderFiltros();
             Catalogo.aplicarFiltros();
             Catalogo.bindEvents();
@@ -108,7 +111,7 @@ const Catalogo = {
 
             const valoresUnicos = [...new Set(Catalogo.productos
                 .map(p => p[col])
-                .filter(val => val && String(val).trim() !== '')
+                .filter(val => val && String(val).trim() !== '' && !String(val).includes('|'))
             )].sort();
 
             if (valoresUnicos.length === 0) return;
@@ -219,7 +222,7 @@ const Catalogo = {
             const btnAddHtml = requierePersonalizacion 
                 ? `<button class="btn-add-direct" onclick="ModalProducto.open('${p.ref}')">Personalizar</button>`
                 : `<button class="btn-add-direct" onclick="Catalogo.addDirectToCart('${p.ref}')">Agregar al carrito</button>`;
-
+            
             const card = document.createElement('div');
             card.className = 'product-card fade-in';
             card.id = `card-${p.ref}`;
@@ -243,8 +246,8 @@ const Catalogo = {
 
                     <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                         <div>
-                            <div style="text-decoration:line-through; color:var(--color-gray-medium); font-size:0.8rem;" id="price-total-${p.ref}">${Utils.formatCurrency(precioBase)}</div>
-                            <div class="product-price" style="font-size:1.1rem; color:var(--color-black);" id="price-anticipo-${p.ref}">Anticipo: ${precioAnticipo}</div>
+                            <div style="color:var(--color-success); font-size:0.85rem; font-weight:600;" id="price-total-${p.ref}">Total: ${Utils.formatCurrency(precioBase)}</div>
+                            <div class="product-price" style="font-size:1.1rem; color:var(--color-black); font-weight:bold;" id="price-anticipo-${p.ref}">Anticipo: ${precioAnticipo}</div>
                         </div>
                     </div>
                     
@@ -313,7 +316,7 @@ const Catalogo = {
         const precioTotalFinal = precioBase + incrementoTotal;
         producto._incrementoActual = incrementoTotal;
         
-        document.getElementById(`price-total-${ref}`).innerText = Utils.formatCurrency(precioTotalFinal);
+        document.getElementById(`price-total-${ref}`).innerText = `Total: ${Utils.formatCurrency(precioTotalFinal)}`;
         document.getElementById(`price-anticipo-${ref}`).innerText = `Anticipo: ${Utils.formatCurrency(precioTotalFinal * 0.20)}`;
         
         const cupiCoinsBadge = document.getElementById(`cupicoins-${ref}`);
