@@ -1,3 +1,4 @@
+/* js/pago.js */
 /* ===================================================== */
 /* CUPISSA — LÓGICA DE CHECKOUT Y PASARELAS */
 /* ===================================================== */
@@ -36,8 +37,8 @@ const MUNICIPIOS = {
 
 const barriosBD = [
     {n:"Buenos Aires", m:"BARRANQUILLA", p:8000}, {n:"Los Girasoles", m:"BARRANQUILLA", p:8000}, {n:"Carrizal", m:"BARRANQUILLA", p:8000}, {n:"San Luis", m:"BARRANQUILLA", p:9000}, {n:"Cevillar", m:"BARRANQUILLA", p:10000}, {n:"Santa María", m:"BARRANQUILLA", p:10000}, {n:"Ciudadela 20 de Julio", m:"BARRANQUILLA", p:8000}, {n:"Santo Domingo de Guzman", m:"BARRANQUILLA", p:10000}, {n:"El Santuario", m:"BARRANQUILLA", p:9000}, {n:"Sevilla Real", m:"BARRANQUILLA", p:10000}, {n:"Kennedy", m:"BARRANQUILLA", p:10000}, {n:"Siete de Abril", m:"BARRANQUILLA", p:8000}, {n:"La Sierra", m:"BARRANQUILLA", p:10000}, {n:"Sinaí", m:"BARRANQUILLA", p:10000}, {n:"La Sierrita", m:"BARRANQUILLA", p:9000}, {n:"Veinte de Julio", m:"BARRANQUILLA", p:8000}, {n:"Las Americas", m:"BARRANQUILLA", p:9000}, {n:"Villa San Carlos", m:"BARRANQUILLA", p:10000}, {n:"Las Cayenas", m:"BARRANQUILLA", p:8000}, {n:"Villa San Pedro", m:"BARRANQUILLA", p:10000}, {n:"Las Gardenias", m:"BARRANQUILLA", p:10000}, {n:"Villa Sevilla", m:"BARRANQUILLA", p:10000}, {n:"Las Granjas", m:"BARRANQUILLA", p:10000}, {n:"Villa Valery", m:"BARRANQUILLA", p:10000}, {n:"Los Continentes", m:"BARRANQUILLA", p:10000},
-    {n:"Alfonso López", m:"BARRANQUILLA", p:12000}, {n:"Las Estrellas", m:"BARRANQUILLA", p:12000}, {n:"Bernardo Hoyos", m:"BARRANQUILLA", p:12000}, {n:"Las Malvinas", m:"BARRANQUILLA", p:10000}, {n:"Buena Esperanza", m:"BARRANQUILLA", p:12000}, {n:"Las Terrazas", m:"BARRANQUILLA", p:12000}, {n:"California", m:"BARRANQUILLA", p:12000}, {n:"Lipaya", m:"BARRANQUILLA", p:10000}, {n:"Caribe Verde", m:"BARRANQUILLA", p:12000}, {n:"Loma Fresca", m:"BARRANQUILLA", p:12000}, {n:"Carlos Meisel", m:"BARRANQUILLA", p:12000}, {n:"Los Andes", m:"BARRANQUILLA", p:12000}, {n:"Los Angeles", m:"BARRANQUILLA", p:12000}, {n:"Los Angeles II", m:"BARRANQUILLA", p:12000}, {n:"Los Angeles III", m:"BARRANQUILLA", p:12000}, {n:"Ciudad Modesto", m:"BARRANQUILLA", p:12000}, {n:"Ciudadela de la Salud", m:"BARRANQUILLA", p:12000}, {n:"Ciudadela de Paz", m:"BARRANQUILLA", p:12000}, {n:"Colina Campestre", m:"BARRANQUILLA", p:12000}, {n:"Cordialidad", m:"BARRANQUILLA", p:10000}, {n:"Los Olivos", m:"BARRANQUILLA", p:12000}, {n:"Los Olivos II", m:"BARRANQUILLA", p:12000}, {n:"Corregimiento de Juan Mina", m:"BARRANQUILLA", p:17000}, {n:"Los Pinos", m:"BARRANQUILLA", p:12000}, {n:"Cuchilla de Villate", m:"BARRANQUILLA", p:12000}, {n:"Los Rosales", m:"BARRANQUILLA", p:12000}, {n:"El Bosque", m:"BARRANQUILLA", p:10000}, {n:"El Carmén", m:"BARRANQUILLA", p:12000}, {n:"Lucero", m:"BARRANQUILLA", p:12000}, {n:"Me Quejo", m:"BARRANQUILLA", p:12000}, {n:"Mercedes Sur", m:"BARRANQUILLA", p:12000}, {n:"El Pueblo", m:"BARRANQUILLA", p:12000}, {n:"Nueva Colombia", m:"BARRANQUILLA", p:12000}, {n:"El Romance", m:"BARRANQUILLA", p:12000}, {n:"Nueva Granada", m:"BARRANQUILLA", p:12000}, {n:"El Rubí", m:"BARRANQUILLA", p:12000}, {n:"Olaya", m:"BARRANQUILLA", p:12000}, {n:"El Silencio", m:"BARRANQUILLA", p:12000}, {n:"Pinar del Rio", m:"BARRANQUILLA", p:12000}, {n:"El Valle", m:"BARRANQUILLA", p:10000}, {n:"Por Fin", m:"BARRANQUILLA", p:12000}, {n:"Evaristo Sourdis", m:"BARRANQUILLA", p:12000}, {n:"Pumarejo", m:"BARRANQUILLA", p:12000}, {n:"Gerlein y Villate", m:"BARRANQUILLA", p:12000}, {n:"San Felipe", m:"BARRANQUILLA", p:12000}, {n:"Kalamary", m:"BARRANQUILLA", p:12000}, {n:"San Isidro", m:"BARRANQUILLA", p:12000}, {n:"La Ceiba", m:"BARRANQUILLA", p:12000}, {n:"La Esmeralda", m:"BARRANQUILLA", p:10000}, {n:"San Pedro Alejandrino", m:"BARRANQUILLA", p:12000}, {n:"La Florida", m:"BARRANQUILLA", p:12000}, {n:"San Pedro Sector I", m:"BARRANQUILLA", p:12000}, {n:"Santo Domigo", m:"BARRANQUILLA", p:12000}, {n:"Siete de Agosto", m:"BARRANQUILLA", p:12000}, {n:"La Libertad", m:"BARRANQUILLA", p:12000}, {n:"Villa del Rosario", m:"BARRANQUILLA", p:12000}, {n:"La Manga", m:"BARRANQUILLA", p:12000}, {n:"Villa Flor", m:"BARRANQUILLA", p:12000}, {n:"La Paz", m:"BARRANQUILLA", p:12000}, {n:"Villas de la Cordialidad", m:"BARRANQUILLA", p:12000}, {n:"Villas de San Pablo", m:"BARRANQUILLA", p:12000}, {n:"Las Colinas", m:"BARRANQUILLA", p:12000},
-    {n:"Atlántico", m:"BARRANQUILLA", p:12000}, {n:"Las Palmeras", m:"BARRANQUILLA", p:12000}, {n:"Bellarena", m:"BARRANQUILLA", p:12000}, {n:"Los Laureles", m:"BARRANQUILLA", p:12000}, {n:"Boyaca", m:"BARRANQUILLA", p:12000}, {n:"Los Trupillos", m:"BARRANQUILLA", p:12000}, {n:"Chiquinquira", m:"BARRANQUILLA", p:13000}, {n:"Moderno", m:"BARRANQUILLA", p:12000}, {n:"El Campito", m:"BARRANQUILLA", p:12000}, {n:"Montes", m:"BARRANQUILLA", p:13000}, {n:"El Limón", m:"BARRANQUILLA", p:12000}, {n:"Pasadena", m:"BARRANQUILLA", p:12000}, {n:"El Milagro", m:"BARRANQUILLA", p:12000}, {n:"Primero de Mayo", m:"BARRANQUILLA", p:12000}, {n:"El Ferry", m:"BARRANQUILLA", p:13000}, {n:"El Parque Sector Barranquilla", m:"BARRANQUILLA", p:12000}, {n:"Rebolo", m:"BARRANQUILLA", p:13000}, {n:"José Antonio Galán", m:"BARRANQUILLA", p:12000}, {n:"San Jose", m:"BARRANQUILLA", p:12000}, {n:"La Arboraya", m:"BARRANQUILLA", p:12000}, {n:"San Nicolás", m:"BARRANQUILLA", p:13000}, {n:"La Chinita", m:"BARRANQUILLA", p:13000}, {n:"San Roque", m:"BARRANQUILLA", p:13000}, {n:"La Luz", m:"BARRANQUILLA", p:13000}, {n:"Santa Helena", m:"BARRANQUILLA", p:12000}, {n:"La Magdalena", m:"BARRANQUILLA", p:12000}, {n:"Simón Bolívar", m:"BARRANQUILLA", p:12000}, {n:"La Unión", m:"BARRANQUILLA", p:12000}, {n:"Tayrona", m:"BARRANQUILLA", p:12000}, {n:"La Victoria", m:"BARRANQUILLA", p:12000}, {n:"Universal I", m:"BARRANQUILLA", p:12000}, {n:"Universal II", m:"BARRANQUILLA", p:12000}, {n:"Las Dunas", m:"BARRANQUILLA", p:12000}, {n:"Las Nieves", m:"BARRANQUILLA", p:12000}, {n:"Villa Blanca", m:"BARRANQUILLA", p:12000}, {n:"Villa del Carmén", m:"BARRANQUILLA", p:12000}, {n:"Las Palmas", m:"BARRANQUILLA", p:12000},
+    {n:"Alfonso López", m:"BARRANQUILLA", p:12000}, {n:"Las Estrellas", m:"BARRANQUILLA", p:12000}, {n:"Bernardo Hoyos", m:"BARRANQUILLA", p:12000}, {n:"Las Malvinas", m:"BARRANQUILLA", p:10000}, {n:"Buena Esperanza", m:"BARRANQUILLA", p:12000}, {n:"Las Terrazas", m:"BARRANQUILLA", p:12000}, {n:"California", m:"BARRANQUILLA", p:12000}, {n:"Lipaya", m:"BARRANQUILLA", p:10000}, {n:"Caribe Verde", m:"BARRANQUILLA", p:12000}, {n:"Loma Fresca", m:"BARRANQUILLA", p:12000}, {n:"Carlos Meisel", m:"BARRANQUILLA", p:12000}, {n:"Los Andes", m:"BARRANQUILLA", p:12000}, {n:"Los Angeles", m:"BARRANQUILLA", p:12000}, {n:"Los Angeles II", m:"BARRANQUILLA", p:12000}, {n:"Los Angeles III", m:"BARRANQUILLA", p:12000}, {n:"Ciudad Modesto", m:"BARRANQUILLA", p:12000}, {n:"Ciudadela de la Salud", m:"BARRANQUILLA", p:12000}, {n:"Ciudadela de Paz", m:"BARRANQUILLA", p:12000}, {n:"Colina Campestre", m:"BARRANQUILLA", p:12000}, {n:"Cordialidad", m:"BARRANQUILLA", p:10000}, {n:"Los Olivos", m:"BARRANQUILLA", p:12000}, {n:"Los Olivos II", m:"BARRANQUILLA", p:12000}, {n:"Corregimiento de Juan Mina", m:"BARRANQUILLA", p:17000}, {n:"Los Pinos", m:"BARRANQUILLA", p:12000}, {n:"Cuchilla de Villate", m:"BARRANQUILLA", p:12000}, {n:"Los Rosales", m:"BARRANQUILLA", p:12000}, {n:"El Bosque", m:"BARRANQUILLA", p:10000}, {n:"El Carmén", m:"BARRANQUILLA", p:12000}, {n:"Lucero", m:"BARRANQUILLA", p:12000}, {n:"Me Quejo", m:"BARRANQUILLA", p:12000}, {n:"Mercedes Sur", m:"BARRANQUILLA", p:12000}, {n:"El Pueblo", m:"BARRANQUILLA", p:12000}, {n:"Nueva Colombia", m:"BARRANQUILLA", p:12000}, {n:"El Romance", m:"BARRANQUILLA", p:12000}, {n:"Nueva Granada", m:"BARRANQUILLA", p:12000}, {n:"El Rubí", m:"BARRANQUILLA", p:12000}, {n:"Olaya", m:"BARRANQUILLA", p:12000}, {n:"El Silencio", m:"BARRANQUILLA", p:12000}, {n:"Pinar del Rio", m:"BARRANQUILLA", p:12000}, {n:"El Valle", m:"BARRANQUILLA", p:10000}, {n:"Por Fin", m:"BARRANQUILLA", p:12000}, {n:"Pumarejo", m:"BARRANQUILLA", p:12000}, {n:"Gerlein y Villate", m:"BARRANQUILLA", p:12000}, {n:"San Felipe", m:"BARRANQUILLA", p:12000}, {n:"Kalamary", m:"BARRANQUILLA", p:12000}, {n:"San Isidro", m:"BARRANQUILLA", p:12000}, {n:"La Ceiba", m:"BARRANQUILLA", p:12000}, {n:"La Esmeralda", m:"BARRANQUILLA", p:10000}, {n:"San Pedro Alejandrino", m:"BARRANQUILLA", p:12000}, {n:"La Florida", m:"BARRANQUILLA", p:12000}, {n:"San Pedro Sector I", m:"BARRANQUILLA", p:12000}, {n:"Santo Domigo", m:"BARRANQUILLA", p:12000}, {n:"Siete de Agosto", m:"BARRANQUILLA", p:12000}, {n:"La Libertad", m:"BARRANQUILLA", p:12000}, {n:"Villa del Rosario", m:"BARRANQUILLA", p:12000}, {n:"La Manga", m:"BARRANQUILLA", p:12000}, {n:"Villa Flor", m:"BARRANQUILLA", p:12000}, {n:"La Paz", m:"BARRANQUILLA", p:12000}, {n:"Villas de la Cordialidad", m:"BARRANQUILLA", p:12000}, {n:"Villas de San Pablo", m:"BARRANQUILLA", p:12000}, {n:"Las Colinas", m:"BARRANQUILLA", p:12000},
+    {n:"Atlántico", m:"BARRANQUILLA", p:12000}, {n:"Las Palmeras", m:"BARRANQUILLA", p:12000}, {n:"Bellarena", m:"BARRANQUILLA", p:12000}, {n:"Los Laureles", m:"BARRANQUILLA", p:12000}, {n:"Boyaca", m:"BARRANQUILLA", p:12000}, {n:"Los Trupillos", m:"BARRANQUILLA", p:12000}, {n:"Chiquinquira", m:"BARRANQUILLA", p:13000}, {n:"Moderno", m:"BARRANQUILLA", p:12000}, {n:"El Campito", m:"BARRANQUILLA", p:12000}, {n:"Montes", m:"BARRANQUILLA", p:13000}, {n:"El Limón", m:"BARRANQUILLA", p:12000}, {n:"Pasadena", m:"BARRANQUILLA", p:12000}, {n:"El Milagro", m:"BARRANQUILLA", p:12000}, {n:"Primero de Mayo", m:"BARRANQUILLA", p:12000}, {n:"El Ferry", m:"BARRANQUILLA", p:13000}, {n:"El Parque Sector Barranquilla", m:"BARRANQUILLA", p:12000}, {n:"Rebolo", m:"BARRANQUILLA", p:13000}, {n:"José Antonio Galán", m:"BARRANQUILLA", p:12000}, {n:"San Jose", m:"BARRANQUILLA", p:12000}, {n:"La Arboraya", m:"BARRANQUILLA", p:12000}, {n:"San Nicolás", m:"BARRANQUILLA", p:13000}, {n:"La Chinita", m:"BARRANQUILLA", p:13000}, {n:"San Roque", m:"BARRANQUILLA", p:13000}, {n:"La Luz", m:"BARRANQUILLA", p:13000}, {n:"Santa Helena", m:"BARRANQUILLA", p:12000}, {n:"La Magdalena", m:"BARRANQUILLA", p:12000}, {n:"Simón Bolívar", m:"BARRANQUILLA", p:12000}, {n:"La Unión", m:"BARRANQUILLA", p:12000}, {n:"La Victoria", m:"BARRANQUILLA", p:12000}, {n:"Tayrona", m:"BARRANQUILLA", p:12000}, {n:"Universal I", m:"BARRANQUILLA", p:12000}, {n:"Universal II", m:"BARRANQUILLA", p:12000}, {n:"Las Dunas", m:"BARRANQUILLA", p:12000}, {n:"Las Nieves", m:"BARRANQUILLA", p:12000}, {n:"Villa Blanca", m:"BARRANQUILLA", p:12000}, {n:"Villa del Carmén", m:"BARRANQUILLA", p:12000}, {n:"Las Palmas", m:"BARRANQUILLA", p:12000},
     {n:"Barrio Abajo", m:"BARRANQUILLA", p:15000}, {n:"La Concepción", m:"BARRANQUILLA", p:15000}, {n:"Alameda del Rio", m:"BARRANQUILLA", p:15000}, {n:"La Cumbre", m:"BARRANQUILLA", p:15000}, {n:"Altos del Prado", m:"BARRANQUILLA", p:15000}, {n:"La Loma", m:"BARRANQUILLA", p:15000}, {n:"America", m:"BARRANQUILLA", p:15000}, {n:"Las Delicias", m:"BARRANQUILLA", p:15000}, {n:"Barlovento", m:"BARRANQUILLA", p:15000}, {n:"Las Mercedes", m:"BARRANQUILLA", p:15000}, {n:"Bellavista", m:"BARRANQUILLA", p:15000}, {n:"Las Nubes (vereda)", m:"BARRANQUILLA", p:15000}, {n:"Bethania", m:"BARRANQUILLA", p:15000}, {n:"Los Alpes", m:"BARRANQUILLA", p:15000}, {n:"Bostón", m:"BARRANQUILLA", p:15000}, {n:"Los Jobos", m:"BARRANQUILLA", p:15000}, {n:"Campo Alegre", m:"BARRANQUILLA", p:15000}, {n:"Los Nogales", m:"BARRANQUILLA", p:15000}, {n:"Centro Bquilla", m:"BARRANQUILLA", p:15000}, {n:"Miramar", m:"BARRANQUILLA", p:15000}, {n:"Ciudad Jardín", m:"BARRANQUILLA", p:15000}, {n:"Modelo", m:"BARRANQUILLA", p:15000}, {n:"Colombia", m:"BARRANQUILLA", p:15000}, {n:"Montecristo", m:"BARRANQUILLA", p:15000}, {n:"El Castillo", m:"BARRANQUILLA", p:15000}, {n:"Nuevo Horizonte", m:"BARRANQUILLA", p:15000}, {n:"El Golf", m:"BARRANQUILLA", p:15000}, {n:"Paraiso", m:"BARRANQUILLA", p:15000}, {n:"El Porvenir", m:"BARRANQUILLA", p:15000}, {n:"San Francisco", m:"BARRANQUILLA", p:15000}, {n:"El Prado", m:"BARRANQUILLA", p:15000}, {n:"Santa Ana", m:"BARRANQUILLA", p:15000}, {n:"El Recreo", m:"BARRANQUILLA", p:15000}, {n:"Villa Country", m:"BARRANQUILLA", p:15000}, {n:"El Rosario", m:"BARRANQUILLA", p:15000}, {n:"Villanueva", m:"BARRANQUILLA", p:15000}, {n:"El Tabor", m:"BARRANQUILLA", p:15000}, {n:"Zona Franca", m:"BARRANQUILLA", p:15000}, {n:"Zona Industrial", m:"BARRANQUILLA", p:15000}, {n:"La Campiña", m:"BARRANQUILLA", p:15000},
     {n:"Altamira", m:"BARRANQUILLA", p:15000}, {n:"Riomar", m:"BARRANQUILLA", p:15000}, {n:"Altos de Riomar", m:"BARRANQUILLA", p:15000}, {n:"San Salvador", m:"BARRANQUILLA", p:15000}, {n:"Altos del Limón", m:"BARRANQUILLA", p:15000}, {n:"San Vicente", m:"BARRANQUILLA", p:15000}, {n:"Andalucia", m:"BARRANQUILLA", p:15000}, {n:"Santa Mónica", m:"BARRANQUILLA", p:15000}, {n:"Corregimiento Eduardo Santos", m:"BARRANQUILLA", p:17000}, {n:"La Playa", m:"BARRANQUILLA", p:18000}, {n:"Siape", m:"BARRANQUILLA", p:15000}, {n:"El Limoncito", m:"BARRANQUILLA", p:15000}, {n:"Solaire Norte", m:"BARRANQUILLA", p:16000}, {n:"El Poblado", m:"BARRANQUILLA", p:15000}, {n:"Villa Campestre", m:"BARRANQUILLA", p:16000}, {n:"La Floresta", m:"BARRANQUILLA", p:15000}, {n:"Villa Carolina", m:"BARRANQUILLA", p:15000}, {n:"Las Flores", m:"BARRANQUILLA", p:16000}, {n:"Villa del Este", m:"BARRANQUILLA", p:15000}, {n:"Las Tres Ave Maria", m:"BARRANQUILLA", p:15000}, {n:"Villa Santos", m:"BARRANQUILLA", p:15000},
     {n:"Villa Estadio", m:"SOLEDAD", p:8000}, {n:"Los Robles", m:"SOLEDAD", p:8000}, {n:"Las Moras", m:"SOLEDAD", p:9000}, {n:"13 de Mayo", m:"SOLEDAD", p:10000}, {n:"16 de Julio", m:"SOLEDAD", p:10000}, {n:"20 de Julio", m:"SOLEDAD", p:10000}, {n:"7 de Agosto", m:"SOLEDAD", p:9000}, {n:"12 de Octubre", m:"SOLEDAD", p:10000}, {n:"Altos de Sevilla", m:"SOLEDAD", p:10000}, {n:"Bella Murillo", m:"SOLEDAD", p:9000}, {n:"Bonanza", m:"SOLEDAD", p:9000}, {n:"Cabrera", m:"SOLEDAD", p:10000}, {n:"Centenario", m:"SOLEDAD", p:10000}, {n:"Ciudad Bolívar", m:"SOLEDAD", p:10000}, {n:"Ciudad Camelot", m:"SOLEDAD", p:10000}, {n:"Ciudad Paraíso", m:"SOLEDAD", p:10000}, {n:"El Parque", m:"SOLEDAD", p:8000}, {n:"El Pasito", m:"SOLEDAD", p:10000}, {n:"El Río", m:"SOLEDAD", p:10000}, {n:"El Triunfo", m:"SOLEDAD", p:10000}, {n:"El Tucan", m:"SOLEDAD", p:9000}, {n:"La Alianza", m:"SOLEDAD", p:10000}, {n:"La Arboleda", m:"SOLEDAD", p:9000}, {n:"La Central", m:"SOLEDAD", p:10000}, {n:"La Esperanza", m:"SOLEDAD", p:10000}, {n:"La Farruca", m:"SOLEDAD", p:10000}, {n:"Las Gaviotas", m:"SOLEDAD", p:9000}, {n:"Las Margaritas", m:"SOLEDAD", p:9000}, {n:"Las Nubes", m:"SOLEDAD", p:10000}, {n:"Las Trinitarias", m:"SOLEDAD", p:9000}, {n:"Los Almendros", m:"SOLEDAD", p:10000}, {n:"Los Arrayanes", m:"SOLEDAD", p:10000}, {n:"Los Balcanes", m:"SOLEDAD", p:10000}, {n:"Los Cedros", m:"SOLEDAD", p:10000}, {n:"Los Cusules", m:"SOLEDAD", p:10000}, {n:"Los Laureles", m:"SOLEDAD", p:10000}, {n:"Los Loteros", m:"SOLEDAD", p:10000}, {n:"Nuevo Triunfo", m:"SOLEDAD", p:10000}, {n:"Oriental", m:"SOLEDAD", p:10000}, {n:"Portal De Las Moras", m:"SOLEDAD", p:9000}, {n:"Porvenir", m:"SOLEDAD", p:10000}, {n:"Primero De Mayo", m:"SOLEDAD", p:10000}, {n:"Puerta de Oro", m:"SOLEDAD", p:10000}, {n:"Pumarejo Soledad", m:"SOLEDAD", p:10000}, {n:"Renacer", m:"SOLEDAD", p:10000}, {n:"Sal Si Puedes", m:"SOLEDAD", p:10000}, {n:"Salcedo", m:"SOLEDAD", p:10000}, {n:"San Antonio", m:"SOLEDAD", p:10000}, {n:"Villa Angelita", m:"SOLEDAD", p:9000}, {n:"Villa del Carmen", m:"SOLEDAD", p:10000}, {n:"Villa del Rey", m:"SOLEDAD", p:10000}, {n:"Villa Estefanny", m:"SOLEDAD", p:10000}, {n:"Villa Éxito", m:"SOLEDAD", p:10000}, {n:"Villa Gladys", m:"SOLEDAD", p:10000}, {n:"Villa Karla", m:"SOLEDAD", p:10000}, {n:"Villa Katanga", m:"SOLEDAD", p:9000}, {n:"Villa María", m:"SOLEDAD", p:10000}, {n:"Villa Merly", m:"SOLEDAD", p:10000}, {n:"Villa Monaco", m:"SOLEDAD", p:10000}, {n:"Villa Severa", m:"SOLEDAD", p:10000}, {n:"Villa Valentina", m:"SOLEDAD", p:10000}, {n:"Villa Viola", m:"SOLEDAD", p:10000},
@@ -64,7 +65,7 @@ const Checkout = {
         const saved = localStorage.getItem('cupissa_cart');
         if (saved) Checkout.items = JSON.parse(saved);
         if (Checkout.items.length === 0) {
-            Utils.toast("Tu carrito está vacío", "error");
+            if(typeof Utils !== 'undefined' && Utils.toast) Utils.toast("Tu carrito está vacío", "error");
             setTimeout(() => window.location.href = '/catalogo/', 2000);
         }
     },
@@ -96,7 +97,7 @@ const Checkout = {
             const tel = document.getElementById('chkTelefono').value.trim();
             const cor = document.getElementById('chkCorreo').value.trim();
             if (!nom || !tel || !cor) {
-                Utils.toast("Completa todos los datos de contacto", "error");
+                if(typeof Utils !== 'undefined' && Utils.toast) Utils.toast("Completa todos los datos de contacto", "error");
                 return false;
             }
             return true;
@@ -105,7 +106,7 @@ const Checkout = {
             const ciu = document.getElementById('chkCiudad').value.trim();
             const dir = document.getElementById('chkDireccion').value.trim();
             if (!ciu || !dir) {
-                Utils.toast("Completa la ciudad y la dirección", "error");
+                if(typeof Utils !== 'undefined' && Utils.toast) Utils.toast("Completa la ciudad y la dirección", "error");
                 return false;
             }
             return true;
@@ -126,7 +127,7 @@ const Checkout = {
             subtotal += item.precio_unitario * item.cantidad;
             container.innerHTML += `
                 <div class="summary-item">
-                    <img src="${item.imagenurl}" alt="${item.nombre}">
+                    <img src="${item.imagenurl}" alt="${item.nombre}" onerror="this.src='/assets/logo.png'">
                     <div class="summary-item-info">
                         <div>${item.nombre} (x${item.cantidad})</div>
                         <div class="summary-item-price">${Utils.formatCurrency(item.precio_unitario * item.cantidad)}</div>
@@ -177,6 +178,7 @@ const Checkout = {
 
         if (ciudad.length > 2 && !esLocal) {
             msjNacional.style.display = 'block';
+            msjNacional.innerText = "Valor del envío varía por medidas y peso. Un asesor te enviará la cotización. Debe cancelarse antes de producción.";
             if(inputCC) inputCC.style.display = 'block';
             if(lblEnvioUI) lblEnvioUI.innerText = "Por Cotizar";
         } else if (esLocal) {
@@ -227,12 +229,10 @@ const Checkout = {
         const chkComisionValor = document.getElementById('chkComisionValor');
         const totalGeneralUI = document.getElementById('chkTotalGeneral');
 
+        // Cálculo inverso (Grossing Up) para Wompi
         if (metodo === 'WOMPI') {
-            const baseComision = montoAPagar * 0.0265 + 700;
-            const ivaComision = baseComision * 0.19;
-            comision = Math.ceil(baseComision + ivaComision);
-        } else if (metodo === 'ADDI') {
-            comision = Math.ceil(montoAPagar * 0.09);
+            const montoConComision = (montoAPagar + 833) / 0.968465;
+            comision = Math.ceil(montoConComision - montoAPagar);
         }
 
         if (comision > 0 && rowComision) {
@@ -244,6 +244,19 @@ const Checkout = {
 
         const totalConComision = montoAPagar + comision;
         if(totalGeneralUI) totalGeneralUI.innerText = Utils.formatCurrency(totalConComision);
+
+        const transInfo = document.getElementById('transferenciaInfo');
+        const btn = document.getElementById('btnConfirmarPedido');
+        const txtMonto = document.getElementById('txtMontoTransferir');
+
+        if (metodo === 'TRANSFERENCIA') {
+            if (transInfo) transInfo.style.display = 'block';
+            if (btn) btn.innerHTML = 'Enviar pago a verificación <i class="fas fa-file-invoice-dollar" style="margin-left: 5px;"></i>';
+            if (txtMonto) txtMonto.innerText = Utils.formatCurrency(totalConComision);
+        } else {
+            if (transInfo) transInfo.style.display = 'none';
+            if (btn) btn.innerHTML = 'Confirmar Pedido <i class="fas fa-check" style="margin-left: 5px;"></i>';
+        }
     },
 
     procesarPago: async (e) => {
@@ -278,6 +291,27 @@ const Checkout = {
             productos: JSON.stringify(Checkout.items)
         };
 
+        if (metodoPagoSelec === 'TRANSFERENCIA') {
+            const fileInput = document.getElementById('chkComprobante');
+            if (fileInput && fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                try {
+                    const base64 = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = () => resolve(reader.result.split(',')[1]); 
+                        reader.onerror = error => reject(error);
+                    });
+                    dataPedido.comprobante_b64 = base64;
+                    dataPedido.comprobante_name = file.name;
+                    dataPedido.comprobante_mime = file.type;
+                } catch (err) {
+                    console.error("Error leyendo comprobante:", err);
+                    if(typeof Utils !== 'undefined' && Utils.toast) Utils.toast("Error con el comprobante, el pedido se enviará sin él.", "warning");
+                }
+            }
+        }
+
         try {
             const res = await Utils.fetchFromBackend('registrarPedido', dataPedido);
             
@@ -285,25 +319,24 @@ const Checkout = {
                 localStorage.removeItem('cupissa_cart');
                 
                 if (metodoPagoSelec === 'WOMPI' && res.wompi_signature) {
-                    // Forzamos un dominio público para evitar el bloqueo 403 del Firewall de Wompi al probar desde local.
                     const redirectUrl = "https://cupissa.com/rastreo/?id=" + res.id_pedido;
                     const wompiLink = `https://checkout.wompi.co/p/?public-key=${res.wompi_pub}&currency=COP&amount-in-cents=${res.wompi_amount}&reference=${res.id_pedido}&signature:integrity=${res.wompi_signature}&redirect-url=${encodeURIComponent(redirectUrl)}`;
                     window.location.href = wompiLink;
                 } else {
-                    Utils.toast("Pedido creado con éxito", "success");
+                    if(typeof Utils !== 'undefined' && Utils.toast) Utils.toast("Pedido creado con éxito", "success");
                     setTimeout(() => window.location.href = `/rastreo/?id=${res.id_pedido}`, 2000);
                 }
             } else {
-                Utils.toast(res.error || "Error al procesar el pedido", "error");
+                if(typeof Utils !== 'undefined' && Utils.toast) Utils.toast(res.error || "Error al procesar el pedido", "error");
                 Checkout.isSubmitting = false;
                 btn.disabled = false;
-                btn.innerHTML = 'Confirmar Pedido <i class="fas fa-check"></i>';
+                Checkout.calcularTotalFinal();
             }
         } catch (err) {
-            Utils.toast("Error de conexión.", "error");
+            if(typeof Utils !== 'undefined' && Utils.toast) Utils.toast("Error de conexión.", "error");
             Checkout.isSubmitting = false;
             btn.disabled = false;
-            btn.innerHTML = 'Confirmar Pedido <i class="fas fa-check"></i>';
+            Checkout.calcularTotalFinal();
         }
     },
 
