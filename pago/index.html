@@ -100,14 +100,31 @@
                             <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">Método de Pago</label>
                             <select id="chkMetodoPago" required style="width: 100%; padding: 10px; border: 1px solid var(--color-gray-medium); border-radius: 5px;">
                                 <option value="" disabled selected>Selecciona una opción</option>
-                                <option value="TRANSFERENCIA">Transferencia Bancaria Directa</option>
-                                <option value="WOMPI">Wompi (Tarjetas, Nequi, PSE)</option>
+                                <option value="TRANSFERENCIA">Transferencia Directa con QR (Nequi, Bancolombia y cualquier banco)</option>
+                                <option value="WOMPI">Wompi (Tarjetas débito y crédito, PSE)</option>
                                 <option value="ADDI">Crédito ADDI (Pago a cuotas)</option>
                             </select>
                         </div>
                     </div>
-                    
-                    <div class="step-actions">
+
+                    <div id="transferenciaInfo" style="display: none; background: #fdf2f8; padding: 20px; border-radius: var(--radius-md); margin-top: 20px; border: 2px dashed var(--color-pink);">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 10px; color: var(--color-pink); text-align: center;"><i class="fas fa-qrcode"></i> Paga con Nequi o Bre-B</h3>
+                        <p style="font-size: 0.9rem; margin-bottom: 15px; text-align: center; color: var(--color-gray-dark);">Escanea este código o usa la llave para transferir <strong><span id="txtMontoTransferir"></span></strong> a CUPISSA SAS.</p>
+                        
+                        <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+                            <img src="/assets/qr_breb.png" alt="QR Nequi Bre-B" style="width: 180px; height: 180px; object-fit: cover; border-radius: 10px; background: white; padding: 10px; box-shadow: var(--shadow-sm);" onerror="this.src='/assets/logo.png'">
+                            <div style="margin-top: 15px; font-size: 1rem; font-weight: bold; background: var(--color-black); color: var(--color-white); padding: 8px 20px; border-radius: 20px; display: inline-flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-mobile-alt"></i> Llave Bre-B (Transfiere desde cualquier banco): 0090279315
+                            </div>
+                        </div>
+
+                        <div style="background: white; padding: 15px; border-radius: var(--radius-sm); border: 1px solid var(--color-gray-medium);">
+                            <label style="display: block; font-size: 0.85rem; font-weight: bold; margin-bottom: 5px;">Sube tu comprobante de pago (Opcional)</label>
+                            <input type="file" id="chkComprobante" accept="image/*,application/pdf" style="width: 100%; padding: 10px; border: 1px solid var(--color-gray-light); border-radius: 5px; font-family: var(--font-primary); font-size: 0.85rem; cursor: pointer;">
+                            <p style="font-size: 0.75rem; color: var(--color-gray-dark); margin-top: 8px; line-height: 1.4;"><i class="fas fa-info-circle"></i> Si no lo subes ahora, tu pedido quedará como <b>Pendiente</b> y podrás enviarlo por WhatsApp luego.</p>
+                        </div>
+                    </div>
+                    <div class="step-actions" style="margin-top: 25px;">
                         <button type="button" class="btn-secondary" onclick="Checkout.prevStep(2)"><i class="fas fa-arrow-left" style="margin-right: 5px;"></i> Atrás</button>
                         <button type="submit" class="btn-primary" id="btnConfirmarPedido" style="font-size: 1.1rem; padding: 12px 24px;">Confirmar Pedido <i class="fas fa-check" style="margin-left: 5px;"></i></button>
                     </div>
