@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </ul>
                 <div class="footer-socials">
                     <a href="https://instagram.com/cupissa.co" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="https://tiktok.com/@cupissa.co" target="_blank" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                    
                     <a href="https://wa.me/+573147671380" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
