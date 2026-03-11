@@ -1,6 +1,6 @@
 /* js/catalogo.js */
 /* ===================================================== */
-/* CUPISSA — CATALOGO.JS (ACTUALIZADO) */
+/* CUPISSA — CATALOGO.JS (ACTUALIZADO CON PRODUCTOS DEMO) */
 /* ===================================================== */
 
 const DEMO_PRODUCTS_CATALOG = [
@@ -62,10 +62,12 @@ const Catalogo = {
 
             Catalogo.productos = Utils.shuffle(productosUnicos);
             
-            // Logica para aplicar parametros de busqueda si existen en la URL
+            // Lógica para capturar todos los parámetros posibles en la URL
             const urlParams = new URLSearchParams(window.location.search);
             const query = urlParams.get('q');
             const refParam = urlParams.get('ref');
+            const catParam = urlParams.get('cat');
+            const mundoParam = urlParams.get('mundo');
 
             if (query) {
                 const qLower = Utils.normalizeStr(query);
@@ -77,7 +79,24 @@ const Catalogo = {
                 Catalogo.productos = Catalogo.productos.filter(p => p.ref === refParam);
             }
             
+            // Renderizamos primero los checkboxes en el DOM
             Catalogo.renderFiltros();
+
+            // Activamos y marcamos automáticamente los filtros si venimos del inicio
+            if (catParam && Catalogo.filtrosActivos['categoria']) {
+                Catalogo.filtrosActivos['categoria'].push(catParam);
+                const cb = document.querySelector(`input[data-col="categoria"][value="${catParam.replace(/"/g, '\\"')}"]`);
+                if (cb) cb.checked = true;
+                document.getElementById('catalogoTitle').innerText = catParam;
+            }
+            
+            if (mundoParam && Catalogo.filtrosActivos['mundo']) {
+                Catalogo.filtrosActivos['mundo'].push(mundoParam);
+                const cb = document.querySelector(`input[data-col="mundo"][value="${mundoParam.replace(/"/g, '\\"')}"]`);
+                if (cb) cb.checked = true;
+                document.getElementById('catalogoTitle').innerText = mundoParam;
+            }
+
             Catalogo.aplicarFiltros();
             Catalogo.bindEvents();
             Catalogo.setupInfiniteScroll();
