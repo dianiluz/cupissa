@@ -46,6 +46,3 @@ img {
     margin-bottom: 2rem;
 }
 
-main {
-    min-height: calc(100vh - 400px); /* Ajuste basado en el footer */
-}
