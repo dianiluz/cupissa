@@ -266,3 +266,27 @@ details[open].filter-group summary::after {
 .btn-view-modal:hover {
     background-color: var(--color-gray-dark);
 }
+
+/* Añadir esto al FINAL de css/catalogo.css */
+@media (max-width: 600px) {
+    .catalogo-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    .product-info {
+        padding: 1rem;
+    }
+    .product-title {
+        font-size: 0.95rem;
+    }
+    .product-price {
+        font-size: 1.05rem;
+    }
+    .btn-add-direct {
+        font-size: 0.8rem;
+        padding: 8px;
+    }
+    .btn-view-modal {
+        padding: 8px;
+    }
+}
