@@ -132,3 +132,16 @@ const Utils = {
 
 // Inicialización automática
 document.addEventListener('DOMContentLoaded', Utils.applyTheme);
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+if(!localStorage.getItem("cookieConsent")){
+document.getElementById("cookieBanner").style.display="flex";
+}
+
+document.getElementById("acceptCookies").onclick=()=>{
+localStorage.setItem("cookieConsent","true");
+document.getElementById("cookieBanner").style.display="none";
+};
+
+});
