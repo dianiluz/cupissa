@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trabaja con Nosotros - CUPISSA</title>
+    <link rel="icon" href="/assets/favicon.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="/css/variables.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/animations.css">
+    <link rel="stylesheet" href="/css/trabajo.css">
+</head>
+<body>
+    <div id="header"></div>
+
+    <main>
+        <section class="trabajo-hero fade-in">
+            <div class="hero-content">
+                <h1>Únete al equipo CUPISSA</h1>
+                <p>Buscamos mentes creativas, apasionadas y listas para transformar ideas en productos tangibles. Descubre nuestras vacantes y crece con nosotros.</p>
+            </div>
+        </section>
+
+        <section class="trabajo-section">
+            <h2 class="section-title">¿Por qué ser parte de Cupissa?</h2>
+            <div class="beneficios-grid">
+                <div class="beneficio-card fade-in">
+                    <i class="fas fa-laptop-house"></i>
+                    <h3>Trabajo Remoto</h3>
+                    <p>Maneja tu tiempo desde cualquier lugar de Colombia.</p>
+                </div>
+                <div class="beneficio-card fade-in">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <h3>Excelentes Ingresos</h3>
+                    <p>Gana un 10% de comisión real por cada venta cerrada y pagada.</p>
+                </div>
+                <div class="beneficio-card fade-in">
+                    <i class="fas fa-paint-brush"></i>
+                    <h3>Productos Exclusivos</h3>
+                    <p>Si eres creador, recibe productos personalizados de alta calidad.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="trabajo-section bg-light">
+            <h2 class="section-title">Nuestras Vacantes Activas</h2>
+            <div class="vacantes-container" id="vacantesContainer">
+                </div>
+        </section>
+
+        <section class="trabajo-section" id="postular">
+            <div class="form-wrapper fade-in">
+                <h2 class="section-title" style="margin-bottom: 10px;">Postúlate Ahora</h2>
+                <p style="text-align: center; color: var(--color-gray-dark); margin-bottom: 30px;">Completa el formulario y nuestro equipo de Gestión Humana revisará tu perfil.</p>
+                
+                <form id="formTrabajo" class="trabajo-form">
+                    <div class="form-group">
+                        <label>Vacante a la que aplicas *</label>
+                        <select id="trabVacante" required>
+                            <option value="" disabled selected>Selecciona una opción</option>
+                            </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nombre Completo *</label>
+                            <input type="text" id="trabNombre" required placeholder="Ej. Ana Pérez">
+                        </div>
+                        <div class="form-group">
+                            <label>Teléfono / WhatsApp *</label>
+                            <input type="tel" id="trabTelefono" required placeholder="Ej. 3001234567">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Correo Electrónico *</label>
+                            <input type="email" id="trabCorreo" required placeholder="correo@ejemplo.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Ciudad de Residencia *</label>
+                            <input type="text" id="trabCiudad" required placeholder="Ej. Barranquilla">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Enlace a Portafolio o Redes Sociales (LinkedIn, Instagram, TikTok)</label>
+                        <input type="url" id="trabLink" placeholder="https://...">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Adjuntar Hoja de Vida (PDF o Imagen)</label>
+                        <input type="file" id="trabCV" accept=".pdf, image/*">
+                        <small style="color: var(--color-gray-dark); display: block; margin-top: 5px;">* Puedes adjuntar tu CV o pegar el enlace arriba. Al menos uno es recomendado.</small>
+                    </div>
+
+                    <div class="form-group terms-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="trabTerminos" required>
+                            <span>He leído la descripción del cargo y acepto los <a href="#" style="color: var(--color-pink); text-decoration: underline;">Términos y Condiciones</a> y la Política de Privacidad de Cupissa SAS. *</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn-primary btn-submit" id="btnEnviarPostulacion">Enviar Postulación <i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer"></div>
+
+    <script src="/js/config.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/header.js"></script>
+    <script src="/js/carrito.js"></script>
+    <script src="/js/footer.js"></script>
+    <script src="/js/trabajo.js"></script>
+    <script src="/js/chat.js"></script>
+</body>
+</html>
