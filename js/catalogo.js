@@ -1,3 +1,4 @@
+/* js/catalogo.js */
 /* ===================================================== */
 /* CUPISSA — CATALOGO.JS (ACTUALIZADO CON PRODUCTOS DEMO) */
 /* ===================================================== */
@@ -25,28 +26,20 @@ const Catalogo = {
         grid.innerHTML = '<div class="empty-state">Cargando productos maravillosos...</div>';
 
         try {
-            // Llamamos a la función correcta del backend que trae todo en 1 solo viaje
             const res = await Utils.fetchFromBackend('obtenerCatalogoBase');
             
-            if (!res || !res.success) {
-                throw new Error("No se pudo cargar la data desde el servidor.");
-            }
+            if (!res || !res.success) throw new Error("No se pudo cargar la data desde el servidor.");
 
             Catalogo.variacionesDB = res.variaciones || [];
             let dataProductos = res.productos || [];
             
-           // Filtro robusto para ignorar filas en blanco y aceptar variaciones en las llaves
             let productosActivos = dataProductos.filter(p => {
                 const estado = p['*activ'] || p['*activo'] || p['activo'] || p['Activo'] || 'NO';
                 const referencia = p.ref || p.referencia || p.Referencia || '';
-                
-                return p && referencia && String(referencia).trim() !== '' && 
-                       String(estado).toUpperCase().trim() === 'SI';
+                return p && referencia && String(referencia).trim() !== '' && String(estado).toUpperCase().trim() === 'SI';
             });
             
-            if (productosActivos.length === 0) {
-                productosActivos = DEMO_PRODUCTS_CATALOG;
-            }
+            if (productosActivos.length === 0) productosActivos = DEMO_PRODUCTS_CATALOG;
             
             let productosUnicos = [];
             let mapaRefs = new Set();
@@ -63,6 +56,24 @@ const Catalogo = {
 
             Catalogo.productos = Utils.shuffle(productosUnicos);
             
+            // Lógica para capturar parámetros de búsqueda en la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const query = urlParams.get('q');
+            const refParam = urlParams.get('ref');
+
+            if (query) {
+                const qLower = Utils.normalizeStr(query);
+                Catalogo.productos = Catalogo.productos.filter(p => 
+                    Utils.normalizeStr(p.nombre || '').includes(qLower) || 
+                    Utils.normalizeStr(p.categoria || '').includes(qLower) ||
+                    Utils.normalizeStr(p.subcategoria || '').includes(qLower) ||
+                    Utils.normalizeStr(p.tematica || '').includes(qLower)
+                );
+                document.getElementById('catalogoTitle').innerText = `Resultados para "${query}"`;
+            } else if (refParam) {
+                Catalogo.productos = Catalogo.productos.filter(p => p.ref === refParam);
+            }
+
             Catalogo.renderFiltros();
             Catalogo.aplicarFiltros();
             Catalogo.bindEvents();
@@ -97,7 +108,7 @@ const Catalogo = {
 
             const valoresUnicos = [...new Set(Catalogo.productos
                 .map(p => p[col])
-                .filter(val => val && String(val).trim() !== '' && !String(val).includes('|'))
+                .filter(val => val && String(val).trim() !== '')
             )].sort();
 
             if (valoresUnicos.length === 0) return;
@@ -162,6 +173,8 @@ const Catalogo = {
 
         lote.forEach(p => {
             let selectsHtml = '';
+            let requierePersonalizacion = false;
+
             Object.keys(p).forEach(key => {
                 let val = String(p[key]);
                 if (val.includes('#') || val.includes('|') || key.toLowerCase() === '*tallas') {
@@ -171,7 +184,9 @@ const Catalogo = {
                     const opciones = cleanVal.split('|').map(o => o.trim());
                     const nombreLimpio = key.replace('*', '').replace('#', '');
                     
-                    if (nombreLimpio.toLowerCase() !== 'personalizable') {
+                    if (nombreLimpio.toLowerCase() === 'personalizable') {
+                        requierePersonalizacion = true;
+                    } else {
                         selectsHtml += `
                             <select class="card-select" data-col="${key}" onchange="Catalogo.updateCardPrice('${p.ref}')">
                                 ${opciones.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
@@ -187,34 +202,35 @@ const Catalogo = {
             const vendidos = Math.floor(Math.random() * 20) + 5;
             const viendo = Math.floor(Math.random() * 15) + 3;
             
-            // --- NUEVA LÓGICA DE IMAGEN ---
             let imgUrlFinal = '/assets/logo.png';
             if (p.imagenurl && String(p.imagenurl).trim() !== '') {
-                // 1. Extraer solo la primera imagen separando por |
                 imgUrlFinal = String(p.imagenurl).split('|')[0].trim();
-                
-                // 2. Si es de Drive, transformarla a un formato seguro para <img>
                 if (imgUrlFinal.includes('drive.google.com')) {
                     const match = imgUrlFinal.match(/id=([a-zA-Z0-9_-]+)/);
                     if (match && match[1]) {
-                        // sz=w800 define el ancho a 800px para no cargar la original súper pesada
                         imgUrlFinal = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800`;
                     }
                 }
             }
-            // ------------------------------
             
+            const isWished = (typeof Wishlist !== 'undefined' && Wishlist.items.some(i => i.ref === p.ref));
+            const heartColor = isWished ? 'var(--color-pink)' : 'var(--color-gray-dark)';
+
+            const btnAddHtml = requierePersonalizacion 
+                ? `<button class="btn-add-direct" onclick="ModalProducto.open('${p.ref}')">Personalizar</button>`
+                : `<button class="btn-add-direct" onclick="Catalogo.addDirectToCart('${p.ref}')">Agregar al carrito</button>`;
+
             const card = document.createElement('div');
             card.className = 'product-card fade-in';
             card.id = `card-${p.ref}`;
             card.innerHTML = `
                 <div style="position:relative;">
                     <img src="${imgUrlFinal}" alt="${p.nombre}" class="product-image" onerror="this.src='/assets/logo.png'" onclick="ModalProducto.open('${p.ref}')" loading="lazy">
-                    <button style="position:absolute; top:10px; right:10px; background:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; color:var(--color-gray-dark); box-shadow:var(--shadow-sm);" title="Agregar a favoritos">
-                        <i class="fas fa-heart"></i>
+                    <button style="position:absolute; top:10px; right:10px; background:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; color:${heartColor}; box-shadow:var(--shadow-sm);" title="Agregar a favoritos" onclick="Wishlist.toggle('${p.ref}')">
+                        <i class="fas fa-heart" id="wishlist-icon-${p.ref}"></i>
                     </button>
                     <div style="position:absolute; bottom:10px; left:0; width:100%; text-align:center;">
-                        <span style="background:var(--color-pink); color:white; font-size:0.75rem; padding:3px 10px; border-radius:15px; font-weight:bold;">Otorga ${cupiCoins} CupiCoins</span>
+                        <span id="cupicoins-${p.ref}" style="background:var(--color-pink); color:white; font-size:0.75rem; padding:3px 10px; border-radius:15px; font-weight:bold;">Otorga ${cupiCoins} CupiCoins</span>
                     </div>
                 </div>
                 <div class="product-info">
@@ -228,12 +244,12 @@ const Catalogo = {
                     <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                         <div>
                             <div style="text-decoration:line-through; color:var(--color-gray-medium); font-size:0.8rem;" id="price-total-${p.ref}">${Utils.formatCurrency(precioBase)}</div>
-                            <div class="product-price" style="font-size:1.1rem; color:var(--color-black);" id="price-anticipo-${p.ref}">Desde ${precioAnticipo}</div>
+                            <div class="product-price" style="font-size:1.1rem; color:var(--color-black);" id="price-anticipo-${p.ref}">Anticipo: ${precioAnticipo}</div>
                         </div>
                     </div>
                     
                     <div class="card-actions" style="margin-top:10px;">
-                        <button class="btn-add-direct" onclick="Catalogo.addDirectToCart('${p.ref}')">Agregar al carrito</button>
+                        ${btnAddHtml}
                         <button class="btn-view-modal" onclick="ModalProducto.open('${p.ref}')" title="Ver detalles" style="background:var(--color-black); color:white; border:none; padding:10px; border-radius:var(--radius-md); cursor:pointer;"><i class="fas fa-expand"></i></button>
                     </div>
                 </div>
@@ -298,7 +314,13 @@ const Catalogo = {
         producto._incrementoActual = incrementoTotal;
         
         document.getElementById(`price-total-${ref}`).innerText = Utils.formatCurrency(precioTotalFinal);
-        document.getElementById(`price-anticipo-${ref}`).innerText = `Desde ${Utils.formatCurrency(precioTotalFinal * 0.20)}`;
+        document.getElementById(`price-anticipo-${ref}`).innerText = `Anticipo: ${Utils.formatCurrency(precioTotalFinal * 0.20)}`;
+        
+        const cupiCoinsBadge = document.getElementById(`cupicoins-${ref}`);
+        if (cupiCoinsBadge) {
+            const cupiCoins = Math.floor(precioTotalFinal / 1000) * 5;
+            cupiCoinsBadge.innerText = `Otorga ${cupiCoins} CupiCoins`;
+        }
     },
 
     addDirectToCart: (ref) => {
