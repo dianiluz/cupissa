@@ -1,3 +1,4 @@
+/* js/modal.js */
 /* ===================================================== */
 /* CUPISSA — LÓGICA DEL MODAL DE PRODUCTO Y VARIACIONES */
 /* ===================================================== */
@@ -19,9 +20,12 @@ const ModalProducto = {
                         <div class="modal-details">
                             <h2 class="modal-title" id="modalTitle"></h2>
                             <p class="modal-ref" id="modalRef"></p>
-                            <div class="modal-price-container">
-                                <span class="modal-price" id="modalPrice"></span>
+                            
+                            <div class="modal-price-container" style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px;">
+                                <span class="modal-price" id="modalPrice" style="color:var(--color-success); font-weight:bold; font-size: 1.5rem;"></span>
+                                <span id="modalAnticipo" style="color:var(--color-gray-dark); font-size: 0.9rem; font-weight: 500;"></span>
                             </div>
+                            
                             <div class="modal-variations" id="modalVariationsArea"></div>
                             
                             <div class="modal-actions">
@@ -164,7 +168,13 @@ const ModalProducto = {
         });
 
         const precioFinal = precioBase + incrementoTotal;
-        document.getElementById('modalPrice').innerText = Utils.formatCurrency(precioFinal);
+        document.getElementById('modalPrice').innerText = `Total: ${Utils.formatCurrency(precioFinal)}`;
+        
+        const anticipoElem = document.getElementById('modalAnticipo');
+        if (anticipoElem) {
+            anticipoElem.innerText = `Anticipo: ${Utils.formatCurrency(precioFinal * 0.20)}`;
+        }
+
         ModalProducto.productoActual._incrementoActual = incrementoTotal;
     },
 
