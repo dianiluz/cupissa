@@ -1,3 +1,4 @@
+/* js/home.js */
 /* ===================================================== */
 /* CUPISSA — LÓGICA DE LA PÁGINA DE INICIO */
 /* ===================================================== */
@@ -14,17 +15,15 @@ const MOCKUPS = [
 ];
 
 const Home = {
-    mockupIndex: 2, // Inicia en 2 porque 0 y 1 ya están en el HTML inicial
+    mockupIndex: 2, 
 
     init: async () => {
-        // 1. Animaciones de las Cintas y el Hero
         Home.activarEfectosVisuales();
 
         try {
             const res = await Utils.fetchFromBackend('obtenerCatalogoBase');
             let productos = res.success ? res.productos : [];
             
-            // Filtro para productos activos
             let productosActivos = productos.filter(p => p['*activo'] && String(p['*activo']).toUpperCase().trim() === 'SI');
             
             if (productosActivos.length > 0) {
@@ -38,7 +37,6 @@ const Home = {
     },
 
     activarEfectosVisuales: () => {
-        // Cintas: Duplicamos contenido para que no se vean mochas
         const tracks = document.querySelectorAll('.ribbon-track');
         tracks.forEach((track, index) => {
             track.innerHTML += track.innerHTML; 
@@ -47,7 +45,6 @@ const Home = {
                 : "marqueeRight 30s linear infinite";
         });
 
-        // Rotación de Mockup Hero (Uno por uno)
         const rotator = document.getElementById('mockupRotator');
         const imgFront = document.getElementById('mockupFront');
         const imgBack = document.getElementById('mockupBack');
@@ -56,16 +53,13 @@ const Home = {
             setInterval(() => {
                 rotator.classList.toggle('flipped');
                 
-                // Cambio de imagen en la cara oculta (después de 1s de giro)
                 setTimeout(() => {
                     const isFlipped = rotator.classList.contains('flipped');
                     const nextImg = MOCKUPS[Home.mockupIndex];
 
                     if (isFlipped) {
-                        // Si está volteado, la cara Frontal está oculta
                         imgFront.src = nextImg;
                     } else {
-                        // Si no está volteado, la cara Trasera está oculta
                         imgBack.src = nextImg;
                     }
 
@@ -117,9 +111,10 @@ const Home = {
                 const precioBase = Utils.safeNumber(p['*precio_base']);
                 const cupicoins = Math.floor(precioBase / 1000) * 5;
                 const nombreProducto = p.producto || p.nombre || "Producto Cupissa";
+                const temporadaNombre = p['*temporada'] || "Destacados"; // Capturamos la temporada
 
                 return `
-                    <div class="product-card fade-in" onclick="window.location.href='/catalogo/?ref=${p.ref}'" style="cursor: pointer;">
+                    <div class="product-card fade-in" onclick="window.location.href='/catalogo/?q=${encodeURIComponent(temporadaNombre)}'" style="cursor: pointer;">
                         <div style="position:relative;">
                             <img src="${p.imagenurl}" alt="${nombreProducto}" class="product-image" onerror="this.src='/assets/logo.png'">
                             <div style="position:absolute; bottom:10px; left:0; width:100%; text-align:center;">
@@ -129,8 +124,8 @@ const Home = {
                         <div class="product-info" style="padding:15px;">
                             <div class="product-title" style="font-weight:600;">${nombreProducto}</div>
                             <div style="margin-top:10px;">
-                                <div style="text-decoration:line-through; color:var(--color-gray-medium); font-size:0.75rem;">${Utils.formatCurrency(precioBase)}</div>
-                                <div class="product-price" style="color:var(--color-black); font-weight:700;">Desde ${Utils.formatCurrency(precioBase * 0.20)}</div>
+                                <div style="color:var(--color-success); font-size:0.85rem; font-weight:600;">Total: ${Utils.formatCurrency(precioBase)}</div>
+                                <div class="product-price" style="color:var(--color-black); font-weight:700;">Anticipo: ${Utils.formatCurrency(precioBase * 0.20)}</div>
                             </div>
                             <button class="btn-add-direct" style="width:100%; margin-top:10px; padding:10px; background:var(--color-pink); color:white; border:none; border-radius:8px; font-weight:bold;">Ver opciones</button>
                         </div>
