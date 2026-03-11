@@ -1,11 +1,12 @@
+/* js/rastreo.js */
 /* ===================================================== */
-/* CUPISSA — LÓGICA DE RASTREO PÚBLICO */
+/* CUPISSA — LÓGICA DE RASTREO PÚBLICO (SÚPER ROBUSTA) */
 /* ===================================================== */
 
 const Rastreo = {
     init: () => {
         const form = document.getElementById('formRastreo');
-        form.addEventListener('submit', Rastreo.buscarPedido);
+        if (form) form.addEventListener('submit', Rastreo.buscarPedido);
 
         const urlParams = new URLSearchParams(window.location.search);
         const id = urlParams.get('id');
@@ -43,42 +44,97 @@ const Rastreo = {
                 err.style.display = 'block';
             }
         } catch (error) {
-            Utils.toast("Error de red. Intenta nuevamente.", "error");
+            console.error("Error al buscar pedido:", error);
+            if (typeof Utils !== 'undefined' && Utils.toast) Utils.toast("Error de red. Intenta nuevamente.", "error");
         } finally {
             btn.disabled = false; btn.innerText = "Buscar";
         }
     },
 
+    // 💡 FUNCIÓN CAZA-ERRORES: Lee la hoja sin importar cómo esté escrito el encabezado
+    obtenerValor: (objeto, nombreBuscado) => {
+        if (!objeto) return '';
+        const key = Object.keys(objeto).find(k => 
+            k.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '') === 
+            nombreBuscado.toLowerCase().replace(/[^a-z0-9]/g, '')
+        );
+        return key ? objeto[key] : '';
+    },
+
     mostrarResultado: (pedido) => {
-        document.getElementById('lblPedidoId').innerText = pedido.IDPedido;
-        document.getElementById('lblCliente').innerText = pedido.NombreCliente;
-        document.getElementById('lblTipoEnvio').innerText = pedido.Transportadora && pedido.Transportadora !== '' ? pedido.Transportadora : pedido.Tipo;
+        // 1. Extracción a prueba de fallos
+        const idPed = Rastreo.obtenerValor(pedido, 'idpedido') || Rastreo.obtenerValor(pedido, 'id') || '---';
+        const cliente = Rastreo.obtenerValor(pedido, 'cliente') || Rastreo.obtenerValor(pedido, 'nombre') || '---';
+        const transportadora = Rastreo.obtenerValor(pedido, 'transportadora') || '';
+        const tipo = Rastreo.obtenerValor(pedido, 'tipo') || '';
+        const guia = Rastreo.obtenerValor(pedido, 'guia') || '';
+        const estadoActualStr = Rastreo.obtenerValor(pedido, 'estado') || '1';
 
-        const estadoActual = parseInt(pedido.Estado) || 1; 
+        // 2. Pintar datos de cabecera
+        document.getElementById('lblPedidoId').innerText = idPed;
+        document.getElementById('lblCliente').innerText = cliente;
+        document.getElementById('lblTipoEnvio').innerText = transportadora !== '' ? transportadora : (tipo !== '' ? tipo : 'Local');
 
-        for (let i = 1; i <= 5; i++) {
-            const step = document.getElementById(`paso-${i}`);
-            step.classList.remove('completed', 'active');
-            if (i < estadoActual) step.classList.add('completed');
-            else if (i === estadoActual) step.classList.add('active');
+        // 3. Conversión súper flexible de Estado (Por número o por texto de la hoja)
+        let estadoActualNum = parseInt(estadoActualStr);
+        if (isNaN(estadoActualNum)) {
+            const str = String(estadoActualStr).toUpperCase().trim();
+            if (str.includes("DISEÑO") || str.includes("DISENO")) estadoActualNum = 1;
+            else if (str.includes("TALLER") || str.includes("FABRICACION")) estadoActualNum = 2;
+            else if (str.includes("LISTO")) estadoActualNum = 3;
+            else if (str.includes("CAMINO") || str.includes("ENVIO") || str.includes("ENVIADO")) estadoActualNum = 4;
+            else if (str.includes("ENTREGADO")) estadoActualNum = 5;
+            else estadoActualNum = 1;
         }
 
+        // 4. Actualizar colores de la línea de tiempo
+        for (let i = 1; i <= 5; i++) {
+            const step = document.getElementById(`paso-${i}`);
+            if (!step) continue;
+            step.classList.remove('completed', 'active');
+            if (i < estadoActualNum) step.classList.add('completed');
+            else if (i === estadoActualNum) step.classList.add('active');
+        }
+
+        // 5. Lógica del Botón y Guía de Transportadora (Paso 4)
         const guiaContainer = document.getElementById('guiaContainer');
         const tituloPaso4 = document.getElementById('tituloPaso4');
         const descPaso4 = document.getElementById('descPaso4');
 
-        if (estadoActual >= 4 && pedido.GuiaTransportadora && pedido.URLtransportadora) {
-            tituloPaso4.innerText = "En Camino con Transportadora";
-            descPaso4.innerText = "Tu paquete ya fue despachado. Usa este número de guía para rastrearlo:";
-            
-            guiaContainer.innerHTML = `
-                <div style="background: #f5f5f5; padding: 10px; border-radius: 8px; margin-top: 10px; display: flex; align-items: center; justify-content: space-between; border: 1px dashed #ccc;">
-                    <span style="font-weight: bold; font-family: monospace; font-size: 1.1rem; letter-spacing: 1px;" id="numGuiaCopy">${pedido.GuiaTransportadora}</span>
-                    <button onclick="navigator.clipboard.writeText('${pedido.GuiaTransportadora}'); Utils.toast('Guía copiada', 'success');" style="background: var(--color-black); color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.8rem;"><i class="fas fa-copy"></i> Copiar</button>
-                </div>
-                <a href="${pedido.URLtransportadora}" target="_blank" class="transportadora-link" style="display: block; text-align: center; margin-top: 10px; padding: 10px; text-decoration: none;">Rastrear en Transportadora <i class="fas fa-external-link-alt"></i></a>
-            `;
-            guiaContainer.style.display = 'block';
+        if (estadoActualNum >= 4) {
+            if (transportadora && guia && !String(transportadora).toUpperCase().includes("LOCAL")) {
+                let urlRastreo = "#";
+                const transUpper = String(transportadora).toUpperCase();
+                
+                if (transUpper.includes("INTERRAPIDISIMO")) {
+                    urlRastreo = `https://www.interrapidisimo.com/sigue-tu-envio/?guia=${guia}`;
+                } else if (transUpper.includes("SERVIENTREGA")) {
+                    urlRastreo = `https://www.servientrega.com/wps/portal/Colombia/transacciones-personas/rastreo-envios/detalle?guia=${guia}`;
+                } else if (transUpper.includes("ENVIA") || transUpper.includes("ENVÍA")) {
+                    urlRastreo = `https://enviacolombia.com/Rastreo/Seguimiento?guia=${guia}`;
+                } else if (transUpper.includes("COORDINADORA")) {
+                    urlRastreo = `https://www.coordinadora.com/portafolio-de-servicios/servicios-en-linea/rastrear-guias/?guia=${guia}`;
+                }
+
+                tituloPaso4.innerText = `En Camino con ${transportadora}`;
+                descPaso4.innerText = "Tu paquete ya fue despachado. Usa este número de guía para rastrearlo directamente:";
+                
+                guiaContainer.innerHTML = `
+                    <div style="background: var(--color-gray-light); padding: 10px; border-radius: var(--radius-sm); margin-top: 10px; display: flex; align-items: center; justify-content: space-between; border: 1px dashed var(--color-gray-medium);">
+                        <span style="font-weight: bold; font-family: monospace; font-size: 1.1rem; letter-spacing: 1px;" id="numGuiaCopy">${guia}</span>
+                        <button onclick="navigator.clipboard.writeText('${guia}'); if(typeof Utils !== 'undefined') Utils.toast('Guía copiada', 'success');" style="background: var(--color-black); color: var(--color-white); border: none; padding: 5px 10px; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.8rem;"><i class="fas fa-copy"></i> Copiar</button>
+                    </div>
+                    ${urlRastreo !== "#" ? `<a href="${urlRastreo}" target="_blank" class="transportadora-link" style="display: block; text-align: center; margin-top: 15px; padding: 12px; text-decoration: none; background: var(--color-pink); color: var(--color-white); border-radius: var(--radius-md); font-weight: bold; box-shadow: var(--shadow-sm); transition: transform 0.2s;">Rastrear en la Transportadora <i class="fas fa-external-link-alt"></i></a>` : ''}
+                `;
+                guiaContainer.style.display = 'block';
+            } else if (estadoActualNum === 4) {
+                // Es domiciliario local, está en estado 4 pero no es paquetería nacional
+                tituloPaso4.innerText = "En Camino";
+                descPaso4.innerText = "Tu pedido está en ruta hacia ti (Envío Local con domiciliario).";
+                guiaContainer.style.display = 'none';
+            } else {
+                guiaContainer.style.display = 'none';
+            }
         } else {
             tituloPaso4.innerText = "En Camino";
             descPaso4.innerText = "Tu pedido está en ruta hacia ti.";
