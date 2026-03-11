@@ -29,18 +29,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     <li><a href="/catalogo/">Catálogo</a></li>
                     <li><a href="/rastreo/">Rastrear Pedido</a></li>
                     <li><a href="/auth/">Iniciar Sesión</a></li>
-                    <li><a href="/trabaja-con-nosotros/">Trabaja con Nosotros</a></li>
+                    <li><a href="/trabajo/">Trabaja con Nosotros</a></li>
                 </ul>
             </div>
 
             <div class="footer-block">
                 <h3 class="footer-title">LEGALES</h3>
                 <ul>
-                    <li><a href="/legales/terminos.html">Términos y condiciones</a></li>
-                    <li><a href="/legales/privacidad.html">Políticas de privacidad</a></li>
-                    <li><a href="/legales/envios.html">Domicilios y Envíos</a></li>
-                    <li><a href="/legales/club.html">Club Cupissa</a></li>
-                    <li><a href="/legales/marketing.html">Marketing y Puntos</a></li>
+                    <li><a href="/legales/#terminos">Términos y condiciones</a></li>
+                    <li><a href="/legales/#privacidad">Políticas de privacidad</a></li>
+                    <li><a href="/legales/#envios">Domicilios y Envíos</a></li>
+                    <li><a href="/legales/#club">Club Cupissa</a></li>
+                    <li><a href="/legales/#puntos">Marketing y Puntos</a></li>
                 </ul>
             </div>
 
