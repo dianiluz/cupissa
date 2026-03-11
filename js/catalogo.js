@@ -1,6 +1,6 @@
 /* js/catalogo.js */
 /* ===================================================== */
-/* CUPISSA — CATALOGO.JS (ACTUALIZADO CON PRODUCTOS DEMO) */
+/* CUPISSA — CATALOGO.JS (CON SEO AUTOMÁTICO) */
 /* ===================================================== */
 
 const DEMO_PRODUCTS_CATALOG = [
@@ -62,7 +62,6 @@ const Catalogo = {
 
             Catalogo.productos = Utils.shuffle(productosUnicos);
             
-            // Lógica para capturar todos los parámetros posibles en la URL
             const urlParams = new URLSearchParams(window.location.search);
             const query = urlParams.get('q');
             const refParam = urlParams.get('ref');
@@ -79,10 +78,8 @@ const Catalogo = {
                 Catalogo.productos = Catalogo.productos.filter(p => p.ref === refParam);
             }
             
-            // Renderizamos primero los checkboxes en el DOM
             Catalogo.renderFiltros();
 
-            // Activamos y marcamos automáticamente los filtros si venimos del inicio
             if (catParam && Catalogo.filtrosActivos['categoria']) {
                 Catalogo.filtrosActivos['categoria'].push(catParam);
                 const cb = document.querySelector(`input[data-col="categoria"][value="${catParam.replace(/"/g, '\\"')}"]`);
@@ -242,12 +239,19 @@ const Catalogo = {
                 ? `<button class="btn-add-direct" onclick="ModalProducto.open('${p.ref}')">Personalizar</button>`
                 : `<button class="btn-add-direct" onclick="Catalogo.addDirectToCart('${p.ref}')">Agregar al carrito</button>`;
             
+            // SEO AUTOMÁTICO: Generar Texto Alt descriptivo para Google Imágenes
+            const altText = `${p.nombre} - ${p.categoria} | Cupissa Productos Personalizados Colombia`;
+
             const card = document.createElement('div');
             card.className = 'product-card fade-in';
             card.id = `card-${p.ref}`;
+            // SEO: Atributos de microdatos básicos en el HTML
+            card.setAttribute('itemscope', '');
+            card.setAttribute('itemtype', 'https://schema.org/Product');
+
             card.innerHTML = `
                 <div style="position:relative;">
-                    <img src="${imgUrlFinal}" alt="${p.nombre}" class="product-image" onerror="this.src='/assets/logo.png'" onclick="ModalProducto.open('${p.ref}')" loading="lazy">
+                    <img itemprop="image" src="${imgUrlFinal}" alt="${altText}" class="product-image" onerror="this.src='/assets/logo.png'" onclick="ModalProducto.open('${p.ref}')" loading="lazy">
                     <button style="position:absolute; top:10px; right:10px; background:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; color:${heartColor}; box-shadow:var(--shadow-sm);" title="Agregar a favoritos" onclick="Wishlist.toggle('${p.ref}')">
                         <i class="fas fa-heart" id="wishlist-icon-${p.ref}"></i>
                     </button>
@@ -256,14 +260,18 @@ const Catalogo = {
                     </div>
                 </div>
                 <div class="product-info">
-                    <div class="product-title">${p.nombre}</div>
+                    <h3 itemprop="name" class="product-title">${p.nombre}</h3>
+                    <meta itemprop="description" content="Personaliza tu ${p.nombre}. Mundo ${p.mundo} en Cupissa SAS Colombia.">
                     <div style="font-size:0.75rem; color:var(--color-success); margin-bottom:5px;">🔥 ${vendidos}+ vendidos hoy | 👀 ${viendo} viéndolo</div>
                     
                     <div class="card-selects">
                         ${selectsHtml}
                     </div>
 
-                    <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                    <div itemprop="offers" itemscope itemtype="https://schema.org/Offer" style="display:flex; justify-content:space-between; align-items:flex-end;">
+                        <meta itemprop="priceCurrency" content="COP">
+                        <meta itemprop="price" content="${precioBase}">
+                        <link itemprop="availability" href="https://schema.org/InStock">
                         <div>
                             <div style="color:var(--color-success); font-size:0.85rem; font-weight:600;" id="price-total-${p.ref}">Total: ${Utils.formatCurrency(precioBase)}</div>
                             <div class="product-price" style="font-size:1.1rem; color:var(--color-black); font-weight:bold;" id="price-anticipo-${p.ref}">Anticipo: ${precioAnticipo}</div>
@@ -278,11 +286,45 @@ const Catalogo = {
             `;
             grid.appendChild(card);
             
+            // SEO: Inyectar JSON-LD dinámico para cada producto renderizado
+            Catalogo.inyectarJSONLD(p, precioBase, imgUrlFinal);
+
             if(selectsHtml !== '') Catalogo.updateCardPrice(p.ref);
         });
 
         Catalogo.paginaActual++;
         Catalogo.cargandoNuevos = false;
+    },
+
+    // FUNCIÓN NUEVA: Genera los datos estructurados que Google ama
+    inyectarJSONLD: (p, precio, img) => {
+        const script = document.createElement('script');
+        script.type = 'application/ld+json';
+        const json = {
+            "@context": "https://schema.org/",
+            "@type": "Product",
+            "name": p.nombre,
+            "image": img,
+            "description": `Producto personalizado de la categoría ${p.categoria} en Cupissa.`,
+            "sku": p.ref,
+            "brand": {
+                "@type": "Brand",
+                "name": "CUPISSA"
+            },
+            "offers": {
+                "@type": "Offer",
+                "url": `https://cupissa.com/catalogo/?ref=${p.ref}`,
+                "priceCurrency": "COP",
+                "price": precio,
+                "availability": "https://schema.org/InStock",
+                "seller": {
+                    "@type": "Organization",
+                    "name": "CUPISSA SAS"
+                }
+            }
+        };
+        script.text = JSON.stringify(json);
+        document.head.appendChild(script);
     },
 
     updateCardPrice: (ref) => {
