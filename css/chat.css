@@ -1,0 +1,213 @@
+/* css/chat.css */
+/* ===================================================== */
+/* CUPISSA — LIVE CHAT MODULAR */
+/* ===================================================== */
+
+.cupissa-chat-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    font-family: var(--font-primary, 'Poppins', sans-serif);
+}
+
+.chat-fab {
+    width: 60px;
+    height: 60px;
+    background-color: var(--color-pink, #db137a);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(219, 19, 122, 0.4);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.chat-fab:hover { transform: scale(1.1); }
+.chat-fab .fa-times { display: none; }
+.cupissa-chat-widget.open .chat-fab .fa-comment-dots { display: none; }
+.cupissa-chat-widget.open .chat-fab .fa-times { display: block; }
+
+.chat-window {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 350px;
+    height: 500px;
+    max-height: 80vh;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+
+.cupissa-chat-widget.open .chat-window {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.chat-header {
+    background: var(--color-pink, #db137a);
+    color: white;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chat-header-avatar {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-pink, #db137a);
+    font-size: 1.2rem;
+}
+
+.chat-header-info h4 { margin: 0; font-size: 1rem; font-family: var(--font-secondary, 'Bree Serif', serif); }
+.chat-header-info p { margin: 0; font-size: 0.75rem; opacity: 0.8; }
+
+/* === FORMULARIO DE REGISTRO CHAT === */
+.chat-login-form {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: #f9f9f9;
+    flex: 1;
+}
+
+.chat-login-form p {
+    font-size: 0.85rem;
+    color: var(--color-gray-dark);
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.chat-login-form input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--color-gray-medium);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.chat-login-form input:focus { border-color: var(--color-pink); }
+
+.chat-login-form button {
+    background: var(--color-black);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.chat-login-form button:hover { background: var(--color-pink); }
+
+/* === INTERFAZ DEL CHAT === */
+.chat-main-interface {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+    overflow: hidden;
+}
+
+.chat-body {
+    flex: 1;
+    background: #f9f9f9;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.chat-msg {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.chat-msg.admin {
+    background: white;
+    color: black;
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.chat-msg.user {
+    background: var(--color-pink, #db137a);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+    box-shadow: 0 1px 2px rgba(219, 19, 122, 0.2);
+}
+
+.chat-time {
+    font-size: 0.65rem;
+    opacity: 0.7;
+    margin-top: 5px;
+    text-align: right;
+    display: block;
+}
+
+.chat-footer {
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+}
+
+.chat-footer input {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+.chat-footer input:focus { border-color: var(--color-pink); }
+
+.chat-footer button {
+    background: var(--color-black);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-footer button:hover { background: var(--color-pink); }
+
+@media (max-width: 450px) {
+    .chat-window { width: calc(100vw - 40px); right: 0; bottom: 75px; }
+}
