@@ -118,7 +118,7 @@
 
 .product-price {
     font-size: 1.2rem;
-    color: var(--color-pink);
+    color: green;
     font-weight: bold;
     margin-bottom: 1rem;
 }
