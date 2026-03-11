@@ -20,6 +20,8 @@ const Utils = {
         }).format(num);
     },
 
+    
+
     // --- MANEJO DE TEXTO ---
     normalizeStr: (str) => {
         if (!str) return "";
@@ -59,6 +61,43 @@ const Utils = {
             return { success: false, error: error.message };
         }
     },
+
+    getClientIP: async () => {
+    try {
+        const res = await fetch("https://api.ipify.org?format=json");
+        const data = await res.json();
+        return data.ip || "";
+    } catch (e) {
+        return "";
+    }
+},
+
+getDeviceInfo: () => {
+    const ua = navigator.userAgent;
+
+    let device = "Desktop";
+    if (/mobile/i.test(ua)) device = "Mobile";
+    if (/tablet/i.test(ua)) device = "Tablet";
+
+    let browser = "Unknown";
+    if (ua.includes("Chrome")) browser = "Chrome";
+    else if (ua.includes("Firefox")) browser = "Firefox";
+    else if (ua.includes("Safari")) browser = "Safari";
+    else if (ua.includes("Edge")) browser = "Edge";
+
+    let os = "Unknown";
+    if (ua.includes("Windows")) os = "Windows";
+    else if (ua.includes("Mac")) os = "MacOS";
+    else if (ua.includes("Android")) os = "Android";
+    else if (ua.includes("iPhone")) os = "iOS";
+
+    return {
+        device,
+        browser,
+        os,
+        user_agent: ua
+    };
+},
 
     // --- GESTIÓN DE SESIÓN  ---
     setUserSession: (userData) => {
@@ -136,7 +175,20 @@ document.addEventListener('DOMContentLoaded', Utils.applyTheme);
 document.addEventListener("DOMContentLoaded",()=>{
 
 if(!localStorage.getItem("cookieConsent")){
-document.getElementById("cookieBanner").style.display="flex";
+const banner = document.getElementById("cookieBanner");
+
+if(!localStorage.getItem("cookieConsent") && banner){
+banner.style.display="flex";
+}
+
+const btn = document.getElementById("acceptCookies");
+
+if(btn){
+btn.onclick=()=>{
+localStorage.setItem("cookieConsent","true");
+banner.style.display="none";
+};
+}
 }
 
 document.getElementById("acceptCookies").onclick=()=>{
