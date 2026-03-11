@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Allow: /catalogo/
+Allow: /trabajo/
+Allow: /legales/
+
+# Bloquear paneles internos para seguridad
+Disallow: /panel/
+Disallow: /admin/
+Disallow: /finanzas/
+
+Sitemap: https://cupissa.com/sitemap.xml
