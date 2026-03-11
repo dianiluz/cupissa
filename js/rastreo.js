@@ -1,6 +1,6 @@
 /* js/rastreo.js */
 /* ===================================================== */
-/* CUPISSA — LÓGICA DE RASTREO PÚBLICO (SÚPER ROBUSTA) */
+/* CUPISSA — LÓGICA DE RASTREO PÚBLICO */
 /* ===================================================== */
 
 const Rastreo = {
@@ -35,7 +35,7 @@ const Rastreo = {
             fd.append('action', 'rastrearPedido');
             fd.append('id_pedido', idPedido);
 
-            const res = await fetch(CONFIG.backendURL, { method: 'POST', body: fd });
+            const res = await fetch(typeof CONFIG !== 'undefined' ? CONFIG.backendURL : '', { method: 'POST', body: fd });
             const data = await res.json();
 
             if (data.success && data.pedido) {
@@ -51,31 +51,35 @@ const Rastreo = {
         }
     },
 
-    // 💡 FUNCIÓN CAZA-ERRORES: Lee la hoja sin importar cómo esté escrito el encabezado
-    obtenerValor: (objeto, nombreBuscado) => {
-        if (!objeto) return '';
-        const key = Object.keys(objeto).find(k => 
-            k.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '') === 
-            nombreBuscado.toLowerCase().replace(/[^a-z0-9]/g, '')
-        );
-        return key ? objeto[key] : '';
-    },
+    mostrarResultado: (pedidoData) => {
+        // 1. Corrección principal: Extraer el objeto si el backend envía un arreglo
+        const pedido = Array.isArray(pedidoData) ? pedidoData[0] : pedidoData;
 
-    mostrarResultado: (pedido) => {
-        // 1. Extracción a prueba de fallos
-        const idPed = Rastreo.obtenerValor(pedido, 'idpedido') || Rastreo.obtenerValor(pedido, 'id') || '---';
-        const cliente = Rastreo.obtenerValor(pedido, 'cliente') || Rastreo.obtenerValor(pedido, 'nombre') || '---';
-        const transportadora = Rastreo.obtenerValor(pedido, 'transportadora') || '';
-        const tipo = Rastreo.obtenerValor(pedido, 'tipo') || '';
-        const guia = Rastreo.obtenerValor(pedido, 'guia') || '';
-        const estadoActualStr = Rastreo.obtenerValor(pedido, 'estado') || '1';
+        if (!pedido) return;
 
-        // 2. Pintar datos de cabecera
+        // 2. Función interna de lectura robusta a prueba de cambios en Google Sheets
+        const obtener = (nombreBuscado) => {
+            const key = Object.keys(pedido).find(k => 
+                String(k).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, '') === 
+                nombreBuscado.toLowerCase().replace(/[^a-z0-9]/g, '')
+            );
+            return key ? pedido[key] : '';
+        };
+
+        // 3. Extracción de variables [cite: 65, 66, 67]
+        const idPed = obtener('idpedido') || obtener('id') || '---';
+        const cliente = obtener('cliente') || obtener('nombre') || '---';
+        const transportadora = obtener('transportadora') || '';
+        const tipo = obtener('tipo') || '';
+        const guia = obtener('guia') || '';
+        const estadoActualStr = obtener('estado') || '1';
+
+        // 4. Pintar cabecera
         document.getElementById('lblPedidoId').innerText = idPed;
         document.getElementById('lblCliente').innerText = cliente;
         document.getElementById('lblTipoEnvio').innerText = transportadora !== '' ? transportadora : (tipo !== '' ? tipo : 'Local');
 
-        // 3. Conversión súper flexible de Estado (Por número o por texto de la hoja)
+        // 5. Conversión de Estado (Soporta números del 1 al 5 o el texto del semáforo) [cite: 758]
         let estadoActualNum = parseInt(estadoActualStr);
         if (isNaN(estadoActualNum)) {
             const str = String(estadoActualStr).toUpperCase().trim();
@@ -87,7 +91,7 @@ const Rastreo = {
             else estadoActualNum = 1;
         }
 
-        // 4. Actualizar colores de la línea de tiempo
+        // 6. Actualizar línea de tiempo
         for (let i = 1; i <= 5; i++) {
             const step = document.getElementById(`paso-${i}`);
             if (!step) continue;
@@ -96,15 +100,17 @@ const Rastreo = {
             else if (i === estadoActualNum) step.classList.add('active');
         }
 
-        // 5. Lógica del Botón y Guía de Transportadora (Paso 4)
+        // 7. Lógica del Botón y Guía (Paso 4)
         const guiaContainer = document.getElementById('guiaContainer');
         const tituloPaso4 = document.getElementById('tituloPaso4');
         const descPaso4 = document.getElementById('descPaso4');
 
         if (estadoActualNum >= 4) {
-            if (transportadora && guia && !String(transportadora).toUpperCase().includes("LOCAL")) {
+            const transUpper = String(transportadora).toUpperCase().trim();
+            const esNacional = transportadora !== '' && !transUpper.includes("LOCAL") && !transUpper.includes("DOMICILIO");
+
+            if (esNacional && guia !== '') {
                 let urlRastreo = "#";
-                const transUpper = String(transportadora).toUpperCase();
                 
                 if (transUpper.includes("INTERRAPIDISIMO")) {
                     urlRastreo = `https://www.interrapidisimo.com/sigue-tu-envio/?guia=${guia}`;
@@ -128,9 +134,8 @@ const Rastreo = {
                 `;
                 guiaContainer.style.display = 'block';
             } else if (estadoActualNum === 4) {
-                // Es domiciliario local, está en estado 4 pero no es paquetería nacional
                 tituloPaso4.innerText = "En Camino";
-                descPaso4.innerText = "Tu pedido está en ruta hacia ti (Envío Local con domiciliario).";
+                descPaso4.innerText = "Tu pedido está en ruta hacia ti (Envío Local/Domiciliario).";
                 guiaContainer.style.display = 'none';
             } else {
                 guiaContainer.style.display = 'none';
