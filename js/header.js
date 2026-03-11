@@ -13,12 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (user && user.tipo_usuario) {
         const rutas = {
             'ADMIN': '/admin/',
-            'CLIENTE': '/cliente/',
+            'CLIENTE': '/cpanel/',
             'ASESOR': '/asesor/',
             'FINANZAS': '/finanzas/',
             'PRODUCCION': '/equipo/' 
         };
-        userLink = rutas[user.tipo_usuario.toUpperCase()] || '/cliente/';
+        userLink = rutas[user.tipo_usuario.toUpperCase()] || '/cpanel/';
     }
 
     const userText = user ? 'Mi Cuenta' : 'Ingresar';
