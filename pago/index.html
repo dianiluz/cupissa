@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - CUPISSA</title>
-    <link rel="icon" href="/assets/favicon.png">
+    <link rel="icon" type="image/png" href="https://cupissa.com/assets/favicon.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -125,21 +125,18 @@
                         </div>
                     </div>
                     <div class="legal-consent">
-
-<label>
-<input type="checkbox" id="chkAceptaTerminos">
-Acepto los 
-<a href="/legales/#terminos" target="_blank">Términos y Condiciones</a>
-de CUPISSA.
-</label>
-
-<label>
-<input type="checkbox" id="chkAceptaPrivacidad">
-Autorizo el tratamiento de mis datos personales conforme a la 
-<a href="/legales/#privacidad" target="_blank">Política de Privacidad</a>.
-</label>
-
-</div>
+                        <label>
+                        <input type="checkbox" id="chkAceptaTerminos">
+                        Acepto los 
+                        <a href="/legales/#terminos" target="_blank">Términos y Condiciones</a>
+                        de CUPISSA.
+                        </label>
+                        <label>
+                        <input type="checkbox" id="chkAceptaPrivacidad">
+                        Autorizo el tratamiento de mis datos personales conforme a la 
+                        <a href="/legales/#privacidad" target="_blank">Política de Privacidad</a>.
+                        </label>
+                    </div>
                     <div class="step-actions" style="margin-top: 25px;">
                         <button type="button" class="btn-secondary" onclick="Checkout.prevStep(2)"><i class="fas fa-arrow-left" style="margin-right: 5px;"></i> Atrás</button>
                         <button type="submit" class="btn-primary" id="btnConfirmarPedido" style="font-size: 1.1rem; padding: 12px 24px;">Confirmar Pedido <i class="fas fa-check" style="margin-left: 5px;"></i></button>
@@ -152,32 +149,34 @@ Autorizo el tratamiento de mis datos personales conforme a la
             <h2 class="summary-title">Resumen de tu Pedido</h2>
             <div class="summary-items" id="chkItemsContainer"></div>
             
-            <div class="summary-totals">
-                <div class="summary-row">
-                    <span>Subtotal Productos:</span>
-                    <span id="chkSubtotal"></span>
-                </div>
-                <div class="summary-row">
-                    <span>Envío:</span>
-                    <span id="chkCostoEnvioUI" style="color: var(--color-success); font-weight: bold;">$0</span>
-                </div>
-                <div class="summary-row" style="font-weight: bold; border-top: 1px solid #ddd; padding-top:10px; margin-top:10px;">
-                    <span>Total Pedido:</span>
-                    <span id="chkTotalPedido"></span>
-                </div>
-                
-                <div style="background: var(--color-white); padding: 15px; border-radius: var(--radius-sm); margin-top: 20px; border-left: 4px solid var(--color-pink);">
+            <div class="checkout-summary">
+                <div class="summary-totals">
                     <div class="summary-row">
-                        <span id="lblMontoAPagar" style="font-weight:bold;">Monto a pagar hoy:</span>
-                        <span id="chkMontoBaseValor" style="font-weight:bold;"></span>
+                        <span>Subtotal Productos:</span>
+                        <span id="chkSubtotal"></span>
                     </div>
-                    <div class="summary-row" id="rowComision" style="display:none; color: var(--color-danger); font-size: 0.85rem;">
-                        <span>Comisión Pasarela:</span>
-                        <span id="chkComisionValor"></span>
+                    <div class="summary-row">
+                        <span>Envío:</span>
+                        <span id="chkCostoEnvioUI" style="color: var(--color-success); font-weight: bold;">$0</span>
                     </div>
-                    <div class="summary-row total" style="color: var(--color-pink); font-size: 1.1rem; font-weight: bold; margin-top: 10px;">
-                        <span>TOTAL A PAGAR:</span>
-                        <span id="chkTotalGeneral"></span>
+                    <div class="summary-row" style="font-weight: bold; border-top: 1px solid #ddd; padding-top:10px; margin-top:10px;">
+                        <span>Total Pedido:</span>
+                        <span id="chkTotalPedido"></span>
+                    </div>
+                    
+                    <div id="checkoutTotalSection" style="background: var(--color-white); padding: 15px; border-radius: var(--radius-sm); margin-top: 20px; border-left: 4px solid var(--color-pink);">
+                        <div class="summary-row">
+                            <span id="lblMontoAPagar" style="font-weight:bold;">Monto a pagar hoy:</span>
+                            <span id="chkMontoBaseValor" style="font-weight:bold;"></span>
+                        </div>
+                        <div class="summary-row" id="rowComision" style="display:none; color: var(--color-danger); font-size: 0.85rem;">
+                            <span>Comisión Pasarela:</span>
+                            <span id="chkComisionValor"></span>
+                        </div>
+                        <div class="summary-row total" style="color: var(--color-pink); font-size: 1.1rem; font-weight: bold; margin-top: 10px;">
+                            <span>TOTAL A PAGAR:</span>
+                            <span id="chkTotalGeneral"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -185,6 +184,8 @@ Autorizo el tratamiento de mis datos personales conforme a la
     </main>
 
     <div id="footer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script src="/js/config.js"></script>
     <script src="/js/utils.js"></script>
