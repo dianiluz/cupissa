@@ -7,29 +7,36 @@ const CONFIG = {
     whatsappNumber: "573147671380",
     baseURL: "https://cupissa.com",
     contactEmail: "contacto@cupissa.com",
-    // URL del script de Google (Backend) [cite: 89]
+    
+    // URL del nuevo script de Google (Backend)
     backendURL: "https://script.google.com/macros/s/AKfycbz0lEEXDtWHyN0EAks9WAxXAni6B9agd29VVflEUaLTMWpMgaTmc_gtBVfHgEncA70/exec",
 
+    // SUPABASE (El nuevo cerebro de datos para tu catálogo)
+    supabase: {
+        url: "https://dhsoimmxfapcppdyjhcj.supabase.co",
+        key: "sb_publishable__F5Xz9UmI0-HOreX3MhFqA_9eZX0qRJ"
+    },
+
     // LÓGICA DE PRECIOS Y FIDELIZACIÓN
-    porcentajeAnticipo: 0.20, // 20% obligatorio para agendar [cite: 36, 174]
-    puntosPorCada: 1000,      // $1.000 pagados = 1 punto [cite: 339]
-    cupicoinsPorPunto: 5,     // 1 punto = 5 CupiCoins [cite: 339]
+    porcentajeAnticipo: 0.20, // 20% obligatorio para agendar
+    puntosPorCada: 1000,      // $1.000 pagados = 1 punto
+    cupicoinsPorPunto: 5,     // 1 punto = 5 CupiCoins
 
     // COMISIONES DE PASARELAS
     comisiones: {
         wompi: {
-            porcentaje: 0.0265, // 2.65% [cite: 335]
-            fijo: 700,          // + $700 [cite: 335]
-            ivaSobreComision: 0.19, // + 19% del valor de la comisión [cite: 335]
-            sumaAlCliente: true  // Wompi se le cobra al cliente [cite: 335]
+            porcentaje: 0.0265, // 2.65%
+            fijo: 700,          // + $700
+            ivaSobreComision: 0.19, // + 19% del valor de la comisión
+            sumaAlCliente: true  // Wompi se le cobra al cliente
         },
         addi: {
-            porcentaje: 0.09,   // 9% de comisión [cite: 336]
+            porcentaje: 0.09,   // 9% de comisión
             sumaAlCliente: false // CUPISSA asume este costo (asumido internamente)
         }
     },
 
-    // GEOGRAFÍA Y ENVÍOS [cite: 328, 329]
+    // GEOGRAFÍA Y ENVÍOS
     zonasLocales: [
         "BARRANQUILLA", 
         "SOLEDAD", 
