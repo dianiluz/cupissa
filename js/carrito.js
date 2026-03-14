@@ -1,5 +1,5 @@
 /* ===================================================== */
-/* CUPISSA — CARRITO GLOBAL Y RECOMPENSAS */
+/* CUPISSA — CARRITO GLOBAL Y RECOMPENSAS                */
 /* ===================================================== */
 
 const Carrito = {
@@ -26,7 +26,9 @@ const Carrito = {
     },
 
     add: (producto, variacionesSeleccionadas, incrementoTotal, cantidad = 1) => {
-        const precioFinal = Utils.safeNumber(producto['*precio_base']) + Utils.safeNumber(incrementoTotal);
+        // Corrección clave: leer precio_base sin asterisco (así viene normalizado desde Supabase)
+        const precioBase = Utils.safeNumber(producto.precio_base || producto['*precio_base'] || 0);
+        const precioFinal = precioBase + Utils.safeNumber(incrementoTotal);
         
         const sortedVars = {};
         Object.keys(variacionesSeleccionadas).sort().forEach(k => {
@@ -41,11 +43,21 @@ const Carrito = {
         if (exist) {
             exist.cantidad += Number(cantidad);
         } else {
+            // Aseguramos de enviar siempre un string seguro para la imagen
+            let imgUrlFinal = '/assets/logo.png';
+            if (producto.imagenurl && String(producto.imagenurl).trim() !== '') {
+                imgUrlFinal = String(producto.imagenurl).split('|')[0].trim();
+                if (imgUrlFinal.includes('drive.google.com')) {
+                    const match = imgUrlFinal.match(/id=([a-zA-Z0-9_-]+)/);
+                    if (match && match[1]) imgUrlFinal = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
+                }
+            }
+
             Carrito.items.push({
                 uniqueId: uniqueId,
                 ref: producto.ref,
                 nombre: producto.nombre,
-                imagenurl: producto.imagenurl,
+                imagenurl: imgUrlFinal,
                 precio_unitario: precioFinal,
                 variaciones: sortedVars,
                 cantidad: Number(cantidad)
@@ -100,44 +112,47 @@ const Carrito = {
             document.head.appendChild(css);
         }
 
-        const overlay = document.createElement('div');
-        overlay.className = 'cart-overlay';
-        overlay.id = 'cartOverlay';
+        // Evitar duplicar el HTML del carrito si ya existe
+        if (!document.getElementById('cartDrawer')) {
+            const overlay = document.createElement('div');
+            overlay.className = 'cart-overlay';
+            overlay.id = 'cartOverlay';
 
-        const drawer = document.createElement('div');
-        drawer.className = 'cart-drawer';
-        drawer.id = 'cartDrawer';
+            const drawer = document.createElement('div');
+            drawer.className = 'cart-drawer';
+            drawer.id = 'cartDrawer';
 
-        drawer.innerHTML = `
-            <div class="cart-header">
-                <h2>Tu Carrito</h2>
-                <button class="close-cart" id="closeCartBtn">&times;</button>
-            </div>
-            <div class="cart-body" id="cartItemsContainer"></div>
-            <div class="cart-footer">
-                <div class="cart-cupicoins" style="background:#fff0f6; color:var(--color-pink); padding:10px; border-radius:5px; margin-bottom:15px; text-align:center; font-weight:bold; font-size:0.9rem;">
-                    🪙 Con esta compra ganarás: <span id="cartCupiCoinsUI">0</span> CupiCoins
+            drawer.innerHTML = `
+                <div class="cart-header">
+                    <h2>Tu Carrito</h2>
+                    <button class="close-cart" id="closeCartBtn">&times;</button>
                 </div>
-                <div class="cart-total">
-                    <span>Subtotal general</span>
-                    <span id="cartTotalUI">$0</span>
+                <div class="cart-body" id="cartItemsContainer"></div>
+                <div class="cart-footer">
+                    <div class="cart-cupicoins" style="background:#fff0f6; color:var(--color-primario, #db137a); padding:10px; border-radius:5px; margin-bottom:15px; text-align:center; font-weight:bold; font-size:0.9rem;">
+                        🪙 Con esta compra ganarás: <span id="cartCupiCoinsUI">0</span> CupiCoins
+                    </div>
+                    <div class="cart-total">
+                        <span>Subtotal general</span>
+                        <span id="cartTotalUI">$0</span>
+                    </div>
+                    <div class="cart-anticipo">
+                        <span>Anticipo estimado (20%)</span>
+                        <span id="cartAnticipoUI">$0</span>
+                    </div>
+                    <div class="cart-warning">
+                        ⚠️ Algunos medios de pago pueden generar un incremento en el valor total debido a costos de transacción. El valor final se mostrará antes de confirmar el pago.
+                    </div>
+                    <div class="cart-footer-actions">
+                        <button class="btn-clear-cart" onclick="Carrito.clear()">Vaciar lista</button>
+                        <a href="/pago/" class="btn-checkout">Ver opciones de pago</a>
+                    </div>
                 </div>
-                <div class="cart-anticipo">
-                    <span>Anticipo estimado (20%)</span>
-                    <span id="cartAnticipoUI">$0</span>
-                </div>
-                <div class="cart-warning">
-                    ⚠️ Algunos medios de pago pueden generar un incremento en el valor total debido a costos de transacción. El valor final se mostrará antes de confirmar el pago.
-                </div>
-                <div class="cart-footer-actions">
-                    <button class="btn-clear-cart" onclick="Carrito.clear()">Vaciar lista</button>
-                    <a href="/pago/" class="btn-checkout">Ver opciones de pago</a>
-                </div>
-            </div>
-        `;
+            `;
 
-        document.body.appendChild(overlay);
-        document.body.appendChild(drawer);
+            document.body.appendChild(overlay);
+            document.body.appendChild(drawer);
+        }
         Carrito.renderItems();
     },
 
@@ -169,7 +184,7 @@ const Carrito = {
             const div = document.createElement('div');
             div.className = 'cart-item';
             div.innerHTML = `
-                <img src="${item.imagenurl}" alt="${item.nombre}">
+                <img src="${item.imagenurl}" alt="${item.nombre}" onerror="this.src='/assets/logo.png'">
                 <div class="cart-item-info">
                     <div class="cart-item-title">${item.nombre}</div>
                     <div class="cart-item-vars">${varsHtml}</div>
@@ -197,13 +212,21 @@ const Carrito = {
     },
 
     openDrawer: () => {
-        document.getElementById('cartDrawer').classList.add('open');
-        document.getElementById('cartOverlay').classList.add('active');
+        const drawer = document.getElementById('cartDrawer');
+        const overlay = document.getElementById('cartOverlay');
+        if (drawer && overlay) {
+            drawer.classList.add('open');
+            overlay.classList.add('active');
+        }
     },
 
     closeDrawer: () => {
-        document.getElementById('cartDrawer').classList.remove('open');
-        document.getElementById('cartOverlay').classList.remove('active');
+        const drawer = document.getElementById('cartDrawer');
+        const overlay = document.getElementById('cartOverlay');
+        if (drawer && overlay) {
+            drawer.classList.remove('open');
+            overlay.classList.remove('active');
+        }
     },
 
     bindEvents: () => {
