@@ -26,6 +26,7 @@ const Carrito = {
     },
 
     add: (producto, variacionesSeleccionadas, incrementoTotal, cantidad = 1) => {
+        // 1. ASEGURAR EL PRECIO EXACTO DEL MODAL
         const precioBase = Utils.safeNumber(producto.precio_base || producto['*precio_base'] || 0);
         const precioFinal = precioBase + Utils.safeNumber(incrementoTotal);
         
@@ -42,30 +43,42 @@ const Carrito = {
         if (exist) {
             exist.cantidad += Number(cantidad);
         } else {
-            // --- LECTURA DINÁMICA DE IMÁGENES (IGUAL QUE EL CATÁLOGO) ---
-            let imgUrlFinal = '/assets/logo.png';
+            // 2. BUSCAR EL COLOR SELECCIONADO PARA LA FOTO DINÁMICA
+            let colorSeleccionado = null;
+            Object.keys(variacionesSeleccionadas).forEach(k => {
+                if (k.toLowerCase().includes('color')) {
+                    colorSeleccionado = String(variacionesSeleccionadas[k]).trim().toLowerCase().replace(/\s+/g, '_');
+                }
+            });
+
+            // 3. FOTO BASE (Fallback por si no hay foto de color)
+            let imgBase = '/assets/logo.png';
             if (producto.imagenurl && String(producto.imagenurl).trim() !== '') {
                 let rawPath = String(producto.imagenurl).split('|')[0].trim();
                 
                 if (rawPath.includes('drive.google.com')) {
                     const match = rawPath.match(/id=([a-zA-Z0-9_-]+)/);
-                    if (match && match[1]) {
-                        imgUrlFinal = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
-                    }
+                    if (match && match[1]) imgBase = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
                 } else if (rawPath.startsWith('http')) {
-                    imgUrlFinal = rawPath;
+                    imgBase = rawPath;
                 } else {
-                    imgUrlFinal = `https://raw.githubusercontent.com/dianiluz/cupissa/main/${rawPath.replace(/^\//, '')}`;
+                    imgBase = `https://raw.githubusercontent.com/dianiluz/cupissa/main/${rawPath.replace(/^\//, '')}`;
                 }
             }
-            // -------------------------------------------------------------
+
+            // 4. ASIGNAR LA FOTO FINAL (Color específico o Base)
+            let imgUrlFinal = imgBase;
+            if (colorSeleccionado) {
+                imgUrlFinal = `/assets/productos/${producto.ref.trim()}/${colorSeleccionado}.webp`;
+            }
 
             Carrito.items.push({
                 uniqueId: uniqueId,
                 ref: producto.ref,
                 nombre: producto.nombre,
                 imagenurl: imgUrlFinal,
-                precio_unitario: precioFinal,
+                imagen_base: imgBase, // La guardamos para usarla de salvavidas en el HTML
+                precio_unitario: precioFinal, // GUARDAMOS EL PRECIO YA SUMADO
                 variaciones: sortedVars,
                 cantidad: Number(cantidad)
             });
@@ -181,27 +194,42 @@ const Carrito = {
         }
 
         Carrito.items.forEach(item => {
-            let varsHtml = '';
+            // DISEÑO VISUAL ÓPTIMO PARA VARIACIONES
+            let varsHtml = '<div class="cart-item-vars-grid">';
+            let personalizacionText = '';
+
             for (const [key, val] of Object.entries(item.variaciones)) {
-                varsHtml += `${key}: ${val} | `;
+                if (key.toLowerCase().includes('personaliza')) {
+                    personalizacionText = val;
+                } else {
+                    varsHtml += `<span class="var-badge"><b>${key}:</b> ${val}</span>`;
+                }
             }
-            varsHtml = varsHtml.slice(0, -3);
+            varsHtml += '</div>';
+
+            if (personalizacionText) {
+                varsHtml += `<div class="cart-item-pers"><i class="fas fa-comment-dots"></i> "${personalizacionText}"</div>`;
+            }
 
             const div = document.createElement('div');
             div.className = 'cart-item';
+            // OJO: onereor usa item.imagen_base como salvavidas infalible
             div.innerHTML = `
-                <img src="${item.imagenurl}" alt="${item.nombre}" onerror="this.src='/assets/logo.png'">
+                <img src="${item.imagenurl}" alt="${item.nombre}" onerror="if(this.src !== '${item.imagen_base}') this.src='${item.imagen_base}'; else this.src='/assets/logo.png';">
                 <div class="cart-item-info">
                     <div class="cart-item-title">${item.nombre}</div>
-                    <div class="cart-item-vars">${varsHtml}</div>
-                    <div class="cart-item-price">${Utils.formatCurrency(item.precio_unitario)}</div>
+                    ${varsHtml}
+                    <div class="cart-item-price-row">
+                        <span class="cart-item-price">${Utils.formatCurrency(item.precio_unitario)}</span>
+                        <span class="cart-item-subtotal">Sub: <b style="color:var(--color-success);">${Utils.formatCurrency(item.precio_unitario * item.cantidad)}</b></span>
+                    </div>
                     <div class="cart-item-actions">
                         <div class="qty-controls">
                             <button class="qty-btn" onclick="Carrito.updateQty('${item.uniqueId}', -1)">-</button>
                             <span>${item.cantidad}</span>
                             <button class="qty-btn" onclick="Carrito.updateQty('${item.uniqueId}', 1)">+</button>
                         </div>
-                        <button class="remove-item" onclick="Carrito.remove('${item.uniqueId}')">Eliminar</button>
+                        <button class="remove-item" onclick="Carrito.remove('${item.uniqueId}')" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 </div>
             `;
