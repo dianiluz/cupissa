@@ -1,4 +1,3 @@
-/* js/wishlist.js */
 /* ===================================================== */
 /* CUPISSA — PANEL DE FAVORITOS (WISHLIST) */
 /* ===================================================== */
@@ -119,16 +118,25 @@ const Wishlist = {
         }
 
         Wishlist.items.forEach(item => {
-            const precioBase = Utils.safeNumber(item['*precio_base']);
+            const precioBase = Utils.safeNumber(item.precio_base || item['*precio_base'] || 0);
             
+            // --- ENLACE DINÁMICO DE IMÁGENES (Igual que en catalogo.js) ---
             let imgUrlFinal = '/assets/logo.png';
             if (item.imagenurl && String(item.imagenurl).trim() !== '') {
-                imgUrlFinal = String(item.imagenurl).split('|')[0].trim();
-                if (imgUrlFinal.includes('drive.google.com')) {
-                    const match = imgUrlFinal.match(/id=([a-zA-Z0-9_-]+)/);
-                    if (match && match[1]) imgUrlFinal = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400`;
+                let rawPath = String(item.imagenurl).split('|')[0].trim();
+                
+                if (rawPath.includes('drive.google.com')) {
+                    const match = rawPath.match(/id=([a-zA-Z0-9_-]+)/);
+                    if (match && match[1]) {
+                        imgUrlFinal = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400`;
+                    }
+                } else if (rawPath.startsWith('http')) {
+                    imgUrlFinal = rawPath;
+                } else {
+                    imgUrlFinal = `https://raw.githubusercontent.com/dianiluz/cupissa/main/${rawPath.replace(/^\//, '')}`;
                 }
             }
+            // ---------------------------------------------
 
             const onClickAction = (typeof ModalProducto !== 'undefined' && typeof Catalogo !== 'undefined' && Catalogo.productos && Catalogo.productos.length > 0) 
                 ? `Wishlist.closeDrawer(); ModalProducto.open('${item.ref}');` 
@@ -139,7 +147,7 @@ const Wishlist = {
             const div = document.createElement('div');
             div.className = 'cart-item';
             div.innerHTML = `
-                <img src="${imgUrlFinal}" alt="${item.nombre}" style="cursor:pointer;" onclick="${onClickAction}">
+                <img src="${imgUrlFinal}" alt="${item.nombre}" style="cursor:pointer;" onclick="${onClickAction}" onerror="this.src='/assets/logo.png'">
                 <div class="cart-item-info">
                     <div class="cart-item-title" style="cursor:pointer;" onclick="${onClickAction}">${item.nombre}</div>
                     <div class="cart-item-price">${Utils.formatCurrency(precioBase)}</div>
