@@ -26,7 +26,6 @@ const Carrito = {
     },
 
     add: (producto, variacionesSeleccionadas, incrementoTotal, cantidad = 1) => {
-        // Corrección clave: leer precio_base sin asterisco (así viene normalizado desde Supabase)
         const precioBase = Utils.safeNumber(producto.precio_base || producto['*precio_base'] || 0);
         const precioFinal = precioBase + Utils.safeNumber(incrementoTotal);
         
@@ -43,15 +42,23 @@ const Carrito = {
         if (exist) {
             exist.cantidad += Number(cantidad);
         } else {
-            // Aseguramos de enviar siempre un string seguro para la imagen
+            // --- LECTURA DINÁMICA DE IMÁGENES (IGUAL QUE EL CATÁLOGO) ---
             let imgUrlFinal = '/assets/logo.png';
             if (producto.imagenurl && String(producto.imagenurl).trim() !== '') {
-                imgUrlFinal = String(producto.imagenurl).split('|')[0].trim();
-                if (imgUrlFinal.includes('drive.google.com')) {
-                    const match = imgUrlFinal.match(/id=([a-zA-Z0-9_-]+)/);
-                    if (match && match[1]) imgUrlFinal = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
+                let rawPath = String(producto.imagenurl).split('|')[0].trim();
+                
+                if (rawPath.includes('drive.google.com')) {
+                    const match = rawPath.match(/id=([a-zA-Z0-9_-]+)/);
+                    if (match && match[1]) {
+                        imgUrlFinal = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
+                    }
+                } else if (rawPath.startsWith('http')) {
+                    imgUrlFinal = rawPath;
+                } else {
+                    imgUrlFinal = `https://raw.githubusercontent.com/dianiluz/cupissa/main/${rawPath.replace(/^\//, '')}`;
                 }
             }
+            // -------------------------------------------------------------
 
             Carrito.items.push({
                 uniqueId: uniqueId,
@@ -112,7 +119,6 @@ const Carrito = {
             document.head.appendChild(css);
         }
 
-        // Evitar duplicar el HTML del carrito si ya existe
         if (!document.getElementById('cartDrawer')) {
             const overlay = document.createElement('div');
             overlay.className = 'cart-overlay';
