@@ -17,13 +17,18 @@ const Catalogo = {
     itemsPorPagina: 12,
     cargandoNuevos: false,
 
+    // AUTO-INICIALIZADOR BLINDADO (Evita pantalla vacía en conexiones lentas)
     esperarSupabase: async () => {
         let intentos = 0;
-        while (!window.db && intentos < 10) {
+        while (!window.db && intentos < 20) {
+            if (typeof window.supabase !== 'undefined' && typeof CONFIG !== 'undefined') {
+                window.db = window.supabase.createClient(CONFIG.supabase.url, CONFIG.supabase.key);
+                break;
+            }
             await new Promise(resolve => setTimeout(resolve, 200));
             intentos++;
         }
-        if (!window.db) throw new Error("Supabase no inicializó a tiempo.");
+        if (!window.db) throw new Error("Supabase no inicializó a tiempo. Revisa tu conexión a internet.");
     },
 
    init: async () => {
@@ -232,7 +237,6 @@ const Catalogo = {
             const vendidos = Math.floor(Math.random() * 20) + 5;
             const viendo = Math.floor(Math.random() * 15) + 3;
             
-            // --- AQUÍ ESTÁ LA SOLUCIÓN DE LAS IMÁGENES ---
             let imgUrlFinal = '/assets/logo.png';
             if (p.imagenurl && String(p.imagenurl).trim() !== '') {
                 let rawPath = String(p.imagenurl).split('|')[0].trim();
@@ -245,11 +249,9 @@ const Catalogo = {
                 } else if (rawPath.startsWith('http')) {
                     imgUrlFinal = rawPath;
                 } else {
-                    // MAGIA: Forzar lectura directa desde GitHub para evitar error 404 local
                     imgUrlFinal = `https://raw.githubusercontent.com/dianiluz/cupissa/main/${rawPath.replace(/^\//, '')}`;
                 }
             }
-            // ---------------------------------------------
             
             const isWished = (typeof Wishlist !== 'undefined' && Wishlist.items.some(i => i.ref === p.ref));
             const heartColor = isWished ? 'var(--color-pink)' : 'var(--color-gray-dark)';
@@ -341,7 +343,7 @@ const Catalogo = {
         const producto = Catalogo.productos.find(p => p.ref === ref);
         if (!card || !producto) return;
 
-        let precioBase = Utils.safeNumber(producto['*precio_base']);
+        let precioBase = Utils.safeNumber(producto.precio_base || producto['*precio_base'] || 0);
         let incrementoTotal = 0;
 
         const seleccionActual = {};
@@ -358,15 +360,18 @@ const Catalogo = {
         });
 
         let reglasAUsar = [];
+        const idsGuardados = String(producto.variaciones_ids || "").trim();
         
-        if (producto.variaciones_ids && String(producto.variaciones_ids).trim() !== '') {
-            const idsStr = String(producto.variaciones_ids).replace(/[\[\]"']/g, '').replace(/\|/g, ',');
+        if (idsGuardados !== '' && idsGuardados.toUpperCase() !== 'NULO') {
+            const idsStr = idsGuardados.replace(/[\[\]"']/g, '').replace(/\|/g, ',');
             const idsArray = idsStr.split(',').map(id => id.trim());
+            // Busca estrictamente por la columna "id" que me confirmaste
             reglasAUsar = Catalogo.variacionesDB.filter(v => idsArray.includes(String(v.id)));
         } else {
             reglasAUsar = Catalogo.variacionesDB.filter(v => !v.producto || String(v.producto).trim() === "");
         }
 
+        // EVALUACIÓN TOLERANTE A ERRORES (Fuzzy Match)
         reglasAUsar.forEach(regla => {
             if (!regla.columna || !regla.valor) return;
             
@@ -378,7 +383,9 @@ const Catalogo = {
                 for (let i = 0; i < columnasRegla.length; i++) {
                     const colReq = Utils.normalizeStr(columnasRegla[i].replace('*','').replace('#',''));
                     const valReq = Utils.normalizeStr(valoresRegla[i]);
-                    const valorSeleccionado = seleccionActual[colReq];
+                    
+                    const matchingKey = Object.keys(seleccionActual).find(k => k === colReq || k.includes(colReq) || colReq.includes(k));
+                    const valorSeleccionado = matchingKey ? seleccionActual[matchingKey] : undefined;
 
                     if (!valorSeleccionado || !(valorSeleccionado === valReq || valorSeleccionado.includes(valReq) || valReq.includes(valorSeleccionado))) {
                         cumpleTodas = false;
@@ -390,7 +397,9 @@ const Catalogo = {
             else {
                 const colReq = Utils.normalizeStr(regla.columna.replace('*','').replace('#',''));
                 const valReq = Utils.normalizeStr(regla.valor);
-                const valorSeleccionado = seleccionActual[colReq];
+                
+                const matchingKey = Object.keys(seleccionActual).find(k => k === colReq || k.includes(colReq) || colReq.includes(k));
+                const valorSeleccionado = matchingKey ? seleccionActual[matchingKey] : undefined;
 
                 if (valorSeleccionado && (valorSeleccionado === valReq || valorSeleccionado.includes(valReq) || valReq.includes(valorSeleccionado))) {
                     incrementoTotal += Number(regla.incremento || 0);
@@ -399,7 +408,7 @@ const Catalogo = {
         });
 
         const precioTotalFinal = precioBase + incrementoTotal;
-        producto._incrementoActual = incrementoTotal;
+        producto._incrementoActual = incrementoTotal; 
         
         const labelTotal = document.getElementById(`price-total-${ref}`);
         const labelAnticipo = document.getElementById(`price-anticipo-${ref}`);
