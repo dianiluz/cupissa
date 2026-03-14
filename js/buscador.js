@@ -19,10 +19,13 @@ const Buscador = {
         Buscador.crearInterfaz(nav);
         
         try {
-            // --- NUEVA CONEXIÓN A SUPABASE ---
-            // Esperar un instante si window.db aún no está listo
+            // --- NUEVA CONEXIÓN A SUPABASE (BLINDADA) ---
             let intentos = 0;
-            while (!window.db && intentos < 10) {
+            while (!window.db && intentos < 20) {
+                if (typeof window.supabase !== 'undefined' && typeof CONFIG !== 'undefined') {
+                    window.db = window.supabase.createClient(CONFIG.supabase.url, CONFIG.supabase.key);
+                    break;
+                }
                 await new Promise(r => setTimeout(r, 200));
                 intentos++;
             }
@@ -34,7 +37,6 @@ const Buscador = {
             
             if (prodData && prodData.length > 0) {
                 Buscador.productosBD = prodData.map(p => {
-                    // Normalizar nombres para mantener compatibilidad con el resto del código
                     p.nombre = p.producto || p.nombre || 'Producto';
                     p['*precio_base'] = p.precio_base || p.precio || 0;
                     return p;
@@ -48,7 +50,6 @@ const Buscador = {
             Buscador.productosBD = typeof DEMO_PRODUCTS_CATALOG !== 'undefined' ? DEMO_PRODUCTS_CATALOG : [];
         }
 
-        // EXTRAER FILTROS ÚNICOS (Categorías, Mundos, Subcategorías, Temáticas, Modalidad)
         const mapFiltros = new Map();
         const camposFiltro = ['mundo', 'categoria', 'subcategoria', 'tematica', 'modalidad'];
         
@@ -128,7 +129,6 @@ const Buscador = {
         const tokens = valLimpio.split(/\s+/).filter(t => t.length > 1 && !stopWords.includes(t));
         if (tokens.length === 0) tokens.push(valLimpio);
 
-        // 1. BUSCAR EN PRODUCTOS
         let resultadosProd = [];
         let mapaRefs = new Set();
 
@@ -171,7 +171,6 @@ const Buscador = {
             }
         });
 
-        // 2. BUSCAR EN FILTROS/CATEGORÍAS
         let resultadosFiltros = [];
         Buscador.filtrosUnicos.forEach(f => {
             const nVal = getNorm(f.valor);
@@ -223,13 +222,11 @@ const Buscador = {
 
         let listaProd = productos || [];
 
-        // Fallback visual
         if ((!productos || productos.length === 0) && (!filtros || filtros.length === 0) && termino.length >= 2) {
             container.innerHTML = `<div style="padding: 15px; text-align: center; color: var(--color-gray-dark); font-size: 0.85rem;">No encontramos coincidencias para "${termino}". ¿Quizás te interese esto?</div>`;
             listaProd = [...Buscador.productosBD].sort(() => 0.5 - Math.random()).slice(0, 4);
         }
 
-        // RENDERIZAR SUGERENCIAS DE FILTROS PRIMERO
         if (filtros && filtros.length > 0) {
             filtros.forEach(f => {
                 container.innerHTML += `
@@ -247,20 +244,27 @@ const Buscador = {
             });
         }
 
-        // RENDERIZAR PRODUCTOS
         listaProd.forEach(r => {
             const precioBase = r['*precio_base'] || r.precio_base || r.precio || 0;
             const precio = typeof Utils !== 'undefined' ? Utils.formatCurrency(precioBase) : '$' + precioBase;
             
+            // --- ENLACE DINÁMICO DE IMÁGENES (Igual que en catalogo.js) ---
             let imgUrlFinal = '/assets/logo.png';
             if (r.imagenurl && String(r.imagenurl).trim() !== '') {
-                imgUrlFinal = String(r.imagenurl).split('|')[0].trim();
-                if (imgUrlFinal.includes('drive.google.com')) {
-                    const match = imgUrlFinal.match(/id=([a-zA-Z0-9_-]+)/);
-                    if (match && match[1]) imgUrlFinal = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
+                let rawPath = String(r.imagenurl).split('|')[0].trim();
+                
+                if (rawPath.includes('drive.google.com')) {
+                    const match = rawPath.match(/id=([a-zA-Z0-9_-]+)/);
+                    if (match && match[1]) {
+                        imgUrlFinal = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
+                    }
+                } else if (rawPath.startsWith('http')) {
+                    imgUrlFinal = rawPath;
+                } else {
+                    imgUrlFinal = `https://raw.githubusercontent.com/dianiluz/cupissa/main/${rawPath.replace(/^\//, '')}`;
                 }
             }
-
+            
             container.innerHTML += `
                 <div style="display: flex; align-items: center; gap: 15px; padding: 10px 15px; border-bottom: 1px solid var(--color-gray-light); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f9f9f9'" onmouseout="this.style.background='white'" onclick="Buscador.guardarHistorial('${termino}'); window.location.href='/catalogo/?ref=${r.ref}'">
                     <img src="${imgUrlFinal}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px;" onerror="this.src='/assets/logo.png'">
