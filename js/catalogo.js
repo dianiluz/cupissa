@@ -1,15 +1,11 @@
-/* js/catalogo.js */
 /* ===================================================== */
-/* CUPISSA — CATALOGO.JS (CON SEO AUTOMÁTICO) */
+/* CUPISSA — CATALOGO.JS (CON SEO AUTOMÁTICO & SUPABASE) */
 /* ===================================================== */
 
 const DEMO_PRODUCTS_CATALOG = [
-    { ref: 'DEMO001', nombre: 'Mameluco Personalizado', imagenurl: '/assets/mockups/mameluco.png', '*precio_base': 35000, mundo: 'MUNDO TEXTIL', categoria: 'BEBÉS', '*activo': 'SI', '#Color': 'Blanco|Negro', '*Tallas': '0-3M|3-6M|6-9M' },
-    { ref: 'DEMO002', nombre: 'Camiseta Oversize', imagenurl: '/assets/mockups/camiseta.png', '*precio_base': 45000, mundo: 'MUNDO CREATIVO', categoria: 'PRODUCTOS PERSONALIZADOS', '*activo': 'SI', '#Color': 'Negro|Gris', '*Tallas': 'S|M|L|XL' },
-    { ref: 'DEMO003', nombre: 'Taza Mágica', imagenurl: '/assets/mockups/taza.png', '*precio_base': 25000, mundo: 'MUNDO CREATIVO', categoria: 'PRODUCTOS PERSONALIZADOS', '*activo': 'SI' },
-    { ref: 'DEMO004', nombre: 'Buzo Capota', imagenurl: '/assets/mockups/buzo.png', '*precio_base': 75000, mundo: 'MUNDO CREATIVO', categoria: 'PRODUCTOS PERSONALIZADOS', '*activo': 'SI', '#Color': 'Fucsia|Blanco', '*Tallas': 'S|M|L' },
-    { ref: 'DEMO005', nombre: 'Tula Deportiva', imagenurl: '/assets/mockups/tula.png', '*precio_base': 20000, mundo: 'MUNDO CREATIVO', categoria: 'PRODUCTOS PERSONALIZADOS', '*activo': 'SI' },
-    { ref: 'DEMO006', nombre: 'Cojín Personalizado', imagenurl: '/assets/mockups/almohada.png', '*precio_base': 30000, mundo: 'MUNDO DETALLES', categoria: 'DETALLES PERSONALIZADOS', '*activo': 'SI' }
+    { ref: 'DEMO001', nombre: 'Mameluco Personalizado', imagenurl: '/assets/mockups/mameluco.png', precio_base: 35000, mundo: 'MUNDO TEXTIL', categoria: 'BEBÉS', activo: 'SI', '#Color': 'Blanco|Negro', '*Tallas': '0-3M|3-6M|6-9M' },
+    { ref: 'DEMO002', nombre: 'Camiseta Oversize', imagenurl: '/assets/mockups/camiseta.png', precio_base: 45000, mundo: 'MUNDO CREATIVO', categoria: 'PRODUCTOS PERSONALIZADOS', activo: 'SI', '#Color': 'Negro|Gris', '*Tallas': 'S|M|L|XL' },
+    { ref: 'DEMO003', nombre: 'Taza Mágica', imagenurl: '/assets/mockups/taza.png', precio_base: 25000, mundo: 'MUNDO CREATIVO', categoria: 'PRODUCTOS PERSONALIZADOS', activo: 'SI' }
 ];
 
 const Catalogo = {
@@ -21,124 +17,140 @@ const Catalogo = {
     itemsPorPagina: 12,
     cargandoNuevos: false,
 
-   init: async () => {
-        const grid = document.getElementById('catalogoGrid');
-        grid.innerHTML = '<div class="empty-state">Cargando productos maravillosos...</div>';
-
-        try {
-            const res = await Utils.fetchFromBackend('obtenerCatalogoBase');
-            
-            if (!res || !res.success) {
-                throw new Error("No se pudo cargar la data desde el servidor.");
-            }
-
-            Catalogo.variacionesDB = res.variaciones || [];
-            let dataProductos = res.productos || [];
-            
-            let productosActivos = dataProductos.filter(p => {
-                const estado = p['*activ'] || p['*activo'] || p['activo'] || p['Activo'] || 'NO';
-                const referencia = p.ref || p.referencia || p.Referencia || '';
-                
-                return p && referencia && String(referencia).trim() !== '' && 
-                       String(estado).toUpperCase().trim() === 'SI';
-            });
-            
-            if (productosActivos.length === 0) {
-                productosActivos = DEMO_PRODUCTS_CATALOG;
-            }
-            
-            let productosUnicos = [];
-            let mapaRefs = new Set();
-            
-            productosActivos.forEach(p => {
-                const refString = String(p.ref || p.referencia || p.Referencia).trim(); 
-                if(!mapaRefs.has(refString)) {
-                    mapaRefs.add(refString);
-                    p.ref = refString; 
-                    p['*precio_base'] = p['*precio_base'] || p['precio_base'] || p.precio || 0;
-                    productosUnicos.push(p);
-                }
-            });
-
-            Catalogo.productos = Utils.shuffle(productosUnicos);
-            
-            const urlParams = new URLSearchParams(window.location.search);
-            const query = urlParams.get('q');
-            const refParam = urlParams.get('ref');
-            const catParam = urlParams.get('cat');
-            const mundoParam = urlParams.get('mundo');
-
-            if (query) {
-                const qLower = Utils.normalizeStr(query);
-                Catalogo.productos = Catalogo.productos.filter(p => 
-                    Object.values(p).some(val => Utils.normalizeStr(String(val)).includes(qLower))
-                );
-                document.getElementById('catalogoTitle').innerText = `Resultados para "${query}"`;
-            } else if (refParam) {
-                Catalogo.productos = Catalogo.productos.filter(p => p.ref === refParam);
-            }
-            
-            Catalogo.renderFiltros();
-
-            if (catParam && Catalogo.filtrosActivos['categoria']) {
-                Catalogo.filtrosActivos['categoria'].push(catParam);
-                const cb = document.querySelector(`input[data-col="categoria"][value="${catParam.replace(/"/g, '\\"')}"]`);
-                if (cb) cb.checked = true;
-                document.getElementById('catalogoTitle').innerText = catParam;
-            }
-            
-            if (mundoParam && Catalogo.filtrosActivos['mundo']) {
-                Catalogo.filtrosActivos['mundo'].push(mundoParam);
-                const cb = document.querySelector(`input[data-col="mundo"][value="${mundoParam.replace(/"/g, '\\"')}"]`);
-                if (cb) cb.checked = true;
-                document.getElementById('catalogoTitle').innerText = mundoParam;
-            }
-
-            Catalogo.aplicarFiltros();
-            Catalogo.bindEvents();
-            Catalogo.setupInfiniteScroll();
-        } catch (error) {
-            console.error("Error cargando catálogo:", error);
-            Catalogo.productos = Utils.shuffle(DEMO_PRODUCTS_CATALOG);
-            Catalogo.renderFiltros();
-            Catalogo.aplicarFiltros();
-            Catalogo.bindEvents();
-            Catalogo.setupInfiniteScroll();
+    esperarSupabase: async () => {
+        let intentos = 0;
+        while (!window.db && intentos < 10) {
+            await new Promise(resolve => setTimeout(resolve, 200));
+            intentos++;
         }
+        if (!window.db) throw new Error("Supabase no inicializó a tiempo.");
     },
+
+   init: async () => {
+       const grid = document.getElementById('catalogoGrid');
+       if(grid) grid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">Cargando catálogo oficial...</div>';
+
+       try {
+           await Catalogo.esperarSupabase();
+
+           const { data: prodData, error: errProd } = await window.db.from('productos').select('*');
+           if (errProd) throw errProd;
+
+           const { data: varData, error: errVar } = await window.db.from('variaciones').select('*');
+           if (errVar) throw errVar;
+
+           Catalogo.variacionesDB = varData || [];
+           let dataProductos = prodData || [];
+           
+           let productosActivos = dataProductos.filter(p => {
+               const estado = p.activo || p['*activ'] || p['*activo'] || 'NO';
+               const referencia = p.ref || p.referencia || p.Referencia || '';
+               return p && referencia && String(referencia).trim() !== '' && String(estado).toUpperCase().trim() === 'SI';
+           });
+           
+           if (productosActivos.length === 0) {
+               productosActivos = DEMO_PRODUCTS_CATALOG;
+           }
+           
+           let productosUnicos = [];
+           let mapaRefs = new Set();
+           
+           productosActivos.forEach(p => {
+               const refString = String(p.ref || p.referencia || p.Referencia).trim(); 
+               if(!mapaRefs.has(refString)) {
+                   mapaRefs.add(refString);
+                   
+                   // Estandarización forzada de datos y filtros
+                   p.ref = refString; 
+                   p.nombre = p.producto || p.nombre || p['*producto'] || 'Producto sin nombre';
+                   p['*precio_base'] = p.precio_base || p['*precio_base'] || p.precio || 0;
+                   
+                   // Forzamos los nombres en minúscula para asegurar que los filtros los encuentren
+                   p.mundo = p.mundo || p.Mundo || '';
+                   p.categoria = p.categoria || p.Categoria || '';
+                   p.subcategoria = p.subcategoria || p.Subcategoria || '';
+                   p.tematica = p.tematica || p.Tematica || '';
+                   p.para_quien = p.para_quien || p.Para_quien || p['Para quien'] || '';
+                   p.temporada = p.temporada || p.Temporada || '';
+
+                   productosUnicos.push(p);
+               }
+           });
+
+           Catalogo.productos = Utils.shuffle(productosUnicos);
+           
+           const urlParams = new URLSearchParams(window.location.search);
+           const query = urlParams.get('q');
+           const refParam = urlParams.get('ref');
+           const catParam = urlParams.get('cat');
+           const mundoParam = urlParams.get('mundo');
+
+           if (query) {
+               const qLower = Utils.normalizeStr(query);
+               Catalogo.productos = Catalogo.productos.filter(p => 
+                   Object.values(p).some(val => Utils.normalizeStr(String(val)).includes(qLower))
+               );
+               const titleEl = document.getElementById('catalogoTitle');
+               if(titleEl) titleEl.innerText = `Resultados para "${query}"`;
+           } else if (refParam) {
+               Catalogo.productos = Catalogo.productos.filter(p => p.ref === refParam);
+           }
+           
+           Catalogo.renderFiltros();
+
+           // Autoselección de filtros si vienen en la URL
+           ['categoria', 'mundo'].forEach(param => {
+               const paramVal = urlParams.get(param);
+               if (paramVal && Catalogo.filtrosActivos[param]) {
+                   Catalogo.filtrosActivos[param].push(paramVal);
+                   const cb = document.querySelector(`input[data-col="${param}"][value="${paramVal.replace(/"/g, '\\"')}"]`);
+                   if (cb) cb.checked = true;
+                   const titleEl = document.getElementById('catalogoTitle');
+                   if(titleEl) titleEl.innerText = paramVal;
+               }
+           });
+
+           Catalogo.aplicarFiltros();
+           Catalogo.bindEvents();
+           Catalogo.setupInfiniteScroll();
+       } catch (error) {
+           console.error("Error cargando catálogo desde Supabase:", error);
+           Catalogo.productos = Utils.shuffle(DEMO_PRODUCTS_CATALOG);
+           Catalogo.renderFiltros();
+           Catalogo.aplicarFiltros();
+           Catalogo.bindEvents();
+           Catalogo.setupInfiniteScroll();
+       }
+   },
 
     renderFiltros: () => {
         const container = document.getElementById('filtrosContainer');
+        if(!container) return;
         container.innerHTML = '';
         Catalogo.filtrosActivos = {};
 
         if (Catalogo.productos.length === 0) return;
 
-        const ignorar = ['ref', 'nombre', 'imagenurl'];
-        const columnasTotales = Object.keys(Catalogo.productos[0]);
-        const columnasFiltro = columnasTotales.filter(col => 
-            !col.startsWith('*') && 
-            !ignorar.includes(col.toLowerCase()) && 
-            !col.includes('#')
-        );
+        // Lista estricta de filtros laterales
+        const columnasPrincipales = ['mundo', 'categoria', 'subcategoria', 'tematica', 'para_quien', 'temporada'];
 
-        columnasFiltro.forEach(col => {
+        columnasPrincipales.forEach(col => {
             Catalogo.filtrosActivos[col] = []; 
 
             const valoresUnicos = [...new Set(Catalogo.productos
                 .map(p => p[col])
-                .filter(val => val && String(val).trim() !== '' && !String(val).includes('|'))
+                .filter(val => val && String(val).trim() !== '')
             )].sort();
 
             if (valoresUnicos.length === 0) return;
 
             const group = document.createElement('details');
             group.className = 'filter-group';
-            if(container.children.length === 0) group.open = true; 
+            group.open = true;
             
             const title = document.createElement('summary');
             title.className = 'filter-title';
-            title.innerText = col.charAt(0).toUpperCase() + col.slice(1);
+            title.innerText = col.replace('_', ' ').charAt(0).toUpperCase() + col.replace('_', ' ').slice(1);
             group.appendChild(title);
 
             const optionsDiv = document.createElement('div');
@@ -171,7 +183,8 @@ const Catalogo = {
         if(count) count.innerText = `${Catalogo.filtrados.length} resultados`;
 
         Catalogo.paginaActual = 1;
-        document.getElementById('catalogoGrid').innerHTML = '';
+        const grid = document.getElementById('catalogoGrid');
+        if(grid) grid.innerHTML = '';
         Catalogo.cargarMasProductos();
     },
 
@@ -180,12 +193,14 @@ const Catalogo = {
         Catalogo.cargandoNuevos = true;
 
         const grid = document.getElementById('catalogoGrid');
+        if(!grid) return;
+
         const inicio = (Catalogo.paginaActual - 1) * Catalogo.itemsPorPagina;
         const fin = inicio + Catalogo.itemsPorPagina;
         const lote = Catalogo.filtrados.slice(inicio, fin);
 
         if (lote.length === 0 && Catalogo.paginaActual === 1) {
-            grid.innerHTML = '<div class="empty-state">No hay productos que coincidan.</div>';
+            grid.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;">No hay productos que coincidan.</div>';
             Catalogo.cargandoNuevos = false;
             return;
         }
@@ -239,13 +254,11 @@ const Catalogo = {
                 ? `<button class="btn-add-direct" onclick="ModalProducto.open('${p.ref}')">Personalizar</button>`
                 : `<button class="btn-add-direct" onclick="Catalogo.addDirectToCart('${p.ref}')">Agregar al carrito</button>`;
             
-            // SEO AUTOMÁTICO: Generar Texto Alt descriptivo para Google Imágenes
             const altText = `${p.nombre} - ${p.categoria} | Cupissa Productos Personalizados Colombia`;
 
             const card = document.createElement('div');
             card.className = 'product-card fade-in';
             card.id = `card-${p.ref}`;
-            // SEO: Atributos de microdatos básicos en el HTML
             card.setAttribute('itemscope', '');
             card.setAttribute('itemtype', 'https://schema.org/Product');
 
@@ -286,7 +299,6 @@ const Catalogo = {
             `;
             grid.appendChild(card);
             
-            // SEO: Inyectar JSON-LD dinámico para cada producto renderizado
             Catalogo.inyectarJSONLD(p, precioBase, imgUrlFinal);
 
             if(selectsHtml !== '') Catalogo.updateCardPrice(p.ref);
@@ -296,7 +308,6 @@ const Catalogo = {
         Catalogo.cargandoNuevos = false;
     },
 
-    // FUNCIÓN NUEVA: Genera los datos estructurados que Google ama
     inyectarJSONLD: (p, precio, img) => {
         const script = document.createElement('script');
         script.type = 'application/ld+json';
@@ -307,20 +318,14 @@ const Catalogo = {
             "image": img,
             "description": `Producto personalizado de la categoría ${p.categoria} en Cupissa.`,
             "sku": p.ref,
-            "brand": {
-                "@type": "Brand",
-                "name": "CUPISSA"
-            },
+            "brand": { "@type": "Brand", "name": "CUPISSA" },
             "offers": {
                 "@type": "Offer",
                 "url": `https://cupissa.com/catalogo/?ref=${p.ref}`,
                 "priceCurrency": "COP",
                 "price": precio,
                 "availability": "https://schema.org/InStock",
-                "seller": {
-                    "@type": "Organization",
-                    "name": "CUPISSA SAS"
-                }
+                "seller": { "@type": "Organization", "name": "CUPISSA SAS" }
             }
         };
         script.text = JSON.stringify(json);
@@ -336,49 +341,83 @@ const Catalogo = {
         let incrementoTotal = 0;
 
         const seleccionActual = {};
+        
+        // 1. Extraer TODA la info del producto (para evaluar reglas combinadas como subcategoria|*tallas)
         Object.keys(producto).forEach(key => {
-            const claveLimpia = key.replace('*','').replace('#','');
-            seleccionActual[Utils.normalizeStr(claveLimpia)] = Utils.normalizeStr(producto[key]);
+            const claveLimpia = Utils.normalizeStr(key.replace('*','').replace('#',''));
+            seleccionActual[claveLimpia] = Utils.normalizeStr(String(producto[key]));
         });
 
+        // 2. Sobrescribir con lo seleccionado por el usuario en tiempo real
         const selects = card.querySelectorAll('.card-select');
         selects.forEach(sel => {
-            const claveLimpia = sel.getAttribute('data-col').replace('*','').replace('#','');
-            seleccionActual[Utils.normalizeStr(claveLimpia)] = Utils.normalizeStr(sel.value);
+            const claveLimpia = Utils.normalizeStr(sel.getAttribute('data-col').replace('*','').replace('#',''));
+            seleccionActual[claveLimpia] = Utils.normalizeStr(sel.value);
         });
 
-        let reglasEspecificas = Catalogo.variacionesDB.filter(v => {
-            if (!v.producto) return false;
-            return v.producto.split('|').map(r => Utils.normalizeStr(r)).includes(Utils.normalizeStr(ref));
-        });
+        // 3. CONEXIÓN POR ID DE VARIACIÓN (El secreto que faltaba)
+        let reglasAUsar = [];
+        
+        if (producto.variaciones_ids && String(producto.variaciones_ids).trim() !== '') {
+            // Convierte valores como "1, 2, 3" o "[1, 2]" en un arreglo limpio de textos
+            const idsStr = String(producto.variaciones_ids).replace(/[\[\]"']/g, '').replace(/\|/g, ',');
+            const idsArray = idsStr.split(',').map(id => id.trim());
+            
+            // Traer solo las reglas de BD cuyos IDs estén en la lista del producto
+            reglasAUsar = Catalogo.variacionesDB.filter(v => idsArray.includes(String(v.id)));
+        } else {
+            // Fallback: Si la columna variaciones_ids está vacía, buscamos si hay reglas globales (ej. empaques)
+            reglasAUsar = Catalogo.variacionesDB.filter(v => !v.producto || String(v.producto).trim() === "");
+        }
 
-        let reglasAUsar = reglasEspecificas.length > 0 ? reglasEspecificas : Catalogo.variacionesDB.filter(v => !v.producto || v.producto.trim() === "");
-
+        // 4. Evaluar las reglas encontradas (Soporta reglas múltiples ej: subcategoria|*tallas)
         reglasAUsar.forEach(regla => {
             if (!regla.columna || !regla.valor) return;
+            
             const columnasRegla = regla.columna.split('|');
             const valoresRegla = regla.valor.split('|');
 
+            // Si es una regla combinada (ej: 3 condiciones al tiempo)
             if (columnasRegla.length === valoresRegla.length) {
                 let cumpleTodas = true;
+                
                 for (let i = 0; i < columnasRegla.length; i++) {
                     const colReq = Utils.normalizeStr(columnasRegla[i].replace('*','').replace('#',''));
                     const valReq = Utils.normalizeStr(valoresRegla[i]);
                     
-                    if (seleccionActual[colReq] !== valReq) {
+                    const valorSeleccionado = seleccionActual[colReq];
+
+                    // Si no tiene la columna o no coincide el valor, la regla entera se rompe
+                    if (!valorSeleccionado || !(valorSeleccionado === valReq || valorSeleccionado.includes(valReq) || valReq.includes(valorSeleccionado))) {
                         cumpleTodas = false;
                         break;
                     }
                 }
-                if (cumpleTodas) incrementoTotal += Utils.safeNumber(regla.incremento);
+                
+                if (cumpleTodas) {
+                    incrementoTotal += Number(regla.incremento || 0);
+                }
+            } 
+            // Si es una regla sencilla (1 sola condición)
+            else {
+                const colReq = Utils.normalizeStr(regla.columna.replace('*','').replace('#',''));
+                const valReq = Utils.normalizeStr(regla.valor);
+                const valorSeleccionado = seleccionActual[colReq];
+
+                if (valorSeleccionado && (valorSeleccionado === valReq || valorSeleccionado.includes(valReq) || valReq.includes(valorSeleccionado))) {
+                    incrementoTotal += Number(regla.incremento || 0);
+                }
             }
         });
 
         const precioTotalFinal = precioBase + incrementoTotal;
         producto._incrementoActual = incrementoTotal;
         
-        document.getElementById(`price-total-${ref}`).innerText = `Total: ${Utils.formatCurrency(precioTotalFinal)}`;
-        document.getElementById(`price-anticipo-${ref}`).innerText = `Anticipo: ${Utils.formatCurrency(precioTotalFinal * 0.20)}`;
+        const labelTotal = document.getElementById(`price-total-${ref}`);
+        const labelAnticipo = document.getElementById(`price-anticipo-${ref}`);
+        
+        if (labelTotal) labelTotal.innerText = `Total: ${Utils.formatCurrency(precioTotalFinal)}`;
+        if (labelAnticipo) labelAnticipo.innerText = `Anticipo: ${Utils.formatCurrency(precioTotalFinal * 0.20)}`;
         
         const cupiCoinsBadge = document.getElementById(`cupicoins-${ref}`);
         if (cupiCoinsBadge) {
@@ -400,7 +439,9 @@ const Catalogo = {
             variacionesSeleccionadas[nombreLimpio] = sel.value;
         });
 
-        Carrito.add(producto, variacionesSeleccionadas, producto._incrementoActual || 0, 1);
+        if (typeof Carrito !== 'undefined' && Carrito.add) {
+            Carrito.add(producto, variacionesSeleccionadas, producto._incrementoActual || 0, 1);
+        }
     },
 
     setupInfiniteScroll: () => {
@@ -413,19 +454,22 @@ const Catalogo = {
     },
 
     bindEvents: () => {
-        document.getElementById('filtrosContainer').addEventListener('change', (e) => {
-            if (e.target.type === 'checkbox') {
-                const col = e.target.getAttribute('data-col');
-                const val = e.target.value;
+        const c = document.getElementById('filtrosContainer');
+        if(c) {
+            c.addEventListener('change', (e) => {
+                if (e.target.type === 'checkbox') {
+                    const col = e.target.getAttribute('data-col');
+                    const val = e.target.value;
 
-                if (e.target.checked) {
-                    Catalogo.filtrosActivos[col].push(val);
-                } else {
-                    Catalogo.filtrosActivos[col] = Catalogo.filtrosActivos[col].filter(v => v !== val);
+                    if (e.target.checked) {
+                        Catalogo.filtrosActivos[col].push(val);
+                    } else {
+                        Catalogo.filtrosActivos[col] = Catalogo.filtrosActivos[col].filter(v => v !== val);
+                    }
+                    Catalogo.aplicarFiltros();
                 }
-                Catalogo.aplicarFiltros();
-            }
-        });
+            });
+        }
     }
 };
 
