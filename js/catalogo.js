@@ -1,10 +1,6 @@
 /* ===================================================== */
-/* CUPISSA — CATALOGO.JS (PRO: MOTOR + FILTROS + TEMU STYLE) */
+/* CUPISSA — CATALOGO.JS (FILTRADO INICIAL + GITHUB IMG) */
 /* ===================================================== */
-
-const DEMO_PRODUCTS_CATALOG = [
-    { ref: 'DEMO001', nombre: 'Mameluco Personalizado', imagenurl: '/assets/mockups/mameluco.png', precio_base: 35000, mundo: 'MUNDO TEXTIL', categoria: 'BEBÉS', activo: 'SI', '#Color': 'Blanco|Negro', '*Tallas': '0-3M|3-6M|6-9M' }
-];
 
 const Catalogo = {
     productos: [],
@@ -37,12 +33,11 @@ const Catalogo = {
             const { data: varData } = await window.db.from('variaciones').select('*');
 
             Catalogo.variacionesDB = varData || [];
-            let dataRaw = prodData || [];
             
-            Catalogo.productos = dataRaw.filter(p => {
-                const estado = p.activo || p['*activ'] || p['*activo'] || 'NO';
-                const ref = p.ref || p.referencia || '';
-                return ref && String(estado).toUpperCase().trim() === 'SI';
+            // 1. CARGA Y NORMALIZACIÓN
+            Catalogo.productos = (prodData || []).filter(p => {
+                const estado = p.activo || p['*activo'] || p['*activ'] || 'NO';
+                return String(estado).toUpperCase().trim() === 'SI';
             }).map(p => ({
                 ...p,
                 ref: String(p.ref || p.referencia).trim(),
@@ -50,13 +45,17 @@ const Catalogo = {
                 '*precio_base': p.precio_base || p['*precio_base'] || 0
             }));
 
-            if (Catalogo.productos.length === 0) Catalogo.productos = DEMO_PRODUCTS_CATALOG;
+            // 2. CAPTURAR FILTROS DE LA URL ANTES DE RENDERIZAR
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('mundo')) Catalogo.filtrosActivos['mundo'] = params.get('mundo');
+            if (params.get('cat')) Catalogo.filtrosActivos['categoria'] = params.get('cat');
+            if (params.get('q')) Catalogo.filtrosActivos['search'] = params.get('q');
 
             Catalogo.renderFiltros();
-            Catalogo.aplicarFiltros();
+            Catalogo.aplicarFiltros(); // Aquí ya se filtran por la URL
             Catalogo.bindEvents();
             Catalogo.setupInfiniteScroll();
-        } catch (e) { console.error("Error init:", e); }
+        } catch (e) { console.error("Error Catálogo:", e); }
     },
 
     renderFiltros: () => {
@@ -69,21 +68,23 @@ const Catalogo = {
             const valores = [...new Set(Catalogo.productos.map(p => p[col]).filter(v => v))].sort();
             if (valores.length === 0) return;
 
+            const isOpen = Catalogo.filtrosActivos[col] ? 'open' : '';
             const details = document.createElement('details');
             details.className = 'filter-group';
+            if(isOpen) details.setAttribute('open', '');
+            
             details.innerHTML = `
                 <summary class="filter-title">${col.replace('_', ' ').toUpperCase()}</summary>
                 <div class="filter-options">
                     <label class="filter-label">
-                        <input type="radio" name="filter_${col}" data-col="${col}" value="" checked> Todos
+                        <input type="radio" name="filter_${col}" data-col="${col}" value="" ${!Catalogo.filtrosActivos[col]?'checked':''}> Todos
                     </label>
                     ${valores.map(v => `
                         <label class="filter-label">
-                            <input type="radio" name="filter_${col}" data-col="${col}" value="${v}"> ${v}
+                            <input type="radio" name="filter_${col}" data-col="${col}" value="${v}" ${Catalogo.filtrosActivos[col] === v ? 'checked' : ''}> ${v}
                         </label>
                     `).join('')}
-                </div>
-            `;
+                </div>`;
             
             details.addEventListener('toggle', () => {
                 if (details.open) {
@@ -96,10 +97,24 @@ const Catalogo = {
 
     aplicarFiltros: () => {
         Catalogo.filtrados = Catalogo.productos.filter(p => {
-            return Object.keys(Catalogo.filtrosActivos).every(col => {
+            // Filtros de Radio
+            const matchFiltros = Object.keys(Catalogo.filtrosActivos).every(col => {
+                if(col === 'search') return true;
                 return !Catalogo.filtrosActivos[col] || p[col] === Catalogo.filtrosActivos[col];
             });
+
+            // Filtro de Búsqueda (q=)
+            let matchSearch = true;
+            if (Catalogo.filtrosActivos['search']) {
+                const term = Utils.normalizeStr(Catalogo.filtrosActivos['search']);
+                matchSearch = Utils.normalizeStr(p.nombre).includes(term) || 
+                              Utils.normalizeStr(p.ref).includes(term) ||
+                              Utils.normalizeStr(p.temporada || '').includes(term);
+            }
+
+            return matchFiltros && matchSearch;
         });
+
         document.getElementById('catalogoCount').innerText = `${Catalogo.filtrados.length} productos`;
         Catalogo.paginaActual = 1;
         document.getElementById('catalogoGrid').innerHTML = '';
@@ -110,16 +125,14 @@ const Catalogo = {
         if (Catalogo.cargandoNuevos) return;
         Catalogo.cargandoNuevos = true;
         const grid = document.getElementById('catalogoGrid');
-        const inicio = (Catalogo.paginaActual - 1) * Catalogo.itemsPorPagina;
-        const lote = Catalogo.filtrados.slice(inicio, inicio + Catalogo.itemsPorPagina);
+        const lote = Catalogo.filtrados.slice((Catalogo.paginaActual - 1) * Catalogo.itemsPorPagina, Catalogo.paginaActual * Catalogo.itemsPorPagina);
 
         lote.forEach(p => {
             let selectsHtml = '';
-            // Solo mostramos Tallas/Modalidad en la tarjeta (limpio)
             Object.keys(p).forEach(key => {
                 const val = String(p[key]);
                 const keyL = key.replace(/[*#]/g, '').toLowerCase();
-                if ((val.includes('|') || keyL.includes('talla')) && !keyL.includes('color') && !keyL.includes('complemento') && !keyL.includes('personaliza')) {
+                if ((val.includes('|') || keyL.includes('talla')) && !['color', 'complemento', 'personaliza'].some(x => keyL.includes(x))) {
                     const opciones = val.replace('#','').split('|').map(o => o.trim());
                     selectsHtml += `<select class="card-select" data-col="${key}" onchange="Catalogo.updateCardPrice('${p.ref}')">
                         <option value="" disabled selected>${keyL.toUpperCase()}</option>
@@ -128,31 +141,33 @@ const Catalogo = {
                 }
             });
 
-            // Lógica TEMU: Números aleatorios realistas
-            const vendidos = Math.floor(Math.random() * 25) + 8;
-            const viendo = Math.floor(Math.random() * 12) + 4;
+            // RUTA INTELIGENTE DE GITHUB
+            let imgFinal = p.imagenurl;
+            if (imgFinal && !imgFinal.startsWith('http')) {
+                imgFinal = `https://raw.githubusercontent.com/dianiluz/cupissa/main/${imgFinal.replace(/^\//, '')}`;
+            }
 
             const card = document.createElement('div');
             card.className = 'product-card fade-in';
             card.id = `card-${p.ref}`;
             card.innerHTML = `
-                <div style="position:relative; overflow:hidden;">
-                    <img src="${p.imagenurl}" class="product-image" onclick="ModalProducto.open('${p.ref}')" onerror="this.src='/assets/logo.png'">
+                <div style="position:relative;">
+                    <img src="${imgFinal}" class="product-image" onclick="ModalProducto.open('${p.ref}')" onerror="this.src='/assets/logo.png'">
                     <div style="position:absolute; bottom:10px; left:0; width:100%; text-align:center;">
-                        <span id="badge-cupi-${p.ref}" style="background:var(--color-pink); color:white; font-size:0.7rem; padding:4px 12px; border-radius:20px; font-weight:bold; box-shadow:var(--shadow-sm);">Otorga --- CupiCoins</span>
+                        <span id="badge-cupi-${p.ref}" style="background:var(--color-pink); color:white; font-size:0.7rem; padding:4px 12px; border-radius:20px; font-weight:bold;">Cargando Cupicoins...</span>
                     </div>
                 </div>
                 <div class="product-info">
                     <h3 class="product-title">${p.nombre}</h3>
-                    <div style="font-size:0.75rem; color:var(--color-success); margin-bottom:8px; display:flex; align-items:center; gap:5px;">
-                        <span>🔥 ${vendidos}+ vendidos hoy</span> | <span>👁️ ${viendo} viéndolo</span>
+                    <div style="font-size:0.75rem; color:var(--color-success); margin-bottom:8px;">
+                        🔥 ${Math.floor(Math.random()*20)+10}+ vendidos hoy | 👁️ ${Math.floor(Math.random()*10)+5} viendo
                     </div>
                     <div class="card-selects">${selectsHtml}</div>
-                    <div style="margin-top:auto; border-top:1px solid #f0f0f0; padding-top:10px;">
+                    <div style="margin-top:auto; border-top:1px solid #eee; padding-top:10px;">
                         <div id="price-total-${p.ref}" style="color:var(--color-success); font-weight:700; font-size:1.1rem;">$ ---</div>
-                        <div id="price-anticipo-${p.ref}" style="color:var(--color-gray-dark); font-size:0.85rem; font-weight:500;">Anticipo: ---</div>
+                        <div id="price-anticipo-${p.ref}" style="color:var(--color-gray-dark); font-size:0.85rem;">Anticipo: ---</div>
                     </div>
-                    <button class="btn-add-direct" onclick="ModalProducto.open('${p.ref}')" style="margin-top:12px; width:100%; font-size:0.9rem;">Agregar al carrito</button>
+                    <button class="btn-add-direct" onclick="ModalProducto.open('${p.ref}')" style="margin-top:10px; width:100%;">Agregar al carrito</button>
                 </div>`;
             grid.appendChild(card);
             Catalogo.updateCardPrice(p.ref);
@@ -170,7 +185,6 @@ const Catalogo = {
         let inc = 0;
         const estado = {};
         
-        // Sincronización exacta con lógica del Modal
         Object.keys(p).forEach(k => { estado[Utils.normalizeStr(k.replace(/[*#]/g, ''))] = Utils.normalizeStr(String(p[k])); });
         card.querySelectorAll('.card-select').forEach(s => {
             if (s.value) estado[Utils.normalizeStr(s.getAttribute('data-col').replace(/[*#]/g, ''))] = Utils.normalizeStr(s.value);
