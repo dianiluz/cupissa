@@ -71,9 +71,11 @@ const Checkout = {
         const data = JSON.parse(localStorage.getItem("cupissa_checkout_data") || "{}");
         Object.keys(data).forEach(id => {
             const el = document.getElementById(id);
-            if(el) el.value = data[id];
+            if(el && el.type !== 'file') el.value = data[id];
         });
-        if(data['chkCorreo']) Checkout.verificarCupicoins(data['chkCorreo']);
+        if(data['chkCorreo']) {
+            Checkout.buscarDatosUsuario(data['chkCorreo']);
+        }
     },
 
     loadCart: () => {
@@ -84,7 +86,88 @@ const Checkout = {
         }
     },
 
-    // --- NAVEGACIÓN DE PASOS ---
+    buscarDatosUsuario: async (email) => {
+        if (!email || !window.db) return;
+        Checkout.verificarCupicoins(email);
+        try {
+            const { data } = await window.db.from('usuarios').select('*').eq('email', email.trim().toLowerCase()).single();
+            if (data) {
+                if (data.nombre && !document.getElementById('chkNombre').value) document.getElementById('chkNombre').value = data.nombre;
+                if (data.telefono && !document.getElementById('chkTelefono').value) document.getElementById('chkTelefono').value = data.telefono;
+                if (data.ciudad && !document.getElementById('chkCiudad').value) {
+                    document.getElementById('chkCiudad').value = data.ciudad;
+                    Checkout.autocompletarDepartamento();
+                }
+                if (data.barrio && !document.getElementById('chkBarrioBuscador').value) document.getElementById('chkBarrioBuscador').value = data.barrio;
+                if (data.direccion && !document.getElementById('chkDireccion').value) document.getElementById('chkDireccion').value = data.direccion;
+                if (data.cc && document.getElementById('chkCedula')) document.getElementById('chkCedula').value = data.cc;
+                
+                Checkout.calcularEnvio();
+            }
+        } catch (e) {
+            // Es un usuario nuevo, falla silenciosa
+        }
+    },
+
+    verificarCupicoins: async (email) => {
+        if (!email || !window.db) return;
+        try {
+            const { data } = await window.db.from('billeteras').select('saldo').eq('email', email.trim().toLowerCase()).single();
+            const box = document.getElementById('boxCupicoins');
+            if (data && data.saldo > 0) {
+                Checkout.cupicoinsDisponibles = data.saldo;
+                if(box) box.style.display = 'block';
+                document.getElementById('lblCupiDisp').innerText = data.saldo;
+                document.getElementById('lblCupiDinero').innerText = Utils.formatCurrency(data.saldo);
+            } else {
+                if(box) box.style.display = 'none';
+                Checkout.cupicoinsDisponibles = 0;
+            }
+            Checkout.calcularTotalFinal();
+        } catch(e) { console.warn("Sin billetera"); }
+    },
+
+    toggleCupicoins: () => {
+        const isChecked = document.getElementById('chkUsarCupicoins').checked;
+        Checkout.cupicoinsUsar = isChecked ? Checkout.cupicoinsDisponibles : 0;
+        Checkout.calcularTotalFinal();
+    },
+
+    aplicarCupon: async () => {
+        const input = document.getElementById('inputCodigoDescuento');
+        const codigo = input.value.trim().toUpperCase();
+        if (!codigo || !window.db) return;
+        
+        let subtotal = Checkout.items.reduce((sum, item) => sum + (item.precio_unitario * item.cantidad), 0);
+        try {
+            const { data: col } = await window.db.from('colaboradores').select('*').eq('codigo_asignado', codigo).eq('estado_contrato', 'FIRMADO').single();
+            if (col) {
+                Checkout.descuentoMonto = subtotal * 0.10;
+                Checkout.codigoAplicado = codigo;
+                Utils.toast(`¡Apoyando a ${col.usuario_redes}! (-10%)`, "success");
+            } else {
+                const { data: promo } = await window.db.from('promociones').select('*').eq('codigo', codigo).eq('estado', 'ACTIVA').single();
+                if (promo) {
+                    Checkout.descuentoMonto = promo.tipo === 'PORCENTAJE' ? (subtotal * (promo.valor / 100)) : promo.valor;
+                    Checkout.codigoAplicado = codigo;
+                    Utils.toast("¡Cupón aplicado!", "success");
+                } else {
+                    const { data: refClient } = await window.db.from('usuarios').select('*').eq('codigo_referido', codigo).single();
+                    if (refClient) {
+                        Checkout.descuentoMonto = 0; 
+                        Checkout.codigoAplicado = codigo;
+                        Utils.toast("¡Código válido! Las CupiCoins de este pedido se sumarán tanto a tu cuenta como a la de quien te refirió al entregar el pedido.", "success");
+                    } else {
+                        Utils.toast("Código no válido o inactivo", "error");
+                        Checkout.descuentoMonto = 0;
+                        Checkout.codigoAplicado = '';
+                    }
+                }
+            }
+            Checkout.calcularTotalFinal();
+        } catch (e) { Utils.toast("Error validando código", "error"); }
+    },
+
     nextStep: (step) => {
         if (!Checkout.validateStep(Checkout.currentStep)) return;
         Checkout.currentStep = step;
@@ -121,72 +204,158 @@ const Checkout = {
             return true;
         }
         if (step === 2) {
-            const ciu = document.getElementById('chkCiudad').value.trim();
+            const ciu = document.getElementById('chkCiudad').value.trim().toUpperCase();
             const dir = document.getElementById('chkDireccion').value.trim();
             if (!ciu || !dir) {
                 Utils.toast("Completa la ciudad y la dirección", "error");
                 return false;
+            }
+            const esLocal = CIUDADES_LOCALES.includes(ciu);
+            if (!esLocal) {
+                const cedula = document.getElementById('chkCedula') ? document.getElementById('chkCedula').value.trim() : '';
+                if (!cedula) {
+                    Utils.toast("La cédula es obligatoria para envíos nacionales", "error");
+                    return false;
+                }
             }
             return true;
         }
         return true;
     },
 
-    verificarCupicoins: async (email) => {
-        if (!email || !window.db) return;
-        try {
-            const { data } = await window.db.from('billeteras').select('saldo').eq('email', email.trim().toLowerCase()).single();
-            const box = document.getElementById('boxCupicoins');
-            if (data && data.saldo > 0) {
-                Checkout.cupicoinsDisponibles = data.saldo;
-                if(box) box.style.display = 'block';
-                document.getElementById('lblCupiDisp').innerText = data.saldo;
-                document.getElementById('lblCupiDinero').innerText = Utils.formatCurrency(data.saldo);
-            } else {
-                if(box) box.style.display = 'none';
-                Checkout.cupicoinsDisponibles = 0;
+    renderResumen: () => {
+        const container = document.getElementById('chkItemsContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        Checkout.items.forEach(item => {
+            let imgUrlFinal = '/assets/logo.png';
+            if (item.imagenurl && String(item.imagenurl).trim() !== '') {
+                let rawPath = String(item.imagenurl).split('|')[0].trim();
+                if (rawPath.includes('drive.google.com')) {
+                    const match = rawPath.match(/id=([a-zA-Z0-9_-]+)/);
+                    if (match && match[1]) imgUrlFinal = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
+                } else if (rawPath.startsWith('http')) {
+                    imgUrlFinal = rawPath;
+                } else {
+                    imgUrlFinal = `https://raw.githubusercontent.com/dianiluz/cupissa/main/${rawPath.replace(/^\//, '')}`;
+                }
             }
-            Checkout.calcularTotalFinal();
-        } catch(e) { console.warn("Sin billetera"); }
-    },
 
-    toggleCupicoins: () => {
-        const isChecked = document.getElementById('chkUsarCupicoins').checked;
-        Checkout.cupicoinsUsar = isChecked ? Checkout.cupicoinsDisponibles : 0;
+            container.innerHTML += `
+                <div class="summary-item" style="display:flex; gap:10px; margin-bottom:10px;">
+                    <img src="${imgUrlFinal}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;" onerror="this.src='/assets/logo.png'">
+                    <div style="flex:1; font-size:0.85rem;">
+                        <div>${item.nombre} (x${item.cantidad})</div>
+                        <div style="color:var(--color-pink); font-weight:bold;">${Utils.formatCurrency(item.precio_unitario * item.cantidad)}</div>
+                    </div>
+                </div>`;
+        });
         Checkout.calcularTotalFinal();
     },
 
-    aplicarCupon: async () => {
-        const input = document.getElementById('inputCodigoDescuento');
-        const codigo = input.value.trim().toUpperCase();
-        if (!codigo || !window.db) return;
-        
-        let subtotal = Checkout.items.reduce((sum, item) => sum + (item.precio_unitario * item.cantidad), 0);
-        try {
-            const { data: promo } = await window.db.from('promociones').select('*').eq('codigo', codigo).eq('estado', 'ACTIVA').single();
-            if (promo) {
-                Checkout.descuentoMonto = promo.tipo === 'PORCENTAJE' ? (subtotal * (promo.valor / 100)) : promo.valor;
-                Checkout.codigoAplicado = codigo;
-                Utils.toast("¡Cupón aplicado!", "success");
-            } else {
-                const { data: col } = await window.db.from('colaboradores').select('*').eq('codigo_asignado', codigo).single();
-                if (col) {
-                    Checkout.descuentoMonto = subtotal * 0.10;
-                    Checkout.codigoAplicado = codigo;
-                    Utils.toast("Descuento Influencer aplicado", "success");
-                } else {
-                    Utils.toast("Código no válido", "error");
-                    Checkout.descuentoMonto = 0;
-                }
+    autocompletarDepartamento: () => {
+        const ciudadInput = document.getElementById('chkCiudad');
+        const deptoInput = document.getElementById('chkDepartamento');
+        if (!ciudadInput || !deptoInput) return;
+
+        const ciudadM = Utils.normalizeStr(ciudadInput.value);
+        let encontrado = false;
+
+        for (const [depto, ciudades] of Object.entries(MUNICIPIOS)) {
+            if (ciudades.find(c => Utils.normalizeStr(c) === ciudadM)) {
+                deptoInput.value = depto;
+                encontrado = true;
+                const data = JSON.parse(localStorage.getItem("cupissa_checkout_data") || "{}");
+                data['chkDepartamento'] = depto;
+                localStorage.setItem("cupissa_checkout_data", JSON.stringify(data));
+                break;
             }
-            Checkout.calcularTotalFinal();
-        } catch (e) { Utils.toast("Error validando código", "error"); }
+        }
+        if (!encontrado) deptoInput.value = "";
+    },
+
+    calcularEnvio: () => {
+        const ciudadInput = document.getElementById('chkCiudad');
+        const barrioInput = document.getElementById('chkBarrioBuscador');
+        const msjNacional = document.getElementById('msjEnvioNacional');
+        const inputCC = document.getElementById('grupoCedulaNacional');
+        const envioUI = document.getElementById('chkCostoEnvioUI');
+        
+        if (!ciudadInput) return;
+
+        const ciudad = Utils.normalizeStr(ciudadInput.value).toUpperCase();
+        const esLocal = CIUDADES_LOCALES.includes(ciudad);
+
+        Checkout.costoEnvioActual = 0;
+
+        if (ciudad.length > 2 && !esLocal) {
+            if(msjNacional) {
+                msjNacional.style.display = 'block';
+                msjNacional.innerHTML = `
+                    <strong>Envío Nacional (Por Cotizar)</strong><br>
+                    El valor del envío se calculará según medidas y peso. Un asesor te enviará la cotización por WhatsApp.<br>
+                    <span style="color: var(--color-danger); font-size: 0.8rem;">⚠️ IMPORTANTE: Solo INTERRAPIDISIMO permite PAGO EN CASA (Contraentrega) del saldo restante.</span>
+                    <div style="margin-top:10px;">
+                        <label style="display:block; font-weight:bold; margin-bottom:5px;">Elige transportadora de preferencia:</label>
+                        <select id="chkTransportadora" style="width:100%; padding:8px; border-radius:4px; border:1px solid #ccc;">
+                            <option value="INTERRAPIDISIMO">Interrapidisimo (Permite contraentrega)</option>
+                            <option value="ENVIA">Envía</option>
+                            <option value="SERVIENTREGA">Servientrega</option>
+                            <option value="COORDINADORA">Coordinadora</option>
+                            <option value="OTRA">Otra (Especificar)</option>
+                        </select>
+                        <input type="text" id="chkTransportadoraOtra" placeholder="Escribe la transportadora..." style="display:none; width:100%; padding:8px; margin-top:5px; border-radius:4px; border:1px solid #ccc;">
+                    </div>
+                `;
+                
+                document.getElementById('chkTransportadora').addEventListener('change', (e) => {
+                    document.getElementById('chkTransportadoraOtra').style.display = e.target.value === 'OTRA' ? 'block' : 'none';
+                });
+            }
+            if(inputCC) inputCC.style.display = 'block'; 
+            
+            if(envioUI) {
+                envioUI.innerText = "Por Cotizar";
+                envioUI.style.color = "#f57f17"; 
+            }
+        } else if (esLocal) {
+            if(msjNacional) msjNacional.style.display = 'none';
+            if(inputCC) inputCC.style.display = 'none';
+
+            if (municipiosFijos[ciudad]) {
+                Checkout.costoEnvioActual = municipiosFijos[ciudad];
+            } else {
+                const barrioNorm = Utils.normalizeStr(barrioInput?.value || '');
+                const match = barriosBD.find(b => b.m === ciudad && Utils.normalizeStr(b.n) === barrioNorm);
+                if (match) Checkout.costoEnvioActual = match.p;
+            }
+            
+            if(envioUI) {
+                envioUI.innerText = Checkout.costoEnvioActual > 0 ? Utils.formatCurrency(Checkout.costoEnvioActual) : "$0";
+                envioUI.style.color = "var(--color-success)";
+            }
+        }
+        Checkout.calcularTotalFinal();
+    },
+
+    selectBarrioDinamico: (nombre, precio) => {
+        const input = document.getElementById('chkBarrioBuscador');
+        if(input) input.value = nombre;
+        document.getElementById('suggestions').style.display = 'none';
+        
+        const data = JSON.parse(localStorage.getItem("cupissa_checkout_data") || "{}");
+        data['chkBarrioBuscador'] = nombre;
+        localStorage.setItem("cupissa_checkout_data", JSON.stringify(data));
+        
+        Checkout.calcularEnvio();
     },
 
     calcularTotalFinal: () => {
         let subtotalProds = Checkout.items.reduce((sum, item) => sum + (item.precio_unitario * item.cantidad), 0);
         let totalBase = Math.max(0, subtotalProds - Checkout.descuentoMonto - Checkout.cupicoinsUsar);
+        
         let totalConEnvio = totalBase + Checkout.costoEnvioActual;
+        
         const porcentajeAbono = Number(document.getElementById('chkAbono')?.value || 0.20);
         let montoBaseHoy = totalConEnvio * porcentajeAbono;
         
@@ -198,18 +367,38 @@ const Checkout = {
             comision = Math.ceil(valorConComision - montoBaseHoy);
         }
 
-        document.getElementById('chkSubtotal').innerText = Utils.formatCurrency(subtotalProds);
-        document.getElementById('chkTotalPedido').innerText = Utils.formatCurrency(totalConEnvio);
-        document.getElementById('chkMontoBaseValor').innerText = Utils.formatCurrency(montoBaseHoy);
-        
+        const totalUI = document.getElementById('chkTotalPedido');
+        const subtUI = document.getElementById('chkSubtotal');
+        const montoBaseUI = document.getElementById('chkMontoBaseValor');
         const rowCom = document.getElementById('rowComision');
+        const chkComisionValor = document.getElementById('chkComisionValor');
+        const totalGeneralUI = document.getElementById('chkTotalGeneral');
+
+        if(subtUI) subtUI.innerText = Utils.formatCurrency(subtotalProds);
+        if(totalUI) totalUI.innerText = Utils.formatCurrency(totalConEnvio);
+        if(montoBaseUI) montoBaseUI.innerText = Utils.formatCurrency(montoBaseHoy);
+        
         if (comision > 0) {
-            rowCom.style.display = 'flex';
-            document.getElementById('chkComisionValor').innerText = Utils.formatCurrency(comision);
+            if(rowCom) rowCom.style.display = 'flex';
+            if(chkComisionValor) chkComisionValor.innerText = Utils.formatCurrency(comision);
         } else {
-            rowCom.style.display = 'none';
+            if(rowCom) rowCom.style.display = 'none';
         }
-        document.getElementById('chkTotalGeneral').innerText = Utils.formatCurrency(montoBaseHoy + comision);
+        
+        if(totalGeneralUI) totalGeneralUI.innerText = Utils.formatCurrency(montoBaseHoy + comision);
+
+        const transInfo = document.getElementById('transferenciaInfo');
+        const btn = document.getElementById('btnConfirmarPedido');
+        const txtMonto = document.getElementById('txtMontoTransferir');
+
+        if (metodo === 'TRANSFERENCIA') {
+            if (transInfo) transInfo.style.display = 'block';
+            if (btn) btn.innerHTML = 'Enviar pago a verificación <i class="fas fa-file-invoice-dollar" style="margin-left: 5px;"></i>';
+            if (txtMonto) txtMonto.innerText = Utils.formatCurrency(montoBaseHoy + comision);
+        } else {
+            if (transInfo) transInfo.style.display = 'none';
+            if (btn) btn.innerHTML = 'Confirmar Pedido <i class="fas fa-check" style="margin-left: 5px;"></i>';
+        }
     },
 
     injectDescuentosUI: () => {
@@ -232,116 +421,136 @@ const Checkout = {
         anchor.insertAdjacentHTML('beforebegin', html);
     },
 
-    renderResumen: () => {
-        const container = document.getElementById('chkItemsContainer');
-        if (!container) return;
-        container.innerHTML = '';
-        Checkout.items.forEach(item => {
-            container.innerHTML += `
-                <div class="summary-item" style="display:flex; gap:10px; margin-bottom:10px;">
-                    <img src="${item.imagenurl}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;" onerror="this.src='/assets/logo.png'">
-                    <div style="flex:1; font-size:0.85rem;">
-                        <div>${item.nombre} (x${item.cantidad})</div>
-                        <div style="color:var(--color-pink); font-weight:bold;">${Utils.formatCurrency(item.precio_unitario * item.cantidad)}</div>
-                    </div>
-                </div>`;
-        });
-        Checkout.calcularTotalFinal();
-    },
-
-    autocompletarDepartamento: () => {
-        const ciudadInput = document.getElementById('chkCiudad');
-        const deptoInput = document.getElementById('chkDepartamento');
-        if (!ciudadInput || !deptoInput) return;
-        const ciudadM = Utils.normalizeStr(ciudadInput.value);
-        let encontrado = false;
-        for (const [depto, ciudades] of Object.entries(MUNICIPIOS)) {
-            if (ciudades.find(c => Utils.normalizeStr(c) === ciudadM)) {
-                deptoInput.value = depto;
-                encontrado = true;
-                break;
-            }
-        }
-        if (!encontrado) deptoInput.value = "";
-    },
-
-    calcularEnvio: () => {
-        const ciudadInput = document.getElementById('chkCiudad');
-        const barrioInput = document.getElementById('chkBarrioBuscador');
-        if (!ciudadInput) return;
-        const ciudad = Utils.normalizeStr(ciudadInput.value).toUpperCase();
-        Checkout.costoEnvioActual = 0;
-        if (municipiosFijos[ciudad]) {
-            Checkout.costoEnvioActual = municipiosFijos[ciudad];
-        } else {
-            const barrioNorm = Utils.normalizeStr(barrioInput?.value || '');
-            const match = barriosBD.find(b => b.m === ciudad && Utils.normalizeStr(b.n) === barrioNorm);
-            if (match) Checkout.costoEnvioActual = match.p;
-        }
-        Checkout.renderResumen();
-    },
-
-    selectBarrioDinamico: (nombre, precio) => {
-        const input = document.getElementById('chkBarrioBuscador');
-        if(input) input.value = nombre;
-        document.getElementById('suggestions').style.display = 'none';
-        Checkout.calcularEnvio();
-    },
-
     procesarPago: async (e) => {
         e.preventDefault();
+        
+        if(!document.getElementById('chkAceptaTerminos')?.checked) return Utils.toast("Debes aceptar los Términos y Condiciones", "error");
+        if(!document.getElementById('chkAceptaPrivacidad')?.checked) return Utils.toast("Debes aceptar la Política de Privacidad", "error");
+
         if (Checkout.isSubmitting) return;
         Checkout.isSubmitting = true;
+        
         const btn = document.getElementById('btnConfirmarPedido');
         btn.disabled = true; btn.innerHTML = 'Procesando... <i class="fas fa-spinner fa-spin"></i>';
+
         try {
             const idPedido = "CUP-" + Date.now().toString().slice(-8);
             const correo = document.getElementById('chkCorreo').value.trim().toLowerCase();
+            const nombreCliente = document.getElementById('chkNombre').value;
             const totalFinalPedido = parseInt(document.getElementById('chkTotalPedido').innerText.replace(/\D/g, ''));
             const anticipo = parseInt(document.getElementById('chkMontoBaseValor').innerText.replace(/\D/g, ''));
+            const cciu = document.getElementById('chkCiudad').value.toUpperCase();
+            const cedula = document.getElementById('chkCedula') ? document.getElementById('chkCedula').value.trim() : '';
+            const metodoPagoSelec = document.getElementById('chkMetodoPago').value;
+            
+            const transInput = document.getElementById('chkTransportadora');
+            let transportadoraFinal = "Mensajería Local";
+            if (!CIUDADES_LOCALES.includes(cciu)) {
+                if (transInput) {
+                    transportadoraFinal = transInput.value === 'OTRA' ? document.getElementById('chkTransportadoraOtra').value : transInput.value;
+                } else {
+                    transportadoraFinal = "Por Cotizar";
+                }
+            }
 
+            let estadoPagoIncial = "PENDIENTE";
+            if (metodoPagoSelec === 'TRANSFERENCIA') {
+                const fileInput = document.getElementById('chkComprobante');
+                if (fileInput && fileInput.files.length > 0) {
+                    estadoPagoIncial = "EN REVISIÓN";
+                    const file = fileInput.files[0];
+                    const base64 = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = () => resolve(reader.result); 
+                    });
+                    await Utils.fetchFromBackend('subirSoportePago', { id_pedido: idPedido, archivoBase64: base64 });
+                }
+            }
+
+            // UPSERT A TABLA USUARIOS CON TODOS LOS DATOS DE CONTACTO Y ENVÍO
             const userData = {
                 email: correo,
-                nombre: document.getElementById('chkNombre').value,
+                nombre: nombreCliente,
                 telefono: document.getElementById('chkTelefono').value.replace(/\D/g, ''),
-                ciudad: document.getElementById('chkCiudad').value.toUpperCase(),
+                ciudad: cciu,
                 departamento: document.getElementById('chkDepartamento').value,
                 barrio: document.getElementById('chkBarrioBuscador').value,
                 direccion: document.getElementById('chkDireccion').value,
-                tipo_usuario: 'CLIENTE', activo: 'SI'
+                cc: cedula, 
+                tipo_usuario: 'CLIENTE', 
+                activo: 'SI'
             };
-            await window.db.from('usuarios').upsert(userData, { onConflict: 'email' });
+            const { error: errUser } = await window.db.from('usuarios').upsert(userData, { onConflict: 'email' });
+            if (errUser) throw new Error("Error en BD (Usuarios): " + errUser.message);
 
+            // INSERT A TABLA PEDIDOS ESTRICTAMENTE CON LAS COLUMNAS DEFINIDAS
             const pedData = {
-                idpedido: idPedido, cliente: userData.nombre, telefono: userData.telefono,
-                usuario_email: correo, direccion: userData.direccion, ciudad: userData.ciudad,
-                departamento: userData.departamento, total: totalFinalPedido, valor_anticipo: anticipo,
-                saldo_pendiente: totalFinalPedido - anticipo, metodo_pago: document.getElementById('chkMetodoPago').value,
-                estado: 1, estado_pago: 'PENDIENTE', fecha_creacion: new Date().toISOString()
+                idpedido: idPedido, 
+                tipo: 'WEB', 
+                estado: 1, 
+                usuario_email: correo, 
+                total: totalFinalPedido, 
+                fecha_creacion: new Date().toISOString(),
+                estado_pago: estadoPagoIncial, 
+                metodo_pago: metodoPagoSelec,
+                valor_anticipo: anticipo,
+                saldo_pendiente: totalFinalPedido - anticipo, 
+                transportadora: transportadoraFinal,
+                vendedor: 'TIENDA ONLINE'
             };
             const { error: errPed } = await window.db.from('pedidos').insert([pedData]);
-            if (errPed) throw errPed;
+            
+            if (errPed) throw new Error("Error en BD (Pedidos): " + errPed.message);
 
-            const itemsToInsert = Checkout.items.map(i => ({
-                idpedido: idPedido, ref_producto: i.ref, producto: `${i.nombre} (${JSON.stringify(i.variaciones)})`, cantidad: i.cantidad, precio: i.precio_unitario
-            }));
+            // INSERT A TABLA PEDIDOS_PRODUCTOS INCLUYENDO LA COLUMNA IMAGENURL
+            const itemsToInsert = Checkout.items.map(i => {
+                let imgGuardar = '/assets/logo.png';
+                if (i.imagenurl && String(i.imagenurl).trim() !== '') {
+                    imgGuardar = String(i.imagenurl).split('|')[0].trim();
+                }
+                return {
+                    idpedido: idPedido, 
+                    ref_producto: i.ref, 
+                    producto: `${i.nombre} (${JSON.stringify(i.variaciones)})`, 
+                    cantidad: i.cantidad, 
+                    precio: i.precio_unitario,
+                    imagenurl: imgGuardar
+                };
+            });
             await window.db.from('pedidos_productos').insert(itemsToInsert);
 
             if (Checkout.cupicoinsUsar > 0) {
                 await window.db.from('billeteras').update({ saldo: Checkout.cupicoinsDisponibles - Checkout.cupicoinsUsar }).eq('email', correo);
             }
 
-            if (pedData.metodo_pago === 'WOMPI') {
+            // PAYLOAD COMPLETO A APPS SCRIPT PARA CORREOS Y TELEGRAM (SIN GUARDAR EN BD)
+            const payloadCorreo = { ...pedData, cliente: nombreCliente };
+            Utils.fetchFromBackend('enviarCorreoConfirmacion', { pedido: payloadCorreo, productos: itemsToInsert });
+            Utils.fetchFromBackend('notificarTelegramPedido', { pedido: payloadCorreo, usuario: userData, productos: itemsToInsert });
+
+            // LÓGICA DE WOMPI (ARMADO DE URL CRUDO PARA NO ROMPER LA FIRMA Y RETORNO CON ?ref=)
+            if (metodoPagoSelec === 'WOMPI') {
                 const totalWompi = parseInt(document.getElementById('chkTotalGeneral').innerText.replace(/\D/g, ''));
                 const res = await Utils.fetchFromBackend('generarFirmaWompi', { id_pedido: idPedido, monto: totalWompi });
-                window.location.href = `https://checkout.wompi.co/p/?public-key=${res.llave_publica}&currency=COP&amount-in-cents=${totalWompi * 100}&reference=${idPedido}&signature:integrity=${res.firma}&redirect-url=https://cupissa.com/rastreo/?id=${idPedido}`;
+                
+                if (res && res.success && res.firma) {
+                    const redirectUrl = encodeURIComponent(`https://cupissa.com/rastreo/?ref=${idPedido}`);
+                    const urlWompi = `https://checkout.wompi.co/p/?public-key=${res.llave_publica}&currency=COP&amount-in-cents=${totalWompi * 100}&reference=${idPedido}&signature:integrity=${res.firma}&redirect-url=${redirectUrl}`;
+                    window.location.href = urlWompi;
+                } else {
+                    throw new Error("Wompi falló: " + (res.error || "No se generó la firma"));
+                }
             } else {
                 localStorage.removeItem('cupissa_cart');
-                window.location.href = `/rastreo/?id=${idPedido}`;
+                localStorage.removeItem('cupissa_checkout_data');
+                window.location.href = `/rastreo/?ref=${idPedido}`;
             }
         } catch (err) {
             Utils.toast(err.message, "error");
-            Checkout.isSubmitting = false; btn.disabled = false;
+            Checkout.isSubmitting = false; 
+            btn.disabled = false;
+            btn.innerHTML = 'Confirmar Pedido <i class="fas fa-check" style="margin-left: 5px;"></i>';
         }
     },
 
@@ -350,7 +559,13 @@ const Checkout = {
             Checkout.autocompletarDepartamento();
             Checkout.calcularEnvio();
         });
-        document.getElementById('chkCorreo')?.addEventListener('blur', (e) => Checkout.verificarCupicoins(e.target.value));
+        
+        const emailInput = document.getElementById('chkCorreo');
+        if(emailInput) {
+            emailInput.addEventListener('blur', (e) => {
+                Checkout.buscarDatosUsuario(e.target.value);
+            });
+        }
         
         document.getElementById('chkBarrioBuscador')?.addEventListener('input', function() {
             const val = Utils.normalizeStr(this.value);
@@ -373,12 +588,27 @@ const Checkout = {
             }
         });
 
+        const campos = ['chkNombre','chkTelefono','chkCorreo','chkDireccion','chkCiudad','chkDepartamento','chkBarrioBuscador'];
+        campos.forEach(id=>{
+            const el = document.getElementById(id);
+            if(el) {
+                el.addEventListener("input",()=>{
+                    const data = JSON.parse(localStorage.getItem("cupissa_checkout_data") || "{}");
+                    data[id] = el.value;
+                    localStorage.setItem("cupissa_checkout_data", JSON.stringify(data));
+                });
+            }
+        });
+
         document.getElementById('chkAbono')?.addEventListener('change', Checkout.calcularTotalFinal);
         document.getElementById('chkMetodoPago')?.addEventListener('change', Checkout.calcularTotalFinal);
         document.getElementById('formCheckout')?.addEventListener('submit', Checkout.procesarPago);
         
         document.addEventListener('click', (e) => {
-            if (e.target.id !== 'chkBarrioBuscador') document.getElementById('suggestions').style.display = 'none';
+            if (e.target.id !== 'chkBarrioBuscador') {
+                const sugg = document.getElementById('suggestions');
+                if(sugg) sugg.style.display = 'none';
+            }
         });
     }
 };
