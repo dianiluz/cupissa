@@ -60,12 +60,10 @@ const Catalogo = {
                if(!mapaRefs.has(refString)) {
                    mapaRefs.add(refString);
                    
-                   // Estandarización forzada de datos y filtros
                    p.ref = refString; 
                    p.nombre = p.producto || p.nombre || p['*producto'] || 'Producto sin nombre';
                    p['*precio_base'] = p.precio_base || p['*precio_base'] || p.precio || 0;
                    
-                   // Forzamos los nombres en minúscula para asegurar que los filtros los encuentren
                    p.mundo = p.mundo || p.Mundo || '';
                    p.categoria = p.categoria || p.Categoria || '';
                    p.subcategoria = p.subcategoria || p.Subcategoria || '';
@@ -98,7 +96,6 @@ const Catalogo = {
            
            Catalogo.renderFiltros();
 
-           // Autoselección de filtros si vienen en la URL
            ['categoria', 'mundo'].forEach(param => {
                const paramVal = urlParams.get(param);
                if (paramVal && Catalogo.filtrosActivos[param]) {
@@ -114,7 +111,7 @@ const Catalogo = {
            Catalogo.bindEvents();
            Catalogo.setupInfiniteScroll();
        } catch (error) {
-           console.error("Error cargando catálogo desde Supabase:", error);
+           console.error("Error cargando catálogo:", error);
            Catalogo.productos = Utils.shuffle(DEMO_PRODUCTS_CATALOG);
            Catalogo.renderFiltros();
            Catalogo.aplicarFiltros();
@@ -131,7 +128,6 @@ const Catalogo = {
 
         if (Catalogo.productos.length === 0) return;
 
-        // Lista estricta de filtros laterales
         const columnasPrincipales = ['mundo', 'categoria', 'subcategoria', 'tematica', 'para_quien', 'temporada'];
 
         columnasPrincipales.forEach(col => {
@@ -236,16 +232,24 @@ const Catalogo = {
             const vendidos = Math.floor(Math.random() * 20) + 5;
             const viendo = Math.floor(Math.random() * 15) + 3;
             
+            // --- AQUÍ ESTÁ LA SOLUCIÓN DE LAS IMÁGENES ---
             let imgUrlFinal = '/assets/logo.png';
             if (p.imagenurl && String(p.imagenurl).trim() !== '') {
-                imgUrlFinal = String(p.imagenurl).split('|')[0].trim();
-                if (imgUrlFinal.includes('drive.google.com')) {
-                    const match = imgUrlFinal.match(/id=([a-zA-Z0-9_-]+)/);
+                let rawPath = String(p.imagenurl).split('|')[0].trim();
+                
+                if (rawPath.includes('drive.google.com')) {
+                    const match = rawPath.match(/id=([a-zA-Z0-9_-]+)/);
                     if (match && match[1]) {
                         imgUrlFinal = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800`;
                     }
+                } else if (rawPath.startsWith('http')) {
+                    imgUrlFinal = rawPath;
+                } else {
+                    // MAGIA: Forzar lectura directa desde GitHub para evitar error 404 local
+                    imgUrlFinal = `https://raw.githubusercontent.com/dianiluz/cupissa/main/${rawPath.replace(/^\//, '')}`;
                 }
             }
+            // ---------------------------------------------
             
             const isWished = (typeof Wishlist !== 'undefined' && Wishlist.items.some(i => i.ref === p.ref));
             const heartColor = isWished ? 'var(--color-pink)' : 'var(--color-gray-dark)';
@@ -342,63 +346,47 @@ const Catalogo = {
 
         const seleccionActual = {};
         
-        // 1. Extraer TODA la info del producto (para evaluar reglas combinadas como subcategoria|*tallas)
         Object.keys(producto).forEach(key => {
             const claveLimpia = Utils.normalizeStr(key.replace('*','').replace('#',''));
             seleccionActual[claveLimpia] = Utils.normalizeStr(String(producto[key]));
         });
 
-        // 2. Sobrescribir con lo seleccionado por el usuario en tiempo real
         const selects = card.querySelectorAll('.card-select');
         selects.forEach(sel => {
             const claveLimpia = Utils.normalizeStr(sel.getAttribute('data-col').replace('*','').replace('#',''));
             seleccionActual[claveLimpia] = Utils.normalizeStr(sel.value);
         });
 
-        // 3. CONEXIÓN POR ID DE VARIACIÓN (El secreto que faltaba)
         let reglasAUsar = [];
         
         if (producto.variaciones_ids && String(producto.variaciones_ids).trim() !== '') {
-            // Convierte valores como "1, 2, 3" o "[1, 2]" en un arreglo limpio de textos
             const idsStr = String(producto.variaciones_ids).replace(/[\[\]"']/g, '').replace(/\|/g, ',');
             const idsArray = idsStr.split(',').map(id => id.trim());
-            
-            // Traer solo las reglas de BD cuyos IDs estén en la lista del producto
             reglasAUsar = Catalogo.variacionesDB.filter(v => idsArray.includes(String(v.id)));
         } else {
-            // Fallback: Si la columna variaciones_ids está vacía, buscamos si hay reglas globales (ej. empaques)
             reglasAUsar = Catalogo.variacionesDB.filter(v => !v.producto || String(v.producto).trim() === "");
         }
 
-        // 4. Evaluar las reglas encontradas (Soporta reglas múltiples ej: subcategoria|*tallas)
         reglasAUsar.forEach(regla => {
             if (!regla.columna || !regla.valor) return;
             
             const columnasRegla = regla.columna.split('|');
             const valoresRegla = regla.valor.split('|');
 
-            // Si es una regla combinada (ej: 3 condiciones al tiempo)
             if (columnasRegla.length === valoresRegla.length) {
                 let cumpleTodas = true;
-                
                 for (let i = 0; i < columnasRegla.length; i++) {
                     const colReq = Utils.normalizeStr(columnasRegla[i].replace('*','').replace('#',''));
                     const valReq = Utils.normalizeStr(valoresRegla[i]);
-                    
                     const valorSeleccionado = seleccionActual[colReq];
 
-                    // Si no tiene la columna o no coincide el valor, la regla entera se rompe
                     if (!valorSeleccionado || !(valorSeleccionado === valReq || valorSeleccionado.includes(valReq) || valReq.includes(valorSeleccionado))) {
                         cumpleTodas = false;
                         break;
                     }
                 }
-                
-                if (cumpleTodas) {
-                    incrementoTotal += Number(regla.incremento || 0);
-                }
+                if (cumpleTodas) incrementoTotal += Number(regla.incremento || 0);
             } 
-            // Si es una regla sencilla (1 sola condición)
             else {
                 const colReq = Utils.normalizeStr(regla.columna.replace('*','').replace('#',''));
                 const valReq = Utils.normalizeStr(regla.valor);
