@@ -1,4 +1,3 @@
-/* js/buscador.js */
 /* ===================================================== */
 /* CUPISSA — BUSCADOR INTELIGENTE (PRODUCTOS Y FILTROS)  */
 /* ===================================================== */
@@ -20,15 +19,29 @@ const Buscador = {
         Buscador.crearInterfaz(nav);
         
         try {
-            const resProd = await (typeof Utils !== 'undefined' ? Utils.fetchFromBackend('obtenerCatalogoBase') : Promise.reject('No Utils'));
-            if (resProd && resProd.success && resProd.productos) {
-                Buscador.productosBD = resProd.productos.filter(p => {
-                    const estado = p['*activ'] || p['*activo'] || p['activo'] || p['Activo'] || 'NO';
-                    return String(estado).toUpperCase().trim() === 'SI';
+            // --- NUEVA CONEXIÓN A SUPABASE ---
+            // Esperar un instante si window.db aún no está listo
+            let intentos = 0;
+            while (!window.db && intentos < 10) {
+                await new Promise(r => setTimeout(r, 200));
+                intentos++;
+            }
+            if (!window.db) throw new Error("Supabase no inicializado en el buscador");
+
+            const { data: prodData, error } = await window.db.from('productos').select('*').eq('activo', 'SI');
+            
+            if (error) throw error;
+            
+            if (prodData && prodData.length > 0) {
+                Buscador.productosBD = prodData.map(p => {
+                    // Normalizar nombres para mantener compatibilidad con el resto del código
+                    p.nombre = p.producto || p.nombre || 'Producto';
+                    p['*precio_base'] = p.precio_base || p.precio || 0;
+                    return p;
                 });
             }
         } catch (e) {
-            console.error("Buscador usando productos en caché/demo.");
+            console.error("Buscador usando productos en caché/demo:", e);
         }
 
         if (!Buscador.productosBD || Buscador.productosBD.length === 0) {
