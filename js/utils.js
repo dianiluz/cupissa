@@ -2,6 +2,15 @@
 /* CUPISSA — UTILIDADES GLOBALES Y NOTIFICACIONES        */
 /* ===================================================== */
 
+// --- INICIALIZACIÓN GLOBAL DE SUPABASE (NUEVO MOTOR) ---
+if (typeof window.supabase !== 'undefined' && !window.db) {
+    window.db = window.supabase.createClient(
+        CONFIG.supabase.url, 
+        CONFIG.supabase.key
+    );
+    console.log("🟢 Conexión Supabase (Tienda) establecida correctamente");
+}
+
 const Utils = {
     // --- MANEJO DE NÚMEROS Y MONEDA ---
     safeNumber: (val) => {
@@ -20,8 +29,6 @@ const Utils = {
         }).format(num);
     },
 
-    
-
     // --- MANEJO DE TEXTO ---
     normalizeStr: (str) => {
         if (!str) return "";
@@ -39,7 +46,7 @@ const Utils = {
         return array;
     },
 
-    // --- COMUNICACIÓN CON BACKEND ---
+    // --- COMUNICACIÓN CON BACKEND (APPS SCRIPT) ---
     fetchFromBackend: async (action, extraData = {}) => {
         try {
             // Usamos URLSearchParams para asegurar compatibilidad con e.parameter de GAS
@@ -63,41 +70,41 @@ const Utils = {
     },
 
     getClientIP: async () => {
-    try {
-        const res = await fetch("https://api.ipify.org?format=json");
-        const data = await res.json();
-        return data.ip || "";
-    } catch (e) {
-        return "";
-    }
-},
+        try {
+            const res = await fetch("https://api.ipify.org?format=json");
+            const data = await res.json();
+            return data.ip || "";
+        } catch (e) {
+            return "";
+        }
+    },
 
-getDeviceInfo: () => {
-    const ua = navigator.userAgent;
+    getDeviceInfo: () => {
+        const ua = navigator.userAgent;
 
-    let device = "Desktop";
-    if (/mobile/i.test(ua)) device = "Mobile";
-    if (/tablet/i.test(ua)) device = "Tablet";
+        let device = "Desktop";
+        if (/mobile/i.test(ua)) device = "Mobile";
+        if (/tablet/i.test(ua)) device = "Tablet";
 
-    let browser = "Unknown";
-    if (ua.includes("Chrome")) browser = "Chrome";
-    else if (ua.includes("Firefox")) browser = "Firefox";
-    else if (ua.includes("Safari")) browser = "Safari";
-    else if (ua.includes("Edge")) browser = "Edge";
+        let browser = "Unknown";
+        if (ua.includes("Chrome")) browser = "Chrome";
+        else if (ua.includes("Firefox")) browser = "Firefox";
+        else if (ua.includes("Safari")) browser = "Safari";
+        else if (ua.includes("Edge")) browser = "Edge";
 
-    let os = "Unknown";
-    if (ua.includes("Windows")) os = "Windows";
-    else if (ua.includes("Mac")) os = "MacOS";
-    else if (ua.includes("Android")) os = "Android";
-    else if (ua.includes("iPhone")) os = "iOS";
+        let os = "Unknown";
+        if (ua.includes("Windows")) os = "Windows";
+        else if (ua.includes("Mac")) os = "MacOS";
+        else if (ua.includes("Android")) os = "Android";
+        else if (ua.includes("iPhone")) os = "iOS";
 
-    return {
-        device,
-        browser,
-        os,
-        user_agent: ua
-    };
-},
+        return {
+            device,
+            browser,
+            os,
+            user_agent: ua
+        };
+    },
 
     // --- GESTIÓN DE SESIÓN  ---
     setUserSession: (userData) => {
@@ -156,7 +163,7 @@ getDeviceInfo: () => {
         }, 4000);
     },
 
-    // --- TEMAS (MODO CLARO/OSCURO) [cite: 27] ---
+    // --- TEMAS (MODO CLARO/OSCURO) ---
     toggleDarkMode: () => {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
@@ -173,27 +180,26 @@ getDeviceInfo: () => {
 document.addEventListener('DOMContentLoaded', Utils.applyTheme);
 
 document.addEventListener("DOMContentLoaded",()=>{
+    if(!localStorage.getItem("cookieConsent")){
+        const banner = document.getElementById("cookieBanner");
+        if(!localStorage.getItem("cookieConsent") && banner){
+            banner.style.display="flex";
+        }
+        const btn = document.getElementById("acceptCookies");
+        if(btn){
+            btn.onclick=()=>{
+                localStorage.setItem("cookieConsent","true");
+                banner.style.display="none";
+            };
+        }
+    }
 
-if(!localStorage.getItem("cookieConsent")){
-const banner = document.getElementById("cookieBanner");
-
-if(!localStorage.getItem("cookieConsent") && banner){
-banner.style.display="flex";
-}
-
-const btn = document.getElementById("acceptCookies");
-
-if(btn){
-btn.onclick=()=>{
-localStorage.setItem("cookieConsent","true");
-banner.style.display="none";
-};
-}
-}
-
-document.getElementById("acceptCookies").onclick=()=>{
-localStorage.setItem("cookieConsent","true");
-document.getElementById("cookieBanner").style.display="none";
-};
-
+    const btnAccept = document.getElementById("acceptCookies");
+    if(btnAccept) {
+        btnAccept.onclick=()=>{
+            localStorage.setItem("cookieConsent","true");
+            const banner = document.getElementById("cookieBanner");
+            if(banner) banner.style.display="none";
+        };
+    }
 });
