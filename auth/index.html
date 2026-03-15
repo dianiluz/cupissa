@@ -49,7 +49,7 @@
 
 <div class="auth-separator"><span>O </span></div>
 
-<button id="btnGoogleLogin" type="button" class="btn-google-custom" onclick="Auth.loginConGoogle()">
+<button type="button" onclick="Auth.loginConGoogle()" class="btn-google-custom">
     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
     <span>Continuar con Google</span>
 </button>
@@ -136,11 +136,14 @@
 
     <div id="footer"></div>
 
-    <script src="/js/config.js"></script>
-    <script src="/js/utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="/js/config.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/auth.js"></script>
     <script src="/js/header.js"></script>
     <script src="/js/carrito.js"></script>
     <script src="/js/footer.js"></script>
-    <script src="/js/auth.js"></script>
+    
 </body>
 </html>
