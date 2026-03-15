@@ -529,25 +529,35 @@ const Checkout = {
             if (Checkout.cupicoinsUsar > 0) {
                 await window.db.from('billeteras').update({ saldo: Checkout.cupicoinsDisponibles - Checkout.cupicoinsUsar }).eq('email', correo);
             }
+            
+            // === DISPARO DE NOTIFICACIONES (CON ESPERA OBLIGATORIA) ===
+            try {
+                let promesasEnvio = [];
 
-            // === DISPARO DE NOTIFICACIONES (CORREGIDO) ===
-            if (esUsuarioNuevo) {
-                const claveTemporal = Math.random().toString(36).slice(-8);
-                Utils.fetchFromBackend('enviarCorreoBienvenida', { 
-                    email: correo, 
-                    nombre: nombreCliente, 
-                    clave_temporal: claveTemporal 
-                });
+                if (esUsuarioNuevo) {
+                    const claveTemporal = Math.random().toString(36).slice(-8);
+                    promesasEnvio.push(Utils.fetchFromBackend('enviarCorreoBienvenida', { 
+                        email: correo, 
+                        nombre: nombreCliente, 
+                        clave_temporal: claveTemporal 
+                    }));
+                }
+
+                const payloadNotificaciones = {
+                    pedido: pedData,
+                    usuario: userData,
+                    productos: itemsToInsert
+                };
+
+                promesasEnvio.push(Utils.fetchFromBackend('enviarCorreoConfirmacion', payloadNotificaciones));
+                promesasEnvio.push(Utils.fetchFromBackend('notificarTelegramPedido', payloadNotificaciones));
+                
+                // ESTO ES LO QUE FALTABA: Obliga a la página a esperar que los mensajes salgan antes de saltar a Wompi
+                await Promise.all(promesasEnvio);
+
+            } catch (errorNotif) {
+                console.error("Error enviando notificaciones:", errorNotif);
             }
-
-            const payloadNotificaciones = {
-                pedido: pedData,
-                usuario: userData,
-                productos: itemsToInsert
-            };
-
-            Utils.fetchFromBackend('enviarCorreoConfirmacion', payloadNotificaciones);
-            Utils.fetchFromBackend('notificarTelegramPedido', payloadNotificaciones);
 
             // === LÓGICA DE WOMPI ===
             if (metodoPagoSelec === 'WOMPI') {
