@@ -238,7 +238,7 @@ const Carrito = {
 
         const totalGeneral = Carrito.getTotal();
         const anticipo = totalGeneral * 0.20;
-        const cupiCoinsEarned = Math.floor(totalGeneral / 1000) * 5;
+        const cupiCoinsEarned = Math.floor(totalGeneral / 1000);
 
         totalUI.innerText = Utils.formatCurrency(totalGeneral);
         anticipoUI.innerText = Utils.formatCurrency(anticipo);
