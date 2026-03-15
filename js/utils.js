@@ -47,17 +47,23 @@ const Utils = {
     },
 
     // --- COMUNICACIÓN CON BACKEND (APPS SCRIPT) ---
+    // --- COMUNICACIÓN CON BACKEND (APPS SCRIPT) ---
     fetchFromBackend: async (action, extraData = {}) => {
         try {
-            // Usamos URLSearchParams para asegurar compatibilidad con e.parameter de GAS
-            const params = new URLSearchParams();
-            params.append('action', action);
-            Object.keys(extraData).forEach(key => params.append(key, extraData[key]));
+            // EL ARREGLO: Empacamos todo como un JSON real, no como texto aplastado
+            const payload = {
+                action: action,
+                ...extraData
+            };
             
             const response = await fetch(CONFIG.backendURL, { 
                 method: 'POST', 
-                body: params,
-                mode: 'cors' 
+                // Convertimos el objeto en una cadena JSON perfecta
+                body: JSON.stringify(payload),
+                // Le decimos a Google que se lo mandamos como texto plano para que no lo bloquee (CORS)
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8'
+                }
             });
             
             if (!response.ok) throw new Error("Error en la respuesta del servidor");
