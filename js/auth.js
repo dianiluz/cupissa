@@ -7,11 +7,27 @@ const Auth = {
     user: null,
 
     init: () => {
-        // VERIFICACIÓN DE CONEXIÓN A SUPABASE
-        if (!window.db) {
-            console.error("❌ Error: Supabase no está inicializado. Revisa config.js y utils.js");
-        } else {
-            console.log("✅ Auth conectado a Supabase");
+        // 1. ESCUCHAR CAMBIOS DE AUTENTICACIÓN (Para Google)
+        if (window.db) {
+            window.db.auth.onAuthStateChange(async (event, session) => {
+                if (event === 'SIGNED_IN' && session) {
+                    console.log("Sesión detectada desde Google:", session.user);
+                    
+                    // Normalizamos los datos de Google para que coincidan con tu sistema
+                    const userData = {
+                        nombre: session.user.user_metadata.full_name || session.user.user_metadata.name,
+                        email: session.user.email,
+                        tipo_usuario: 'CLIENTE', // Por defecto
+                        success: true
+                    };
+
+                    // Guardamos en LocalStorage para que todo el sitio sepa quién es
+                    localStorage.setItem('cupissa_user', JSON.stringify(userData));
+                    
+                    // Redirigimos al panel
+                    window.location.replace("/cpanel/");
+                }
+            });
         }
 
         Auth.checkSession();
@@ -32,14 +48,25 @@ const Auth = {
     // --- NUEVA FUNCIÓN: LOGIN CON GOOGLE ---
     loginConGoogle: async () => {
     try {
+        if (!window.db) {
+            window.db = window.supabase.createClient(CONFIG.supabase.url, CONFIG.supabase.key);
+        }
+
         const { data, error } = await window.db.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: window.location.origin + '/cpanel/' }
+            options: {
+                // Quitamos el redirectTo manual para que no choque mientras probamos
+                queryParams: {
+                    access_type: 'offline',
+                    prompt: 'select_account',
+                }
+            }
         });
+
         if (error) throw error;
     } catch (error) {
-        console.error("Error Google:", error.message);
-        Utils.toast("Error al conectar con Google", "error");
+        console.error("Error:", error.message);
+        Utils.toast("Error: " + error.message, "error");
     }
 },
 
