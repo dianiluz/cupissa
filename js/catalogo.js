@@ -128,33 +128,25 @@ const Catalogo = {
         const lote = Catalogo.filtrados.slice((Catalogo.paginaActual - 1) * Catalogo.itemsPorPagina, Catalogo.paginaActual * Catalogo.itemsPorPagina);
 
         lote.forEach(p => {
-            let selectsHtml = '';
-            Object.keys(p).forEach(key => {
-                const val = String(p[key]);
-                const keyL = key.replace(/[*#]/g, '').toLowerCase();
-                if ((val.includes('|') || keyL.includes('talla')) && !['color', 'complemento', 'personaliza'].some(x => keyL.includes(x))) {
-                    const opciones = val.replace('#','').split('|').map(o => o.trim());
-                    selectsHtml += `<select class="card-select" data-col="${key}" onchange="Catalogo.updateCardPrice('${p.ref}')">
-                        <option value="" disabled selected>${keyL.toUpperCase()}</option>
-                        ${opciones.map(o => `<option value="${o}">${o}</option>`).join('')}
-                    </select>`;
-                }
-            });
+            // USAMOS EL NUEVO MOTOR INTELIGENTE DE UTILS
+            // Dentro del lote.forEach de cargarMasProductos:
+const imgFinal = Utils.getImagenUrl(p); // Intenta la de Supabase
+const imgBase = `https://raw.githubusercontent.com/dianiluz/cupissa/main/assets/productos/${p.ref}/base.webp`;
 
-            // RUTA INTELIGENTE DE GITHUB
-            let imgFinal = p.imagenurl;
-            if (imgFinal && !imgFinal.startsWith('http')) {
-                imgFinal = `https://raw.githubusercontent.com/dianiluz/cupissa/main/${imgFinal.replace(/^\//, '')}`;
-            }
+
 
             const card = document.createElement('div');
             card.className = 'product-card fade-in';
             card.id = `card-${p.ref}`;
             card.innerHTML = `
-                <div style="position:relative;">
-                    <img src="${imgFinal}" class="product-image" onclick="ModalProducto.open('${p.ref}')" onerror="this.src='/assets/logo.png'">
+                <div style="position:relative; overflow:hidden;">
+<img src="${imgFinal}" 
+     class="product-image" 
+     onclick="ModalProducto.open('${p.ref}')" 
+     onerror="this.onerror=null; this.src='${imgBase}'; this.setAttribute('onerror', 'this.src=\\'/assets/logo.png\\'');">
+                    
                     <div style="position:absolute; bottom:10px; left:0; width:100%; text-align:center;">
-                        <span id="badge-cupi-${p.ref}" style="background:var(--color-pink); color:white; font-size:0.7rem; padding:4px 12px; border-radius:20px; font-weight:bold;">Cargando Cupicoins...</span>
+                        <span id="badge-cupi-${p.ref}" style="background:var(--color-pink); color:white; font-size:0.7rem; padding:4px 12px; border-radius:20px; font-weight:bold;">Calculando CupiCoins...</span>
                     </div>
                 </div>
                 <div class="product-info">
@@ -162,13 +154,14 @@ const Catalogo = {
                     <div style="font-size:0.75rem; color:var(--color-success); margin-bottom:8px;">
                         🔥 ${Math.floor(Math.random()*20)+10}+ vendidos hoy | 👁️ ${Math.floor(Math.random()*10)+5} viendo
                     </div>
-                    <div class="card-selects">${selectsHtml}</div>
+                    
                     <div style="margin-top:auto; border-top:1px solid #eee; padding-top:10px;">
                         <div id="price-total-${p.ref}" style="color:var(--color-success); font-weight:700; font-size:1.1rem;">$ ---</div>
                         <div id="price-anticipo-${p.ref}" style="color:var(--color-gray-dark); font-size:0.85rem;">Anticipo: ---</div>
                     </div>
                     <button class="btn-add-direct" onclick="ModalProducto.open('${p.ref}')" style="margin-top:10px; width:100%;">Agregar al carrito</button>
                 </div>`;
+            
             grid.appendChild(card);
             Catalogo.updateCardPrice(p.ref);
         });
@@ -206,7 +199,7 @@ const Catalogo = {
         const total = base + inc;
         document.getElementById(`price-total-${ref}`).innerText = Utils.formatCurrency(total);
         document.getElementById(`price-anticipo-${ref}`).innerText = `Anticipo (20%): ${Utils.formatCurrency(total * 0.20)}`;
-        document.getElementById(`badge-cupi-${ref}`).innerText = `Otorga ${Math.floor(total/1000)*5} CupiCoins`;
+        document.getElementById(`badge-cupi-${ref}`).innerText = `Otorga ${Math.floor(total/1000)} CupiCoins`;
     },
 
     bindEvents: () => {
