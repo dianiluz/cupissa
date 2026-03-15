@@ -53,7 +53,14 @@ const ModalProducto = {
         if (!producto) return;
         ModalProducto.productoActual = producto;
         ModalProducto.cantidadActual = 1;
-        document.getElementById('modalImg').src = producto.imagenurl;
+        
+        // USAMOS EL MOTOR DE UTILS PARA LA FOTO INICIAL
+        const imgModal = document.getElementById('modalImg');
+        imgModal.src = Utils.getImagenUrl(producto);
+        // Seguro: si falla la principal, intenta la base.webp de la carpeta
+        const urlBase = `https://raw.githubusercontent.com/dianiluz/cupissa/main/assets/productos/${String(producto.ref).trim()}/base.webp`;
+        imgModal.setAttribute('onerror', `this.onerror=null; this.src='${urlBase}'; this.setAttribute('onerror', 'this.src=\\'/assets/logo.png\\'');`);
+
         document.getElementById('modalTitle').innerText = producto.nombre;
         document.getElementById('modalRef').innerText = `Ref: ${producto.ref}`;
         document.getElementById('modalQty').value = 1;
@@ -128,15 +135,35 @@ const ModalProducto = {
         ModalProducto.calculatePrice();
         const radios = document.querySelectorAll('.var-radio');
         let colorSel = null;
+        
         radios.forEach(r => {
             const circ = r.nextElementSibling;
-            if (r.checked) { circ.style.border = '2px solid var(--color-pink)'; circ.style.transform = 'scale(1.1)'; colorSel = r.value.trim().toLowerCase().replace(/\s+/g, '_'); }
-            else { circ.style.border = '2px solid #E5E7EB'; circ.style.transform = 'scale(1)'; }
+            if (r.checked) { 
+                circ.style.border = '2px solid var(--color-pink)'; 
+                circ.style.transform = 'scale(1.1)'; 
+                colorSel = r.value; 
+            } else { 
+                circ.style.border = '2px solid #E5E7EB'; 
+                circ.style.transform = 'scale(1)'; 
+            }
         });
+
         if (colorSel) {
             const img = document.getElementById('modalImg');
-            const url = `/assets/productos/${ModalProducto.productoActual.ref.trim()}/${colorSel}.webp`;
-            if (!img.src.endsWith(url)) { img.style.opacity = '0.5'; setTimeout(() => { img.src = url; img.style.opacity = '1'; }, 100); }
+            // Pedimos a Utils la URL específica de ese color
+            const nuevaUrl = Utils.getImagenUrl(ModalProducto.productoActual, colorSel);
+            // La base de la carpeta por si el color no tiene foto
+            const urlBase = `https://raw.githubusercontent.com/dianiluz/cupissa/main/assets/productos/${String(ModalProducto.productoActual.ref).trim()}/base.webp`;
+            
+            if (img.src !== nuevaUrl) {
+                img.style.opacity = '0.5';
+                setTimeout(() => {
+                    img.src = nuevaUrl;
+                    // EL SEGURO: Si falla el color, muestra la base de la carpeta
+                    img.setAttribute('onerror', `this.onerror=null; this.src='${urlBase}'; this.setAttribute('onerror', 'this.src=\\'/assets/logo.png\\'');`);
+                    img.style.opacity = '1';
+                }, 100);
+            }
         }
     },
 
@@ -192,7 +219,7 @@ const ModalProducto = {
         document.getElementById('modalPrice').innerText = `Total: ${Utils.formatCurrency(total)}`;
         if (document.getElementById('modalAnticipo')) document.getElementById('modalAnticipo').innerText = `Anticipo (20%): ${Utils.formatCurrency(total * 0.20)}`;
         if (document.getElementById('modalCupicoins')) {
-            const c = Math.floor(total / 1000) * 5;
+            const c = Math.floor(total / 1000);
             document.getElementById('modalCupicoins').innerHTML = `✨ Sumas <b>${c} CupiCoins</b>`;
             document.getElementById('modalCupicoins').style.display = 'block';
         }
