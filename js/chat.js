@@ -22,27 +22,20 @@ const LiveChat = {
     init: () => {
         if (LiveChat.isInitialized) return;
 
-        // 1. Inyectar CSS modular y ESPERAR a que cargue
         const cssLink = document.createElement('link');
         cssLink.rel = 'stylesheet';
         cssLink.href = '/css/chat.css';
         
         cssLink.onload = async () => {
-            // 2. Inyectar la interfaz SOLO cuando el CSS ya está aplicado
             LiveChat.crearInterfaz();
 
-            // 3. Cargar librerías de Firebase dinámicamente
             await LiveChat.cargarScript("https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js");
             await LiveChat.cargarScript("https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js");
 
-            // 4. Inicializar Firebase
             if (!firebase.apps.length) firebase.initializeApp(LiveChat.firebaseConfig);
             LiveChat.db = firebase.database();
 
-            // 5. Configurar Sesión de Usuario
             LiveChat.configurarSesion();
-            
-            // 6. Activar Listeners (Firebase y DOM)
             LiveChat.bindEvents();
             
             LiveChat.isInitialized = true;
@@ -83,10 +76,10 @@ const LiveChat = {
                     <button id="chatStartBtn">Comenzar a chatear</button>
                 </div>
 
-                <div id="chatMainInterface" class="chat-main-interface">
+                <div id="chatMainInterface" class="chat-main-interface" style="display:none;">
                     <div class="chat-body" id="chatBody">
                         <div class="chat-msg admin">
-                            Por favor, deja un mensaje con tu consulta o comentario, y uno de nuestros agentes te responderá lo antes posible.
+                            Hola! 👋 Soy CupiBot, el asistente de Cupissa. ¿En qué te puedo ayudar hoy?
                             <span class="chat-time">Ahora</span>
                         </div>
                     </div>
@@ -98,28 +91,40 @@ const LiveChat = {
             </div>
             <div class="chat-fab" onclick="LiveChat.toggleChat()">
                 <i class="fas fa-comment-dots"></i>
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times" style="display:none;"></i>
             </div>
         `;
         document.body.appendChild(widget);
     },
 
     toggleChat: () => {
-        document.getElementById('cupissaChatWidget').classList.toggle('open');
-        setTimeout(() => {
-            const input = document.getElementById('chatInput');
-            if (input && document.getElementById('chatMainInterface').style.display === 'flex') input.focus();
-            LiveChat.scrollBottom();
-        }, 300);
+        const widget = document.getElementById('cupissaChatWidget');
+        widget.classList.toggle('open');
+        const iconChat = widget.querySelector('.fa-comment-dots');
+        const iconClose = widget.querySelector('.fa-times');
+        
+        if (widget.classList.contains('open')) {
+            iconChat.style.display = 'none';
+            iconClose.style.display = 'block';
+            setTimeout(() => {
+                const input = document.getElementById('chatInput');
+                if (input && document.getElementById('chatMainInterface').style.display === 'flex') input.focus();
+                LiveChat.scrollBottom();
+            }, 300);
+        } else {
+            iconChat.style.display = 'block';
+            iconClose.style.display = 'none';
+        }
     },
 
     configurarSesion: () => {
-        let savedId = localStorage.getItem('cupissa_chat_session');
+        let savedId = sessionStorage.getItem('cupissa_chat_session');
         let savedInfo = localStorage.getItem('cupissa_chat_user');
         
         if (!savedId) {
-            savedId = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-            localStorage.setItem('cupissa_chat_session', savedId);
+            // El ID es único por pestaña, así siempre limpia la web, pero en Telegram se agrupa por correo
+            savedId = 'sess_' + Math.random().toString(36).substr(2, 9);
+            sessionStorage.setItem('cupissa_chat_session', savedId);
         }
         LiveChat.chatId = savedId;
 
@@ -144,10 +149,9 @@ const LiveChat = {
         
         LiveChat.mostrarChat();
         
-        // Enviar mensaje oculto inicial al backend para crear el Tema en Telegram
         if (typeof Utils !== 'undefined' && Utils.fetchFromBackend) {
-            Utils.fetchFromBackend('notificarChatTelegram', {
-                chat_id: LiveChat.chatId,
+            Utils.fetchFromBackend('nuevoMensajeChat', {
+                thread_id: LiveChat.chatId,
                 nombre: nom,
                 telefono: tel,
                 correo: cor,
@@ -180,9 +184,10 @@ const LiveChat = {
         await LiveChat.db.ref(`chats/${LiveChat.chatId}/messages`).push(msgData);
         
         if (typeof Utils !== 'undefined' && Utils.fetchFromBackend) {
-            Utils.fetchFromBackend('notificarChatTelegram', {
-                chat_id: LiveChat.chatId,
+            Utils.fetchFromBackend('nuevoMensajeChat', {
+                thread_id: LiveChat.chatId,
                 nombre: LiveChat.userInfo.nombre,
+                correo: LiveChat.userInfo.correo,
                 mensaje: texto,
                 is_first: false
             });
@@ -191,16 +196,17 @@ const LiveChat = {
 
     escucharMensajes: () => {
         const chatBody = document.getElementById('chatBody');
-        
-        // Desvincular oyentes previos para evitar duplicados si se cierra sesión
         LiveChat.db.ref(`chats/${LiveChat.chatId}/messages`).off();
 
         LiveChat.db.ref(`chats/${LiveChat.chatId}/messages`).on('child_added', (snapshot) => {
             const data = snapshot.val();
+            // Evitar duplicar el mensaje inicial de bienvenida
+            if (data.text.includes("Soy CupiBot") && data.sender === "admin") return;
+
             const time = new Date(data.timestamp || Date.now()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             
             const div = document.createElement('div');
-            div.className = `chat-msg ${data.sender}`; // "admin" o "user"
+            div.className = `chat-msg ${data.sender}`;
             div.innerHTML = `
                 ${data.text}
                 <span class="chat-time">${time}</span>
