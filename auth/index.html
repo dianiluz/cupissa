@@ -45,6 +45,14 @@
                 
                 <button type="submit" class="btn-primary" id="btnLoginSubmit" style="width: 100%; margin-top: 10px;">Ingresar</button>
             </form>
+            
+
+<div class="auth-separator"><span>O </span></div>
+
+<button id="btnGoogleLogin" type="button" class="btn-google-custom" onclick="Auth.loginConGoogle()">
+    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
+    <span>Continuar con Google</span>
+</button>
 
             <div style="margin-top: 1.5rem; font-size: 0.9rem;">
                 ¿No tienes cuenta? <a href="#" class="auth-link" onclick="document.getElementById('loginBox').style.display='none'; document.getElementById('registerBox').style.display='block'; return false;">Regístrate aquí</a>
