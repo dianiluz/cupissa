@@ -7,6 +7,13 @@ const Auth = {
     user: null,
 
     init: () => {
+        // VERIFICACIÓN DE CONEXIÓN A SUPABASE
+        if (!window.db) {
+            console.error("❌ Error: Supabase no está inicializado. Revisa config.js y utils.js");
+        } else {
+            console.log("✅ Auth conectado a Supabase");
+        }
+
         Auth.checkSession();
         Auth.checkSetupURL(); 
         Auth.bindEvents();
@@ -15,8 +22,6 @@ const Auth = {
     checkSession: () => {
         const activeUser = Utils.getUserSession ? Utils.getUserSession() : JSON.parse(localStorage.getItem('cupissa_user'));
         const path = window.location.pathname;
-        
-        // CORRECCIÓN: Solo redirigir al panel si estamos en login/registro y ya hay sesión
         const isAuthPage = path.includes('/auth/') || path.includes('/login/') || path.includes('/registro/');
         
         if (activeUser && isAuthPage) {
@@ -24,24 +29,20 @@ const Auth = {
         }
     },
 
-    checkSetupURL: () => {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('action') === 'setup') {
-            setTimeout(() => {
-                ['loginBox', 'registerBox', 'recoverBox'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if(el) el.style.display = 'none';
-                });
-                const setupBox = document.getElementById('setupBox');
-                if (setupBox) {
-                    setupBox.style.display = 'block';
-                    document.getElementById('setupEmail').value = params.get('email');
-                    document.getElementById('setupToken').value = params.get('token');
-                }
-            }, 100);
-        }
-    },
-    
+    // --- NUEVA FUNCIÓN: LOGIN CON GOOGLE ---
+    loginConGoogle: async () => {
+    try {
+        const { data, error } = await window.db.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo: window.location.origin + '/cpanel/' }
+        });
+        if (error) throw error;
+    } catch (error) {
+        console.error("Error Google:", error.message);
+        Utils.toast("Error al conectar con Google", "error");
+    }
+},
+
     login: async (e) => {
         if(e) e.preventDefault();
         const btn = document.getElementById('btnLoginSubmit');
@@ -53,38 +54,40 @@ const Auth = {
 
         btn.disabled = true;
         btn.innerText = "Conectando...";
-        errorDiv.style.display = 'none';
+        if(errorDiv) errorDiv.style.display = 'none';
 
         try {
             const res = await Utils.fetchFromBackend('login', { email, password });
             if (res.success) {
                 if (remember) localStorage.setItem('cupissa_user', JSON.stringify(res));
                 else sessionStorage.setItem('cupissa_user', JSON.stringify(res));
-                
-                // Redirigir siempre a la nueva carpeta del panel
                 window.location.replace("/cpanel/");
             } else {
-                errorDiv.innerText = res.error || "Credenciales incorrectas.";
-                errorDiv.style.display = 'block';
+                if(errorDiv) {
+                    errorDiv.innerText = res.error || "Credenciales incorrectas.";
+                    errorDiv.style.display = 'block';
+                }
                 btn.disabled = false;
                 btn.innerText = "Ingresar";
             }
         } catch (error) {
-            errorDiv.innerText = "Error de red. Intenta nuevamente.";
-            errorDiv.style.display = 'block';
+            if(errorDiv) {
+                errorDiv.innerText = "Error de red. Intenta nuevamente.";
+                errorDiv.style.display = 'block';
+            }
             btn.disabled = false;
         }
-    },
-
-    logout: () => {
-        localStorage.removeItem('cupissa_user');
-        sessionStorage.removeItem('cupissa_user');
-        window.location.replace("/");
     },
 
     bindEvents: () => {
         const loginForm = document.getElementById('formLogin');
         if (loginForm) loginForm.addEventListener('submit', Auth.login);
+
+        // ASIGNAR EVENTO AL BOTÓN DE GOOGLE
+        const btnGoogle = document.getElementById('btnGoogleLogin');
+        if (btnGoogle) {
+            btnGoogle.addEventListener('click', Auth.loginConGoogle);
+        }
     }
 };
 
