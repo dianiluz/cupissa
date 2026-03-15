@@ -12,6 +12,36 @@ if (typeof window.supabase !== 'undefined' && !window.db) {
 }
 
 const Utils = {
+    // --- NUEVO MOTOR DE IMÁGENES INTELIGENTE ---
+    getImagenUrl: (producto, color = null) => {
+        if (!producto) return '/assets/logo.png';
+        
+        const ref = String(producto.ref || producto.referencia || "").trim();
+        const imgDb = String(producto.imagenurl || "").trim();
+        const baseRepo = "https://raw.githubusercontent.com/dianiluz/cupissa/main/assets/productos";
+
+        // 1. Si Supabase tiene una URL completa de Drive o externa, se respeta
+        if (imgDb.startsWith('http')) return imgDb.split('|')[0].trim();
+
+        // 2. Si el panel admin ya está guardando solo la referencia o el nuevo sistema
+        // Construimos la ruta: assets/productos/REFERENCIA/
+        const folderPath = `${baseRepo}/${ref}`;
+
+        // Si se pide un color específico (para el modal o carrito)
+        if (color) {
+            const colorClean = Utils.normalizeStr(color).replace(/\s+/g, '_');
+            return `${folderPath}/${colorClean}.webp`;
+        }
+
+        // Si es para el catálogo o no hay color, intentamos cargar 'base.webp'
+        // Pero si la DB trae una ruta vieja tipo "/assets/productos/CUP123.png", la usamos de fallback
+        if (imgDb !== "" && imgDb.includes('.')) {
+             return imgDb.startsWith('/') ? `https://raw.githubusercontent.com/dianiluz/cupissa/main${imgDb}` : imgDb;
+        }
+
+        return `${folderPath}/base.webp`;
+    },
+
     // --- MANEJO DE NÚMEROS Y MONEDA ---
     safeNumber: (val) => {
         if (!val) return 0;
@@ -47,25 +77,14 @@ const Utils = {
     },
 
     // --- COMUNICACIÓN CON BACKEND (APPS SCRIPT) ---
-    // --- COMUNICACIÓN CON BACKEND (APPS SCRIPT) ---
     fetchFromBackend: async (action, extraData = {}) => {
         try {
-            // EL ARREGLO: Empacamos todo como un JSON real, no como texto aplastado
-            const payload = {
-                action: action,
-                ...extraData
-            };
-            
+            const payload = { action: action, ...extraData };
             const response = await fetch(CONFIG.backendURL, { 
                 method: 'POST', 
-                // Convertimos el objeto en una cadena JSON perfecta
                 body: JSON.stringify(payload),
-                // Le decimos a Google que se lo mandamos como texto plano para que no lo bloquee (CORS)
-                headers: {
-                    'Content-Type': 'text/plain;charset=utf-8'
-                }
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }
             });
-            
             if (!response.ok) throw new Error("Error en la respuesta del servidor");
             return await response.json();
         } catch (error) {
@@ -75,44 +94,7 @@ const Utils = {
         }
     },
 
-    getClientIP: async () => {
-        try {
-            const res = await fetch("https://api.ipify.org?format=json");
-            const data = await res.json();
-            return data.ip || "";
-        } catch (e) {
-            return "";
-        }
-    },
-
-    getDeviceInfo: () => {
-        const ua = navigator.userAgent;
-
-        let device = "Desktop";
-        if (/mobile/i.test(ua)) device = "Mobile";
-        if (/tablet/i.test(ua)) device = "Tablet";
-
-        let browser = "Unknown";
-        if (ua.includes("Chrome")) browser = "Chrome";
-        else if (ua.includes("Firefox")) browser = "Firefox";
-        else if (ua.includes("Safari")) browser = "Safari";
-        else if (ua.includes("Edge")) browser = "Edge";
-
-        let os = "Unknown";
-        if (ua.includes("Windows")) os = "Windows";
-        else if (ua.includes("Mac")) os = "MacOS";
-        else if (ua.includes("Android")) os = "Android";
-        else if (ua.includes("iPhone")) os = "iOS";
-
-        return {
-            device,
-            browser,
-            os,
-            user_agent: ua
-        };
-    },
-
-    // --- GESTIÓN DE SESIÓN  ---
+    // --- GESTIÓN DE SESIÓN ---
     setUserSession: (userData) => {
         const data = {
             nombre: userData.nombre,
@@ -127,9 +109,7 @@ const Utils = {
     getUserSession: () => {
         const local = localStorage.getItem('cupissa_user');
         const session = sessionStorage.getItem('cupissa_user');
-        
-        const data = local ? JSON.parse(local) : (session ? JSON.parse(session) : null);
-        return data;
+        return local ? JSON.parse(local) : (session ? JSON.parse(session) : null);
     },
 
     logout: () => {
@@ -147,65 +127,24 @@ const Utils = {
             toastBox.style.cssText = 'position:fixed; bottom:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:10px;';
             document.body.appendChild(toastBox);
         }
-        
         const toast = document.createElement('div');
-        // Usando los colores oficiales de la marca 
         const bgColor = type === 'error' ? '#ff4d4d' : (type === 'success' ? '#28a745' : '#db137a');
-        
         toast.style.cssText = `background-color: ${bgColor}; color: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-family: 'Poppins', sans-serif; font-size: 0.95rem; opacity: 0; transform: translateY(20px); transition: all 0.3s ease;`;
         toast.innerText = msg;
-        
         toastBox.appendChild(toast);
-        
         requestAnimationFrame(() => {
             toast.style.opacity = '1';
             toast.style.transform = 'translateY(0)';
         });
-
         setTimeout(() => {
             toast.style.opacity = '0';
             toast.style.transform = 'translateY(20px)';
             setTimeout(() => toast.remove(), 300);
         }, 4000);
-    },
-
-    // --- TEMAS (MODO CLARO/OSCURO) ---
-    toggleDarkMode: () => {
-        document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        localStorage.setItem('cupissa_theme', isDark ? 'dark' : 'light');
-    },
-
-    applyTheme: () => {
-        const theme = localStorage.getItem('cupissa_theme');
-        if (theme === 'dark') document.body.classList.add('dark-mode');
     }
 };
 
-// Inicialización automática
-document.addEventListener('DOMContentLoaded', Utils.applyTheme);
-
-document.addEventListener("DOMContentLoaded",()=>{
-    if(!localStorage.getItem("cookieConsent")){
-        const banner = document.getElementById("cookieBanner");
-        if(!localStorage.getItem("cookieConsent") && banner){
-            banner.style.display="flex";
-        }
-        const btn = document.getElementById("acceptCookies");
-        if(btn){
-            btn.onclick=()=>{
-                localStorage.setItem("cookieConsent","true");
-                banner.style.display="none";
-            };
-        }
-    }
-
-    const btnAccept = document.getElementById("acceptCookies");
-    if(btnAccept) {
-        btnAccept.onclick=()=>{
-            localStorage.setItem("cookieConsent","true");
-            const banner = document.getElementById("cookieBanner");
-            if(banner) banner.style.display="none";
-        };
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    const theme = localStorage.getItem('cupissa_theme');
+    if (theme === 'dark') document.body.classList.add('dark-mode');
 });
