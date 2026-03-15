@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Panel - Cliente CUPISSA</title>
+    <title>Mi Panel - CUPISSA</title>
     <link rel="icon" href="/assets/favicon.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -13,84 +13,30 @@
     <link rel="stylesheet" href="/css/base.css">
     <link rel="stylesheet" href="/css/layout.css">
     <link rel="stylesheet" href="/css/components.css">
-    <link rel="stylesheet" href="/css/animations.css">
-    
-    <link rel="stylesheet" href="/css/panel.css">
+    <link rel="stylesheet" href="/css/panel.css"> 
 </head>
-<body>
-    <div id="header"></div> 
+<body class="panel-body">
 
-    <main class="panel-layout">
-        
-        <aside class="panel-sidebar">
-            <div style="text-align: center; margin-bottom: 25px; padding: 0 15px;">
-                <img src="/assets/icons/user-avatar.png" id="userPhoto" style="width: 80px; border-radius: 50%; border: 3px solid var(--color-pink);">
-                <h3 id="panelUserName" style="font-family: 'Bree Serif'; font-size: 1.1rem; margin-top: 10px; color: var(--color-black);">Cargando...</h3>
-                <span id="userBadge" class="badge">Cliente</span>
-            </div>
+    <div id="header"></div>
 
-            <ul class="panel-sidebar-menu">
-                <li onclick="Panel.showTab('resumen')" id="menu-resumen" class="active"><i class="fas fa-th-large"></i> Resumen</li>
-                <li onclick="Panel.showTab('pedidos')" id="menu-pedidos"><i class="fas fa-shopping-bag"></i> Mis Pedidos</li>
-                <li onclick="Panel.showTab('cupicoins')" id="menu-cupicoins"><i class="fas fa-coins"></i> CupiCoins & Club</li>
-                <li onclick="Panel.showTab('albumes')" id="menu-albumes"><i class="fas fa-book"></i> Álbumes</li>
-                <li onclick="Panel.showTab('perfil')" id="menu-perfil"><i class="fas fa-user-edit"></i> Mi Perfil</li>
-                <li onclick="Auth.logout()" style="color: var(--color-pink); border-top: 1px solid #eee; margin-top: 10px;"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</li>
-            </ul>
-        </aside>
-
-        <section class="panel-content-area">
-            
-            <div id="tab-resumen" class="tab-pane active">
-                <h2 style="font-family: 'Bree Serif'; margin-bottom: 20px;">Resumen de Actividad</h2>
-                <div class="kpi-grid">
-                    <div class="kpi-card">
-                        <h3 id="valCupiCoins">0</h3>
-                        <p>Mis CupiCoins</p>
-                    </div>
-                    <div class="kpi-card">
-                        <h3 id="valPedidosActivos">0</h3>
-                        <p>Pedidos Activos</p>
-                    </div>
-                    <div class="kpi-card">
-                        <h3 id="valNivelClub" style="font-size: 1.2rem;">Cargando...</h3>
-                        <p>Nivel del Club</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-pedidos" class="tab-pane">
-                <h2 style="font-family: 'Bree Serif';">Historial de Pedidos</h2>
-                <div id="listaPedidos" style="margin-top: 20px;">Cargando pedidos...</div>
-            </div>
-
-            <div id="tab-cupicoins" class="tab-pane">
-                <h2 style="font-family: 'Bree Serif';">CupiCoins & Club</h2>
-                <div id="tableroPromos" class="kpi-grid" style="margin-top: 20px;"></div>
-            </div>
-
-            <div id="tab-albumes" class="tab-pane">
-                <h2 style="font-family: 'Bree Serif';">Mis Álbumes</h2>
-                <div id="albumContainer"></div>
-            </div>
-
-            <div id="tab-perfil" class="tab-pane">
-                <h2 style="font-family: 'Bree Serif';">Mi Perfil</h2>
-                <p>Próximamente podrás editar tus datos aquí.</p>
-            </div>
-
-        </section>
-    </main>
+    <div id="panelApp">
+        <div style="text-align: center; padding: 100px 20px; color: var(--color-pink);">
+            <i class="fas fa-spinner fa-spin fa-3x"></i>
+            <h3 style="margin-top: 20px; font-family: 'Poppins', sans-serif;">Conectando con Cupissa...</h3>
+        </div>
+    </div>
 
     <div id="footer"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script src="/js/config.js"></script>
     <script src="/js/utils.js"></script>
+    
     <script src="/js/header.js"></script>
     <script src="/js/carrito.js"></script>
     <script src="/js/footer.js"></script>
-    <script src="/js/auth.js"></script>
+    
     <script src="/js/panel.js"></script>
-    <script src="/js/chat.js"></script>
 </body>
 </html>
