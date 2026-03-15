@@ -128,8 +128,16 @@ const Checkout = {
     },
 
     toggleCupicoins: () => {
+        const abonoSelect = document.getElementById('chkAbono');
         const isChecked = document.getElementById('chkUsarCupicoins').checked;
-        Checkout.cupicoinsUsar = isChecked ? Checkout.cupicoinsDisponibles : 0;
+
+        if (isChecked && abonoSelect && abonoSelect.value !== "1") {
+            Utils.toast("Los CupiCoins solo pueden redimirse si seleccionas PAGO TOTAL (100%)", "error");
+            document.getElementById('chkUsarCupicoins').checked = false;
+            Checkout.cupicoinsUsar = 0;
+        } else {
+            Checkout.cupicoinsUsar = isChecked ? Checkout.cupicoinsDisponibles : 0;
+        }
         Checkout.calcularTotalFinal();
     },
 
@@ -228,22 +236,14 @@ const Checkout = {
         if (!container) return;
         container.innerHTML = '';
         Checkout.items.forEach(item => {
-            let imgUrlFinal = '/assets/logo.png';
-            if (item.imagenurl && String(item.imagenurl).trim() !== '') {
-                let rawPath = String(item.imagenurl).split('|')[0].trim();
-                if (rawPath.includes('drive.google.com')) {
-                    const match = rawPath.match(/id=([a-zA-Z0-9_-]+)/);
-                    if (match && match[1]) imgUrlFinal = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w200`;
-                } else if (rawPath.startsWith('http')) {
-                    imgUrlFinal = rawPath;
-                } else {
-                    imgUrlFinal = `https://raw.githubusercontent.com/dianiluz/cupissa/main/${rawPath.replace(/^\//, '')}`;
-                }
-            }
+            // USAMOS EL MOTOR INTELIGENTE DE UTILS
+            const imgUrlFinal = item.imagenurl; 
+            const imgBase = item.imagen_base;
 
             container.innerHTML += `
                 <div class="summary-item" style="display:flex; gap:10px; margin-bottom:10px;">
-                    <img src="${imgUrlFinal}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;" onerror="this.src='/assets/logo.png'">
+                    <img src="${imgUrlFinal}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;" 
+                         onerror="this.onerror=null; this.src='${imgBase}'; this.setAttribute('onerror', 'this.src=\\'/assets/logo.png\\'');">
                     <div style="flex:1; font-size:0.85rem;">
                         <div>${item.nombre} (x${item.cantidad})</div>
                         <div style="color:var(--color-pink); font-weight:bold;">${Utils.formatCurrency(item.precio_unitario * item.cantidad)}</div>
@@ -484,7 +484,7 @@ const Checkout = {
                 departamento: document.getElementById('chkDepartamento').value,
                 barrio: document.getElementById('chkBarrioBuscador').value,
                 direccion: document.getElementById('chkDireccion').value,
-                cc: cedula, 
+                cc: cedula && cedula !== "" ? parseInt(cedula) : null,
                 tipo_usuario: 'CLIENTE', 
                 activo: 'SI'
             };
@@ -629,6 +629,12 @@ const Checkout = {
                 });
             }
         });
+        document.getElementById('chkAbono')?.addEventListener('change', () => {
+        const chkCupi = document.getElementById('chkUsarCupicoins');
+        if (chkCupi) chkCupi.checked = false;
+        Checkout.cupicoinsUsar = 0;
+        Checkout.calcularTotalFinal();
+    });
 
         document.getElementById('chkAbono')?.addEventListener('change', Checkout.calcularTotalFinal);
         document.getElementById('chkMetodoPago')?.addEventListener('change', Checkout.calcularTotalFinal);
@@ -641,6 +647,8 @@ const Checkout = {
             }
         });
     }
+
+    
 };
 
 document.addEventListener('DOMContentLoaded', Checkout.init);
