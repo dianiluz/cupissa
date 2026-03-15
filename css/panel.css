@@ -1,293 +1,478 @@
 /* ===================================================== */
-/* CUPISSA — ESTILOS EXCLUSIVOS DEL PANEL DE CLIENTE     */
+/* CUPISSA — ESTILOS DEL PANEL (MODERNO Y RESPONSIVE)    */
 /* ===================================================== */
 
-/* Contenedor Principal del Panel */
-.panel-layout {
-    display: flex;
-    max-width: 1200px;
-    margin: 40px auto;
-    background: var(--color-white);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    overflow: hidden;
-    min-height: 70vh;
-    border: 1px solid #f0f0f0;
+/* 1. LAYOUT PRINCIPAL */
+.panel-body {
+    background-color: #f8f9fa;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    -webkit-tap-highlight-color: transparent; /* Evita parpadeos azules al tocar en móvil */
 }
 
-/* Sidebar del Panel */
+.panel-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 100px); /* Deja espacio para footer/header */
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 30px;
+    padding: 30px 20px;
+}
+
+/* 2. SIDEBAR (MENÚ LATERAL) */
 .panel-sidebar {
-    width: 280px;
-    background: #fafafa;
-    padding: 30px 0;
-    border-right: 1px solid #eee;
+    background: white;
+    border-radius: 20px;
+    padding: 30px 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05); /* Sombra más suave */
     display: flex;
     flex-direction: column;
+    height: fit-content;
+    position: sticky;
+    top: 90px;
+    z-index: 10;
 }
 
-/* Menú de Navegación Lateral */
-.panel-sidebar-menu {
+.user-profile-summary {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+#panelUserName {
+    font-family: 'Bree Serif', serif;
+    font-size: 1.5rem;
+    margin: 12px 0 5px;
+    color: #333;
+    word-break: break-word; /* Evita que nombres largos rompan el diseño */
+}
+
+.user-role-tag {
+    font-size: 0.7rem;
+    color: #888;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* MENÚ */
+.panel-sidebar-menu ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    flex-grow: 1;
 }
 
 .panel-sidebar-menu li {
-    padding: 14px 25px;
+    padding: 14px 20px;
+    margin-bottom: 8px;
+    border-radius: 12px;
     cursor: pointer;
-    font-weight: 600;
-    color: var(--color-gray-dark);
-    transition: all 0.3s ease;
-    border-left: 4px solid transparent;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 15px;
+    color: #555;
+    transition: all 0.2s ease;
+    font-weight: 500;
     font-size: 0.95rem;
 }
 
 .panel-sidebar-menu li i {
-    width: 20px;
+    font-size: 1.2rem;
+    width: 24px;
     text-align: center;
-    font-size: 1.1rem;
-    color: var(--color-gray-medium);
 }
 
 .panel-sidebar-menu li:hover {
-    background: #f0f0f0;
-    color: var(--color-black);
+    background: #fff0f6;
+    color: var(--color-pink);
 }
 
 .panel-sidebar-menu li.active {
-    background: #fff;
-    color: var(--color-pink);
-    border-left-color: var(--color-pink);
+    background: var(--color-pink);
+    color: white;
+    box-shadow: 0 4px 15px rgba(219, 19, 122, 0.3);
 }
 
-.panel-sidebar-menu li.active i {
-    color: var(--color-pink);
+.btn-logout {
+    color: #e53935 !important;
 }
 
-/* Área de Contenido */
-.panel-content-area {
-    flex: 1;
-    padding: 40px;
-    background: var(--color-white);
-    overflow-y: auto;
+.btn-logout:hover {
+    background: #ffebee !important;
 }
 
-/* Pestañas de Contenido */
+/* 3. CONTENIDO PRINCIPAL */
+.panel-content {
+    padding-bottom: 50px;
+    width: 100%; /* Previene desbordamiento en grid */
+    overflow-x: hidden;
+}
+
 .tab-pane {
     display: none;
-    animation: panelFadeIn 0.4s ease forwards;
+    animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .tab-pane.active {
     display: block;
 }
 
-@keyframes panelFadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Grid de Tarjetas de Indicadores (KPIs) */
-.kpi-grid {
+/* 4. TARJETAS DE RESUMEN (CUPICOINS) */
+.resumen-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
-    margin-bottom: 30px;
 }
 
-.kpi-card {
-    background: #fff;
-    padding: 25px;
-    border-radius: var(--radius-md);
-    text-align: center;
-    border: 1px solid #eee;
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.3s ease;
-}
-
-.kpi-card:hover {
-    transform: translateY(-5px);
-}
-
-.kpi-card h3 {
-    margin: 0;
-    font-size: 2.2rem;
-    color: var(--color-black);
-    font-family: 'Bree Serif', serif;
-}
-
-.kpi-card p {
-    margin: 8px 0 0 0;
-    color: var(--color-gray-dark);
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 1px;
-}
-
-/* Estilos de Insignias (Badges) */
-.badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    background: var(--color-gray-medium);
+.card-cupicoins-main {
+    background: linear-gradient(135deg, #db137a, #ff5d9e);
     color: white;
+    padding: 35px 25px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(219, 19, 122, 0.25);
+    position: relative;
+    overflow: hidden;
 }
 
-/* Adaptación para Dispositivos Móviles */
+/* Brillo decorativo en la tarjeta de Cupicoins */
+.card-cupicoins-main::after {
+    content: '';
+    position: absolute;
+    top: -50%; right: -50%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.card-cupicoins-main h3 { margin: 0; font-size: 1.1rem; opacity: 0.9; font-weight: 500; }
+
+.coins-val {
+    font-size: 4.5rem;
+    font-weight: 800;
+    margin: 5px 0;
+    font-family: 'Bree Serif', serif;
+    line-height: 1.1;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+/* PROMOS Y CANJE */
+.card-promos-redimir {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+}
+
+.promo-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #f0f0f0;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.promo-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+}
+
+/* 5. PEDIDOS */
+.pedido-full-card {
+    background: white;
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 18px;
+    border: 1px solid #eaeaea;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.pedido-full-card:hover { 
+    transform: translateY(-3px); 
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    border-color: #ddd;
+}
+
+.p-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f5f5f5;
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+}
+
+.p-status {
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    background: #f8f9fa;
+    border-radius: 20px; /* Bordes más redondos estilo app */
+    letter-spacing: 0.5px;
+}
+
+.p-footer {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+    flex-wrap: wrap; /* Para móviles */
+}
+
+.p-footer button {
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: white;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    font-family: inherit;
+    transition: all 0.2s;
+    flex: 1; /* Los botones toman ancho igual en móvil */
+    min-width: 120px;
+    text-align: center;
+}
+
+.p-footer button:hover {
+    background: #f8f9fa;
+    border-color: #ccc;
+}
+
+/* 6. PERFIL Y FORMULARIOS */
+.card-white {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input {
+    padding: 14px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+    background-color: #fafafa;
+}
+
+.form-group input:focus {
+    border-color: var(--color-pink);
+    background-color: white;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(219, 19, 122, 0.1);
+}
+
+.form-group input:read-only {
+    background-color: #f0f0f0;
+    color: #888;
+    cursor: not-allowed;
+    border-color: #e0e0e0;
+}
+
+/* RESPONSIVE MÓVIL (APLICACIÓN) */
 @media (max-width: 900px) {
     .panel-layout {
-        flex-direction: column;
-        margin: 0;
-        border-radius: 0;
-        border: none;
+        grid-template-columns: 1fr;
+        padding: 15px;
+        gap: 20px;
     }
     
     .panel-sidebar {
-        width: 100%;
-        padding: 20px 0 0 0;
-        border-right: none;
-        border-bottom: 1px solid #eee;
+        position: relative;
+        top: 0;
+        margin-bottom: 10px;
+        padding: 20px 15px;
     }
-    
+
+    /* Ocultar texto en menú lateral móvil para modo barra de tareas */
     .panel-sidebar-menu {
         display: flex;
         overflow-x: auto;
         padding-bottom: 5px;
     }
     
+    .panel-sidebar-menu ul {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        width: 100%;
+    }
+
     .panel-sidebar-menu li {
-        flex: 0 0 auto;
-        padding: 12px 20px;
-        white-space: nowrap;
-        border-left: none;
-        border-bottom: 3px solid transparent;
+        flex-direction: column;
+        justify-content: center;
+        padding: 10px;
+        font-size: 0.75rem;
+        margin-bottom: 0;
+        flex: 1;
+        min-width: 80px;
+        text-align: center;
+        gap: 5px;
+    }
+
+    .panel-sidebar-menu li i {
+        font-size: 1.3rem;
     }
     
-    .panel-sidebar-menu li.active {
-        border-bottom-color: var(--color-pink);
+    .resumen-grid, .form-grid {
+        grid-template-columns: 1fr;
     }
-    
-    .panel-content-area {
-        padding: 25px 15px;
+
+    .card-white {
+        padding: 20px;
+    }
+
+    .promo-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .promo-item button {
+        width: 100%;
     }
 }
 
-.pedido-card{
-border:1px solid #eee;
-padding:20px;
-border-radius:10px;
-margin-bottom:15px;
+/* ANIMACIONES */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.pedido-head{
-display:flex;
-justify-content:space-between;
-margin-bottom:10px;
-font-weight:bold;
+/* ===================================================== */
+/* DISEÑO DEL MENÚ Y BOTONES                             */
+/* ===================================================== */
+
+.nav-app-mobile {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.pedido-actions{
-margin-top:10px;
-display:flex;
-gap:10px;
+.sidebar-btn {
+    padding: 12px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    color: #666;
+    font-weight: 500;
 }
 
-.pedido-actions button{
-background:#db137a;
-border:none;
-color:white;
-padding:6px 12px;
-border-radius:6px;
-cursor:pointer;
+.sidebar-btn:hover { background: #fff0f6; color: #db137a; }
+
+.active-tab {
+    background: #fff0f6;
+    color: #db137a;
+    font-weight: bold;
 }
 
-.estampitas-grid{
-
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:10px;
-margin-top:20px;
-
+.sidebar-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.card-estampita{
-
-border:1px solid #eee;
-border-radius:10px;
-padding:10px;
-text-align:center;
-
+.sidebar-actions button {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
-.card-estampita img{
+.btn-app-descargar { background: #333; color: white; }
+.btn-app-actualizar { background: #f0f0f0; color: #333; }
+.btn-app-salir { background: #ffebee; color: #e53935; }
 
-width:100%;
-border-radius:6px;
+/* ===================================================== */
+/* MAGIA PARA CELULARES (BOTTOM NAVIGATION BAR)          */
+/* ===================================================== */
+@media (max-width: 900px) {
+    .panel-layout {
+        padding-bottom: 90px; /* Deja espacio para que el menú no tape el contenido */
+    }
 
-}
+    /* 1. La barra se pega abajo */
+    .panel-sidebar-menu {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        z-index: 1000;
+        padding: 10px 0 5px 0;
+        border-radius: 25px 25px 0 0;
+    }
 
-.sobre-modal{
+    /* 2. Los iconos se ponen en fila */
+    .nav-app-mobile {
+        flex-direction: row;
+        justify-content: space-evenly;
+        align-items: center;
+    }
 
-position:fixed;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-background:white;
-padding:30px;
-z-index:9999;
-border-radius:12px;
+    /* 3. Estilo tipo App (Icono arriba, texto chiquito abajo) */
+    .sidebar-btn {
+        flex-direction: column;
+        gap: 4px;
+        padding: 8px 5px;
+        font-size: 0.75rem;
+        flex: 1;
+        text-align: center;
+        border-radius: 15px;
+    }
 
-}
+    .sidebar-btn i { font-size: 1.4rem; }
 
-.modal-sobre{
+    /* 4. Acomodar los botones de acción en el perfil superior */
+    .sidebar-actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
 
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.7);
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:9999;
-
-}
-
-.cards-pack{
-
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:10px;
-
-}
-
-.card-pack{
-
-background:white;
-padding:10px;
-border-radius:10px;
-text-align:center;
-
-}
-
-.card-pack.epica{
-
-border:3px solid purple;
-
-}
-
-.card-pack.legendaria{
-
-border:3px solid gold;
-box-shadow:0 0 20px gold;
-
+    .sidebar-actions button {
+        flex: 1;
+        min-width: 130px;
+        font-size: 0.85rem;
+        padding: 10px;
+    }
 }
