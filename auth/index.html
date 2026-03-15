@@ -20,6 +20,7 @@
     <div id="header"></div>
 
     <main class="auth-wrapper">
+        
         <div class="auth-card fade-in" id="loginBox">
             <h1 class="auth-title">Bienvenido</h1>
             <p class="auth-subtitle">Ingresa a tu cuenta para continuar.</p>
@@ -38,7 +39,7 @@
                     <label>
                         <input type="checkbox" id="loginRemember"> Recordarme
                     </label>
-                    <a href="#" class="auth-link" onclick="document.getElementById('loginBox').style.display='none'; document.getElementById('recoverBox').style.display='block'; return false;">¿Olvidaste tu contraseña?</a>
+                    <a href="#" class="auth-link" id="btnRecuperarClave" onclick="document.getElementById('loginBox').style.display='none'; document.getElementById('recoverBox').style.display='block'; return false;">¿Olvidaste tu contraseña?</a>
                 </div>
 
                 <div id="loginError" style="color: var(--color-danger); display: none; font-size: 0.85rem; text-align: center;"></div>
@@ -46,13 +47,12 @@
                 <button type="submit" class="btn-primary" id="btnLoginSubmit" style="width: 100%; margin-top: 10px;">Ingresar</button>
             </form>
             
+            <div class="auth-separator"><span>O </span></div>
 
-<div class="auth-separator"><span>O </span></div>
-
-<button type="button" onclick="Auth.loginConGoogle()" class="btn-google-custom">
-    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
-    <span>Continuar con Google</span>
-</button>
+            <button type="button" onclick="Auth.loginConGoogle()" class="btn-google-custom" id="btnGoogleLogin">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G">
+                <span>Continuar con Google</span>
+            </button>
 
             <div style="margin-top: 1.5rem; font-size: 0.9rem;">
                 ¿No tienes cuenta? <a href="#" class="auth-link" onclick="document.getElementById('loginBox').style.display='none'; document.getElementById('registerBox').style.display='block'; return false;">Regístrate aquí</a>
@@ -93,7 +93,7 @@
 
         <div class="auth-card fade-in" id="recoverBox" style="display: none;">
             <h1 class="auth-title">Recuperar Clave</h1>
-            <p class="auth-subtitle">Te enviaremos una nueva contraseña a tu correo.</p>
+            <p class="auth-subtitle">Te enviaremos un enlace a tu correo.</p>
             
             <form id="formRecover" class="auth-form">
                 <div class="form-group">
@@ -103,7 +103,7 @@
 
                 <div id="recMsg" style="display: none; font-size: 0.85rem; text-align: center; margin-bottom: 10px;"></div>
                 
-                <button type="submit" class="btn-primary" id="btnRecSubmit" style="width: 100%;">Enviar Clave</button>
+                <button type="button" class="btn-primary" id="btnRecSubmit" onclick="Auth.recuperarClave(event)" style="width: 100%;">Enviar Enlace</button>
             </form>
 
             <div style="margin-top: 1.5rem; font-size: 0.9rem;">
@@ -111,39 +111,20 @@
             </div>
         </div>
 
-        <div class="auth-card fade-in" id="setupBox" style="display: none;">
-            <h1 class="auth-title">Crear Contraseña</h1>
-            <p class="auth-subtitle">Establece una clave segura para tu nueva cuenta.</p>
-            
-            <form id="formSetup" class="auth-form">
-                <input type="hidden" id="setupToken">
-                <div class="form-group">
-                    <label for="setupEmail">Correo Electrónico</label>
-                    <input type="email" id="setupEmail" readonly style="background-color: var(--color-gray-light); color: var(--color-gray-dark); cursor: not-allowed;">
-                </div>
-                <div class="form-group">
-                    <label for="setupPassword">Nueva Contraseña</label>
-                    <input type="password" id="setupPassword" required placeholder="Mínimo 6 caracteres">
-                </div>
-
-                <div id="setupMsg" style="display: none; font-size: 0.85rem; text-align: center; margin-bottom: 10px;"></div>
-                
-                <button type="submit" class="btn-primary" id="btnSetupSubmit" style="width: 100%;">Guardar y Entrar</button>
-            </form>
-        </div>
-
     </main>
 
     <div id="footer"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="/js/config.js"></script>
-<script src="/js/utils.js"></script>
-<script src="/js/auth.js"></script>
+    
+    <script src="/js/config.js"></script>
+    <script src="/js/utils.js"></script>
+    
     <script src="/js/header.js"></script>
     <script src="/js/carrito.js"></script>
     <script src="/js/footer.js"></script>
     
+    <script src="/js/auth.js"></script>
+
 </body>
 </html>
