@@ -1,0 +1,1227 @@
+{
+  "schemaVersion": 1,
+  "worlds": [
+    {
+      "id": "infantil",
+      "name": "Infantil",
+      "icon": "✦",
+      "color": "#F2A7B8",
+      "description": "Bebés, niñas, niños y universo infantil.",
+      "active": true
+    },
+    {
+      "id": "damas",
+      "name": "Damas",
+      "icon": "✿",
+      "color": "#D98DB8",
+      "description": "Moda, belleza, cuidado personal y vestuario.",
+      "active": true
+    },
+    {
+      "id": "caballeros",
+      "name": "Caballeros",
+      "icon": "◈",
+      "color": "#6F8FAF",
+      "description": "Moda, vestuario y accesorios.",
+      "active": true
+    },
+    {
+      "id": "hogar",
+      "name": "Hogar",
+      "icon": "⌂",
+      "color": "#8FAE9B",
+      "description": "Textiles, decoración y artículos para el hogar.",
+      "active": true
+    },
+    {
+      "id": "publicidad-eventos",
+      "name": "Publicidad y eventos",
+      "icon": "▧",
+      "color": "#E9B75B",
+      "description": "Impresión, señalización y producción para eventos.",
+      "active": true
+    },
+    {
+      "id": "detalles",
+      "name": "Detalles",
+      "icon": "♡",
+      "color": "#E98D91",
+      "description": "Regalos, anchetas, bouquets y celebraciones.",
+      "active": true
+    },
+    {
+      "id": "personalizados",
+      "name": "Personalizados",
+      "icon": "✧",
+      "color": "#ED1683",
+      "description": "Productos que se transforman con tu idea.",
+      "active": true
+    },
+    {
+      "id": "confecciones",
+      "name": "Confecciones",
+      "icon": "⌁",
+      "color": "#8E82B8",
+      "description": "Telas, insumos, materiales y servicios de confección.",
+      "active": true
+    },
+    {
+      "id": "accesorios",
+      "name": "Accesorios",
+      "icon": "◇",
+      "color": "#C69B67",
+      "description": "Accesorios de distintas líneas y públicos.",
+      "active": true
+    },
+    {
+      "id": "juguetes",
+      "name": "Juguetes",
+      "icon": "☆",
+      "color": "#E9A64E",
+      "description": "Juguetes, juegos y artículos recreativos.",
+      "active": true
+    },
+    {
+      "id": "calzado",
+      "name": "Calzado",
+      "icon": "⌑",
+      "color": "#A18B79",
+      "description": "Calzado para diferentes edades y estilos.",
+      "active": true
+    },
+    {
+      "id": "papeleria",
+      "name": "Papelería",
+      "icon": "▤",
+      "color": "#78A9C9",
+      "description": "Útiles, papelería y materiales creativos.",
+      "active": true
+    },
+    {
+      "id": "ferreteria",
+      "name": "Ferretería",
+      "icon": "⚒",
+      "color": "#8C969E",
+      "description": "Herramientas, materiales y artículos de ferretería.",
+      "active": true
+    },
+    {
+      "id": "otros",
+      "name": "Otros",
+      "icon": "＋",
+      "color": "#999999",
+      "description": "Productos y servicios especiales.",
+      "active": true
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-1",
+      "worldId": "infantil",
+      "name": "Básicos sin estampados ni personalización",
+      "active": true
+    },
+    {
+      "id": "cat-2",
+      "worldId": "infantil",
+      "name": "Bebés",
+      "active": true
+    },
+    {
+      "id": "cat-3",
+      "worldId": "infantil",
+      "name": "Niñas",
+      "active": true
+    },
+    {
+      "id": "cat-4",
+      "worldId": "infantil",
+      "name": "Niños",
+      "active": true
+    },
+    {
+      "id": "cat-5",
+      "worldId": "infantil",
+      "name": "Vestuario",
+      "active": true
+    },
+    {
+      "id": "cat-6",
+      "worldId": "infantil",
+      "name": "Disfraces",
+      "active": true
+    },
+    {
+      "id": "cat-7",
+      "worldId": "infantil",
+      "name": "Pijamas",
+      "active": true
+    },
+    {
+      "id": "cat-8",
+      "worldId": "infantil",
+      "name": "Tejidos",
+      "active": true
+    },
+    {
+      "id": "cat-9",
+      "worldId": "infantil",
+      "name": "Trajes de baño",
+      "active": true
+    },
+    {
+      "id": "cat-10",
+      "worldId": "damas",
+      "name": "Básicos",
+      "active": true
+    },
+    {
+      "id": "cat-11",
+      "worldId": "damas",
+      "name": "Camisetas",
+      "active": true
+    },
+    {
+      "id": "cat-12",
+      "worldId": "damas",
+      "name": "Blusas",
+      "active": true
+    },
+    {
+      "id": "cat-13",
+      "worldId": "damas",
+      "name": "Tops y croptops",
+      "active": true
+    },
+    {
+      "id": "cat-14",
+      "worldId": "damas",
+      "name": "Bodys y corsets",
+      "active": true
+    },
+    {
+      "id": "cat-15",
+      "worldId": "damas",
+      "name": "Buzos",
+      "active": true
+    },
+    {
+      "id": "cat-16",
+      "worldId": "damas",
+      "name": "Conjuntos deportivos",
+      "active": true
+    },
+    {
+      "id": "cat-17",
+      "worldId": "damas",
+      "name": "Faldas",
+      "active": true
+    },
+    {
+      "id": "cat-18",
+      "worldId": "damas",
+      "name": "Shorts",
+      "active": true
+    },
+    {
+      "id": "cat-19",
+      "worldId": "damas",
+      "name": "Pantalones",
+      "active": true
+    },
+    {
+      "id": "cat-20",
+      "worldId": "damas",
+      "name": "Jeans",
+      "active": true
+    },
+    {
+      "id": "cat-21",
+      "worldId": "damas",
+      "name": "Joggers",
+      "active": true
+    },
+    {
+      "id": "cat-22",
+      "worldId": "damas",
+      "name": "Conjuntos",
+      "active": true
+    },
+    {
+      "id": "cat-23",
+      "worldId": "damas",
+      "name": "Vestidos",
+      "active": true
+    },
+    {
+      "id": "cat-24",
+      "worldId": "damas",
+      "name": "Lencería",
+      "active": true
+    },
+    {
+      "id": "cat-25",
+      "worldId": "damas",
+      "name": "Traje de baño",
+      "active": true
+    },
+    {
+      "id": "cat-26",
+      "worldId": "damas",
+      "name": "Pijamas",
+      "active": true
+    },
+    {
+      "id": "cat-27",
+      "worldId": "damas",
+      "name": "Disfraces",
+      "active": true
+    },
+    {
+      "id": "cat-28",
+      "worldId": "damas",
+      "name": "Vestuario",
+      "active": true
+    },
+    {
+      "id": "cat-29",
+      "worldId": "damas",
+      "name": "Maquillaje",
+      "active": true
+    },
+    {
+      "id": "cat-30",
+      "worldId": "damas",
+      "name": "Skin care",
+      "active": true
+    },
+    {
+      "id": "cat-31",
+      "worldId": "damas",
+      "name": "Hair care",
+      "active": true
+    },
+    {
+      "id": "cat-32",
+      "worldId": "caballeros",
+      "name": "Básicos",
+      "active": true
+    },
+    {
+      "id": "cat-33",
+      "worldId": "caballeros",
+      "name": "Camisas y camisetas",
+      "active": true
+    },
+    {
+      "id": "cat-34",
+      "worldId": "caballeros",
+      "name": "Joggers",
+      "active": true
+    },
+    {
+      "id": "cat-35",
+      "worldId": "caballeros",
+      "name": "Pantalonetas",
+      "active": true
+    },
+    {
+      "id": "cat-36",
+      "worldId": "caballeros",
+      "name": "Jean",
+      "active": true
+    },
+    {
+      "id": "cat-37",
+      "worldId": "caballeros",
+      "name": "Pantalones",
+      "active": true
+    },
+    {
+      "id": "cat-38",
+      "worldId": "caballeros",
+      "name": "Conjuntos",
+      "active": true
+    },
+    {
+      "id": "cat-39",
+      "worldId": "caballeros",
+      "name": "Conjuntos deportivos",
+      "active": true
+    },
+    {
+      "id": "cat-40",
+      "worldId": "caballeros",
+      "name": "Pijamas",
+      "active": true
+    },
+    {
+      "id": "cat-41",
+      "worldId": "caballeros",
+      "name": "Disfraces",
+      "active": true
+    },
+    {
+      "id": "cat-42",
+      "worldId": "caballeros",
+      "name": "Vestuario",
+      "active": true
+    },
+    {
+      "id": "cat-43",
+      "worldId": "hogar",
+      "name": "Sábanas",
+      "active": true
+    },
+    {
+      "id": "cat-44",
+      "worldId": "hogar",
+      "name": "Fundas de almohadas",
+      "active": true
+    },
+    {
+      "id": "cat-45",
+      "worldId": "hogar",
+      "name": "Cojines",
+      "active": true
+    },
+    {
+      "id": "cat-46",
+      "worldId": "hogar",
+      "name": "Cortinas",
+      "active": true
+    },
+    {
+      "id": "cat-47",
+      "worldId": "hogar",
+      "name": "Manteles",
+      "active": true
+    },
+    {
+      "id": "cat-48",
+      "worldId": "hogar",
+      "name": "Forros de sillas",
+      "active": true
+    },
+    {
+      "id": "cat-49",
+      "worldId": "hogar",
+      "name": "Forros de puertas",
+      "active": true
+    },
+    {
+      "id": "cat-50",
+      "worldId": "hogar",
+      "name": "Juegos de baño",
+      "active": true
+    },
+    {
+      "id": "cat-51",
+      "worldId": "hogar",
+      "name": "Tapetes",
+      "active": true
+    },
+    {
+      "id": "cat-52",
+      "worldId": "hogar",
+      "name": "Accesorios de cocina",
+      "active": true
+    },
+    {
+      "id": "cat-53",
+      "worldId": "hogar",
+      "name": "Toallas",
+      "active": true
+    },
+    {
+      "id": "cat-54",
+      "worldId": "hogar",
+      "name": "Carteles",
+      "active": true
+    },
+    {
+      "id": "cat-55",
+      "worldId": "publicidad-eventos",
+      "name": "Pendones",
+      "active": true
+    },
+    {
+      "id": "cat-56",
+      "worldId": "publicidad-eventos",
+      "name": "Volantes",
+      "active": true
+    },
+    {
+      "id": "cat-57",
+      "worldId": "publicidad-eventos",
+      "name": "Tarjetas",
+      "active": true
+    },
+    {
+      "id": "cat-58",
+      "worldId": "publicidad-eventos",
+      "name": "Stickers",
+      "active": true
+    },
+    {
+      "id": "cat-59",
+      "worldId": "publicidad-eventos",
+      "name": "Cuadros y retablos",
+      "active": true
+    },
+    {
+      "id": "cat-60",
+      "worldId": "publicidad-eventos",
+      "name": "Vinilo adhesivo",
+      "active": true
+    },
+    {
+      "id": "cat-61",
+      "worldId": "publicidad-eventos",
+      "name": "DTF por metros",
+      "active": true
+    },
+    {
+      "id": "cat-62",
+      "worldId": "publicidad-eventos",
+      "name": "Calandra",
+      "active": true
+    },
+    {
+      "id": "cat-63",
+      "worldId": "publicidad-eventos",
+      "name": "Cajas",
+      "active": true
+    },
+    {
+      "id": "cat-64",
+      "worldId": "publicidad-eventos",
+      "name": "Bolsas",
+      "active": true
+    },
+    {
+      "id": "cat-65",
+      "worldId": "publicidad-eventos",
+      "name": "Tulas",
+      "active": true
+    },
+    {
+      "id": "cat-66",
+      "worldId": "publicidad-eventos",
+      "name": "Mobiliarios",
+      "active": true
+    },
+    {
+      "id": "cat-67",
+      "worldId": "publicidad-eventos",
+      "name": "Forros",
+      "active": true
+    },
+    {
+      "id": "cat-68",
+      "worldId": "publicidad-eventos",
+      "name": "Letreros MDF",
+      "active": true
+    },
+    {
+      "id": "cat-69",
+      "worldId": "publicidad-eventos",
+      "name": "Letreros luminosos",
+      "active": true
+    },
+    {
+      "id": "cat-70",
+      "worldId": "publicidad-eventos",
+      "name": "Avisos y gigantografía",
+      "active": true
+    },
+    {
+      "id": "cat-71",
+      "worldId": "detalles",
+      "name": "Anchetas",
+      "active": true
+    },
+    {
+      "id": "cat-72",
+      "worldId": "detalles",
+      "name": "Bouquets",
+      "active": true
+    },
+    {
+      "id": "cat-73",
+      "worldId": "detalles",
+      "name": "Piñatas",
+      "active": true
+    },
+    {
+      "id": "cat-74",
+      "worldId": "detalles",
+      "name": "Comestibles",
+      "active": true
+    },
+    {
+      "id": "cat-75",
+      "worldId": "detalles",
+      "name": "Cajas sorpresa",
+      "active": true
+    },
+    {
+      "id": "cat-76",
+      "worldId": "detalles",
+      "name": "Flores eternas",
+      "active": true
+    },
+    {
+      "id": "cat-77",
+      "worldId": "detalles",
+      "name": "Cartas",
+      "active": true
+    },
+    {
+      "id": "cat-78",
+      "worldId": "detalles",
+      "name": "Centros de mesa",
+      "active": true
+    },
+    {
+      "id": "cat-79",
+      "worldId": "detalles",
+      "name": "Y más",
+      "active": true
+    },
+    {
+      "id": "cat-80",
+      "worldId": "personalizados",
+      "name": "Camisas",
+      "active": true
+    },
+    {
+      "id": "cat-81",
+      "worldId": "personalizados",
+      "name": "Camisetas",
+      "active": true
+    },
+    {
+      "id": "cat-82",
+      "worldId": "personalizados",
+      "name": "Camisetas oversize",
+      "active": true
+    },
+    {
+      "id": "cat-83",
+      "worldId": "personalizados",
+      "name": "Mamelucos",
+      "active": true
+    },
+    {
+      "id": "cat-84",
+      "worldId": "personalizados",
+      "name": "Guayaberas",
+      "active": true
+    },
+    {
+      "id": "cat-85",
+      "worldId": "personalizados",
+      "name": "Buzos y chaquetas",
+      "active": true
+    },
+    {
+      "id": "cat-86",
+      "worldId": "personalizados",
+      "name": "Pantalones",
+      "active": true
+    },
+    {
+      "id": "cat-87",
+      "worldId": "personalizados",
+      "name": "Vestuario",
+      "active": true
+    },
+    {
+      "id": "cat-88",
+      "worldId": "personalizados",
+      "name": "Disfraces",
+      "active": true
+    },
+    {
+      "id": "cat-89",
+      "worldId": "personalizados",
+      "name": "Conjuntos deportivos",
+      "active": true
+    },
+    {
+      "id": "cat-90",
+      "worldId": "personalizados",
+      "name": "Cojines y almohadas",
+      "active": true
+    },
+    {
+      "id": "cat-91",
+      "worldId": "personalizados",
+      "name": "Tazas y termos",
+      "active": true
+    },
+    {
+      "id": "cat-92",
+      "worldId": "personalizados",
+      "name": "Tulas y bolsos",
+      "active": true
+    },
+    {
+      "id": "cat-93",
+      "worldId": "personalizados",
+      "name": "Bolsas",
+      "active": true
+    },
+    {
+      "id": "cat-94",
+      "worldId": "personalizados",
+      "name": "Cajas",
+      "active": true
+    },
+    {
+      "id": "cat-95",
+      "worldId": "personalizados",
+      "name": "Gorras",
+      "active": true
+    },
+    {
+      "id": "cat-96",
+      "worldId": "personalizados",
+      "name": "Bandas y cintas",
+      "active": true
+    },
+    {
+      "id": "cat-97",
+      "worldId": "confecciones",
+      "name": "Telas por metro y por rollo",
+      "active": true
+    },
+    {
+      "id": "cat-98",
+      "worldId": "confecciones",
+      "name": "Telas personalizadas",
+      "active": true
+    },
+    {
+      "id": "cat-99",
+      "worldId": "confecciones",
+      "name": "Agujas",
+      "active": true
+    },
+    {
+      "id": "cat-100",
+      "worldId": "confecciones",
+      "name": "Agujas de tejer",
+      "active": true
+    },
+    {
+      "id": "cat-101",
+      "worldId": "confecciones",
+      "name": "Lana",
+      "active": true
+    },
+    {
+      "id": "cat-102",
+      "worldId": "confecciones",
+      "name": "Hilos",
+      "active": true
+    },
+    {
+      "id": "cat-103",
+      "worldId": "confecciones",
+      "name": "Cuellos rib",
+      "active": true
+    },
+    {
+      "id": "cat-104",
+      "worldId": "confecciones",
+      "name": "Prendas sobre pedido con imagen de referencia",
+      "active": true
+    },
+    {
+      "id": "cat-105",
+      "worldId": "confecciones",
+      "name": "Prendas sobre medida",
+      "active": true
+    },
+    {
+      "id": "cat-106",
+      "worldId": "confecciones",
+      "name": "Patrones",
+      "active": true
+    },
+    {
+      "id": "cat-107",
+      "worldId": "confecciones",
+      "name": "Cintas",
+      "active": true
+    },
+    {
+      "id": "cat-108",
+      "worldId": "confecciones",
+      "name": "Cintas personalizadas",
+      "active": true
+    },
+    {
+      "id": "cat-109",
+      "worldId": "confecciones",
+      "name": "Variedades de confección",
+      "active": true
+    },
+    {
+      "id": "cat-110",
+      "worldId": "accesorios",
+      "name": "Accesorios generales",
+      "active": true
+    },
+    {
+      "id": "cat-111",
+      "worldId": "juguetes",
+      "name": "Juguetes y juegos",
+      "active": true
+    },
+    {
+      "id": "cat-112",
+      "worldId": "juguetes",
+      "name": "Juguetes didácticos",
+      "active": true
+    },
+    {
+      "id": "cat-113",
+      "worldId": "calzado",
+      "name": "Calzado infantil",
+      "active": true
+    },
+    {
+      "id": "cat-114",
+      "worldId": "calzado",
+      "name": "Calzado dama",
+      "active": true
+    },
+    {
+      "id": "cat-115",
+      "worldId": "calzado",
+      "name": "Calzado caballero",
+      "active": true
+    },
+    {
+      "id": "cat-116",
+      "worldId": "papeleria",
+      "name": "Útiles escolares",
+      "active": true
+    },
+    {
+      "id": "cat-117",
+      "worldId": "papeleria",
+      "name": "Papelería creativa",
+      "active": true
+    },
+    {
+      "id": "cat-118",
+      "worldId": "ferreteria",
+      "name": "Herramientas",
+      "active": true
+    },
+    {
+      "id": "cat-119",
+      "worldId": "ferreteria",
+      "name": "Materiales y suministros",
+      "active": true
+    },
+    {
+      "id": "cat-120",
+      "worldId": "otros",
+      "name": "Alas gigantes",
+      "active": true
+    },
+    {
+      "id": "cat-121",
+      "worldId": "otros",
+      "name": "Tocados",
+      "active": true
+    },
+    {
+      "id": "cat-122",
+      "worldId": "otros",
+      "name": "Vestuario de fantasía",
+      "active": true
+    },
+    {
+      "id": "cat-123",
+      "worldId": "otros",
+      "name": "Disfraces sobre pedido con referencia",
+      "active": true
+    }
+  ],
+  "subcategories": [
+    {
+      "id": "sub-bebes-mamelucos",
+      "categoryName": "Bebés",
+      "name": "Mamelucos",
+      "active": true
+    },
+    {
+      "id": "sub-bebes-conjuntos",
+      "categoryName": "Bebés",
+      "name": "Conjuntos",
+      "active": true
+    },
+    {
+      "id": "sub-bebes-vestidos",
+      "categoryName": "Bebés",
+      "name": "Vestidos",
+      "active": true
+    },
+    {
+      "id": "sub-bebes-sets",
+      "categoryName": "Bebés",
+      "name": "Sets",
+      "active": true
+    },
+    {
+      "id": "sub-ninas-camisetas",
+      "categoryName": "Niñas",
+      "name": "Camisetas",
+      "active": true
+    },
+    {
+      "id": "sub-ninas-tutus",
+      "categoryName": "Niñas",
+      "name": "Tutus",
+      "active": true
+    },
+    {
+      "id": "sub-ninas-faldas",
+      "categoryName": "Niñas",
+      "name": "Faldas",
+      "active": true
+    },
+    {
+      "id": "sub-ninas-pantalones-y-joggers",
+      "categoryName": "Niñas",
+      "name": "Pantalones y joggers",
+      "active": true
+    },
+    {
+      "id": "sub-ninas-conjuntos-deportivos",
+      "categoryName": "Niñas",
+      "name": "Conjuntos deportivos",
+      "active": true
+    },
+    {
+      "id": "sub-ninas-shorts",
+      "categoryName": "Niñas",
+      "name": "Shorts",
+      "active": true
+    },
+    {
+      "id": "sub-ninas-vestidos",
+      "categoryName": "Niñas",
+      "name": "Vestidos",
+      "active": true
+    },
+    {
+      "id": "sub-ninas-conjuntos-con-tutu",
+      "categoryName": "Niñas",
+      "name": "Conjuntos con tutu",
+      "active": true
+    },
+    {
+      "id": "sub-ninas-conjuntos",
+      "categoryName": "Niñas",
+      "name": "Conjuntos",
+      "active": true
+    },
+    {
+      "id": "sub-ninas-sets",
+      "categoryName": "Niñas",
+      "name": "Sets",
+      "active": true
+    },
+    {
+      "id": "sub-ninos-camisetas",
+      "categoryName": "Niños",
+      "name": "Camisetas",
+      "active": true
+    },
+    {
+      "id": "sub-ninos-buzos-y-chaquetas",
+      "categoryName": "Niños",
+      "name": "Buzos y chaquetas",
+      "active": true
+    },
+    {
+      "id": "sub-ninos-pantalones-y-joggers",
+      "categoryName": "Niños",
+      "name": "Pantalones y joggers",
+      "active": true
+    },
+    {
+      "id": "sub-ninos-bermudas-y-pantalonetas",
+      "categoryName": "Niños",
+      "name": "Bermudas y pantalonetas",
+      "active": true
+    },
+    {
+      "id": "sub-ninos-conjuntos-deportivos",
+      "categoryName": "Niños",
+      "name": "Conjuntos deportivos",
+      "active": true
+    },
+    {
+      "id": "sub-ninos-conjuntos-personalizados",
+      "categoryName": "Niños",
+      "name": "Conjuntos personalizados",
+      "active": true
+    },
+    {
+      "id": "sub-ninos-conjuntos-tematicos",
+      "categoryName": "Niños",
+      "name": "Conjuntos temáticos",
+      "active": true
+    },
+    {
+      "id": "sub-ninos-sets",
+      "categoryName": "Niños",
+      "name": "Sets",
+      "active": true
+    }
+  ],
+  "audiences": [
+    {
+      "id": "aud-1",
+      "name": "Bebés"
+    },
+    {
+      "id": "aud-2",
+      "name": "Niñas"
+    },
+    {
+      "id": "aud-3",
+      "name": "Niños"
+    },
+    {
+      "id": "aud-4",
+      "name": "Damas"
+    },
+    {
+      "id": "aud-5",
+      "name": "Caballeros"
+    },
+    {
+      "id": "aud-6",
+      "name": "Unisex"
+    },
+    {
+      "id": "aud-7",
+      "name": "Familias"
+    },
+    {
+      "id": "aud-8",
+      "name": "Parejas"
+    },
+    {
+      "id": "aud-9",
+      "name": "Mascotas"
+    },
+    {
+      "id": "aud-10",
+      "name": "Empresas"
+    },
+    {
+      "id": "aud-11",
+      "name": "Instituciones"
+    },
+    {
+      "id": "aud-12",
+      "name": "Figuras y personajes"
+    }
+  ],
+  "seasons": [
+    {
+      "id": "season-1",
+      "name": "Carnaval"
+    },
+    {
+      "id": "season-2",
+      "name": "Amor y amistad"
+    },
+    {
+      "id": "season-3",
+      "name": "Halloween"
+    },
+    {
+      "id": "season-4",
+      "name": "San Patricio"
+    },
+    {
+      "id": "season-5",
+      "name": "Navidad"
+    },
+    {
+      "id": "season-6",
+      "name": "Semana Santa"
+    },
+    {
+      "id": "season-7",
+      "name": "20 de Julio"
+    },
+    {
+      "id": "season-8",
+      "name": "Día de la Raza"
+    },
+    {
+      "id": "season-9",
+      "name": "Independencia"
+    },
+    {
+      "id": "season-10",
+      "name": "Cumpleaños de Barranquilla"
+    },
+    {
+      "id": "season-11",
+      "name": "English Day"
+    },
+    {
+      "id": "season-12",
+      "name": "Disfraces y peinados locos"
+    },
+    {
+      "id": "season-13",
+      "name": "Corridos"
+    },
+    {
+      "id": "season-14",
+      "name": "Festivales"
+    },
+    {
+      "id": "season-15",
+      "name": "Día del Novio"
+    },
+    {
+      "id": "season-16",
+      "name": "Día de la Novia"
+    },
+    {
+      "id": "season-17",
+      "name": "Flores amarillas"
+    },
+    {
+      "id": "season-18",
+      "name": "Virgen del Carmen"
+    },
+    {
+      "id": "season-19",
+      "name": "Victoria's Secret"
+    },
+    {
+      "id": "season-20",
+      "name": "Vacaciones"
+    }
+  ],
+  "occasions": [
+    {
+      "id": "occasion-1",
+      "name": "Cumpleaños"
+    },
+    {
+      "id": "occasion-2",
+      "name": "Quinceañeros"
+    },
+    {
+      "id": "occasion-3",
+      "name": "Graduaciones"
+    },
+    {
+      "id": "occasion-4",
+      "name": "Matrimonios"
+    },
+    {
+      "id": "occasion-5",
+      "name": "Bautizos"
+    },
+    {
+      "id": "occasion-6",
+      "name": "Baby shower"
+    },
+    {
+      "id": "occasion-7",
+      "name": "Revelación de género"
+    },
+    {
+      "id": "occasion-8",
+      "name": "Aniversarios"
+    },
+    {
+      "id": "occasion-9",
+      "name": "Despedidas"
+    },
+    {
+      "id": "occasion-10",
+      "name": "Eventos empresariales"
+    },
+    {
+      "id": "occasion-11",
+      "name": "Sesiones fotográficas"
+    },
+    {
+      "id": "occasion-12",
+      "name": "Celebraciones especiales"
+    },
+    {
+      "id": "occasion-13",
+      "name": "Regalos y sorpresas"
+    }
+  ],
+  "themes": [
+    {
+      "id": "theme-type-1",
+      "name": "Marcas"
+    },
+    {
+      "id": "theme-type-2",
+      "name": "Personajes"
+    },
+    {
+      "id": "theme-type-3",
+      "name": "Películas"
+    },
+    {
+      "id": "theme-type-4",
+      "name": "Series"
+    },
+    {
+      "id": "theme-type-5",
+      "name": "Animación"
+    },
+    {
+      "id": "theme-type-6",
+      "name": "Profesiones"
+    },
+    {
+      "id": "theme-type-7",
+      "name": "Deportes"
+    },
+    {
+      "id": "theme-type-8",
+      "name": "Música y artistas"
+    },
+    {
+      "id": "theme-type-9",
+      "name": "Fantasía"
+    },
+    {
+      "id": "theme-type-10",
+      "name": "Culturas y tradiciones"
+    },
+    {
+      "id": "theme-type-11",
+      "name": "Festividades"
+    },
+    {
+      "id": "theme-type-12",
+      "name": "Eventos"
+    }
+  ]
+}
